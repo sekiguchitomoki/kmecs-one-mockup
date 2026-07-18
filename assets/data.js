@@ -1,3 +1,23 @@
+/* ===== 閲覧パスワードゲート（外部からのカジュアルな閲覧を防ぐ簡易ロック） =====
+   ※ 静的サイトのためソース上にコードが見える簡易ロックです（一応の目的）。
+   ※ Playwright等の自動化は sessionStorage.kmecs_gate='ok' でバイパスできます。 */
+(function(){
+  var PASS='kmecs28';                       // 閲覧パスワード（必要に応じて変更可）
+  try{ if(sessionStorage.getItem('kmecs_gate')==='ok') return; }catch(e){ return; }
+  try{ document.documentElement.style.visibility='hidden'; }catch(e){}
+  var ok=false;
+  for(var i=0;i<3;i++){
+    var v=window.prompt('ケーメックスONE 受発注ポータル（モックアップ）\n閲覧パスワードを入力してください');
+    if(v===null) break;
+    if(v===PASS){ ok=true; break; }
+  }
+  if(ok){ try{ sessionStorage.setItem('kmecs_gate','ok'); }catch(e){} try{ document.documentElement.style.visibility=''; }catch(e){} }
+  else {
+    document.documentElement.innerHTML='<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#0d1024;color:#fff"><div style="text-align:center"><div style="font-weight:700;font-size:20px">ケーメックスONE モックアップ</div><div style="color:#9aa0ad;margin-top:8px">閲覧にはパスワードが必要です。再読み込みで再入力できます。</div></div></body>';
+    throw new Error('gate');
+  }
+})();
+
 /* KMECS ONE モック — 共通ダミーデータ */
 
 /* ===== 仮アカウント（顧客ごとの条件＝粗利率・取引条件で金額表示）===== */

@@ -85,7 +85,7 @@
       var a = KMECS.account();
 
       document.getElementById('priceNote').innerHTML = a
-        ? '<div class="card px-4 py-3 text-[15px] flex items-center gap-2"><span class="badge text-white" style="background:#e60012">得値ランク'+a.rank+'</span>'
+        ? '<div class="card px-4 py-3 text-[15px] flex items-center gap-2"><span class="badge bg-neutral-100 text-neutral-600">お客様価格（得値）</span>'
           + '<span class="text-neutral-600">'+a.company+' 様のお取引価格（得値・'+a.terms+'）を表示しています。</span></div>'
         : '<div class="border-l-4 bg-white card px-4 py-3 text-[15px] flex flex-wrap items-center justify-between gap-2" style="border-left-color:#e60012">'
           + '<span class="text-neutral-600">価格はログイン後に表示されます（既存お取引先様向けB2B専用）。</span>'

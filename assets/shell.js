@@ -159,7 +159,7 @@
     }
     if (key === 'mypage') {
       const acc = a
-        ? megaLink('mypage.html', 'マイページ', `${a.company} ／ 得値${a.rank}`) + megaLink('orders.html', '注文・進捗', '進行中の注文を確認') + megaLink('quotes.html', '保存した見積', '一時保存・有効な見積')
+        ? megaLink('mypage.html', 'マイページ', `${a.company}`) + megaLink('orders.html', '注文・進捗', '進行中の注文を確認') + megaLink('quotes.html', '保存した見積', '一時保存・有効な見積')
         : megaLink('login.html', 'ログイン', 'ログインで得値・注文履歴を表示') + megaLink('contact.html', 'アカウント発行の相談', '担当営業までお問い合わせください');
       return `<div class="grid grid-cols-12 gap-8">
         <div class="col-span-4">${megaFeature('mypage.html', 'assets/img/support2.jpg', 'マイページ')}</div>
@@ -182,8 +182,7 @@
       ? `<div class="flex items-center gap-2.5 shrink-0 whitespace-nowrap">
            <div class="text-right leading-tight hidden xl:block">
              <div class="text-[13px] text-neutral-400 hidden 2xl:block">${a.company}</div>
-             <div class="text-[14px] text-white font-medium flex items-center gap-1.5 justify-end">${a.user} 様
-               <span class="badge text-white" style="background:#e60012">得値${a.rank}</span></div>
+             <div class="text-[14px] text-white font-medium justify-end">${a.user} 様</div>
            </div>
            <button id="logoutBtn" class="text-[13px] text-neutral-400 hover:text-white border border-white/25 px-2.5 py-1 shrink-0">ログアウト</button>
          </div>`

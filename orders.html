@@ -90,13 +90,14 @@
     onReady:function(){
       var a = KMECS.account();
       if(!a){ document.getElementById('guest').classList.remove('hidden'); document.getElementById('main').classList.add('hidden'); return; }
-      var f = 'all';
+      var f = qs('f') || 'all';   // マイページのカードから ?f=active / lead / unpaid で来る
 
       function render(){
         var list = ORDERS.filter(function(o){
           if(o.acc !== a.key) return false;
           if(f==='active') return o.step < 6;
           if(f==='unpaid') return o.pay==='未入金';
+          if(f==='lead')   return o.step<=2 && o.pay==='未請求';   // 納期回答待ち
           return true;
         });
         document.getElementById('count').textContent = list.length;
@@ -111,16 +112,17 @@
         }).join('');
       }
 
-      document.querySelectorAll('.fb').forEach(function(b){
-        b.addEventListener('click', function(){
-          f = b.getAttribute('data-f');
-          document.querySelectorAll('.fb').forEach(function(x){
-            x.className='fb px-4 py-2 border border-[color:var(--line)] text-neutral-600 bg-white'; x.style.background='';
-          });
-          b.className='fb px-4 py-2 text-white'; b.style.background='#e60012';
-          render();
+      function paintFb(){
+        document.querySelectorAll('.fb').forEach(function(x){
+          var on = x.getAttribute('data-f')===f;
+          x.className = on ? 'fb px-4 py-2 text-white' : 'fb px-4 py-2 border border-[color:var(--line)] text-neutral-600 bg-white';
+          x.style.background = on ? '#e60012' : '';
         });
+      }
+      document.querySelectorAll('.fb').forEach(function(b){
+        b.addEventListener('click', function(){ f = b.getAttribute('data-f'); paintFb(); render(); });
       });
+      paintFb();   // ?f= の初期ハイライト（納期回答待ち等・該当ボタンが無い場合は「すべて」表示）
       render();
     }
   });

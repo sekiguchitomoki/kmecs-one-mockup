@@ -273,7 +273,7 @@
       // ログイン状態バナー
       document.getElementById('stateBanner').innerHTML = a
         ? '<div class="bg-white border-b border-[color:var(--line)]"><div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-3 flex flex-wrap items-center justify-between gap-3">'
-          + '<div class="text-[16px]"><b class="text-ink">'+a.company+'</b> でログイン中 <span class="badge text-white ml-1" style="background:#e60012">得値ランク'+a.rank+'</span>'
+          + '<div class="text-[16px]"><b class="text-ink">'+a.company+'</b> でログイン中 <span class="badge bg-neutral-100 text-neutral-600">お客様価格（得値）</span>'
           + '<span class="text-[14px] text-neutral-500 ml-2">お客様専用価格（得値）を表示中 ・ '+a.terms+'</span></div>'
           + '<a href="mypage.html" class="btn-ink !py-2 !px-5 !text-[15px]">マイページへ</a></div></div>'
         : '<div class="bg-white border-b-2" style="border-color:#e60012"><div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-3 flex flex-wrap items-center justify-between gap-3">'
