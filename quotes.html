@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+    <div class="sec-label">QUOTE</div>
+    <h1 class="sec-title text-3xl mt-1">見積一覧</h1>
+    <p class="text-[16px] text-neutral-500 mt-2">営業からお送りした見積番号を検索し、<b class="text-ink">見積内容の通りに発注</b>できます。行を選んで一部だけ発注（部分注文）も可能です。</p>
+
+    <div id="guest" class="hidden card p-16 text-center mt-8">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" class="mx-auto mb-3"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="font-bold text-ink">見積情報の表示にはログインが必要です</div>
+      <p class="text-[15px] text-neutral-500 mt-2">金額（得値）を含む見積は、お取引先様アカウントでのログイン後に表示されます。</p>
+      <a href="login.html" class="btn-red mt-5">ログイン</a>
+    </div>
+
+    <div id="main">
+      <!-- 検索 -->
+      <div class="card p-5 mt-6">
+        <div class="grid sm:grid-cols-[1fr_auto] gap-4 items-end">
+          <div>
+            <label class="sec-label">見積番号で検索</label>
+            <input id="kw" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-sm outline-none focus:border-[color:var(--brand)] font-display" placeholder="見積番号を入力してください（例: QT26060025）">
+          </div>
+          <button id="search" class="btn-red">検索</button>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-[color:var(--line)]">
+          <div>
+            <label class="sec-label">見積状況</label>
+            <select id="fStatus" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2 text-[16px] outline-none bg-white">
+              <option value="">すべて</option><option value="有効">有効</option><option value="期限切れ">期限切れ</option>
+            </select>
+          </div>
+          <div>
+            <label class="sec-label">見積種別</label>
+            <select id="fType" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2 text-[16px] outline-none bg-white">
+              <option value="">すべて</option><option value="一般見積">一般見積（ODU / MOXA）</option><option value="特殊見積">特殊見積（Fraba / IPC組込）</option>
+            </select>
+          </div>
+          <div>
+            <label class="sec-label">担当</label>
+            <select class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2 text-[16px] outline-none bg-white"><option>すべて</option><option>鈴木 慶博</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 mt-6 mb-3">
+        <div class="text-sm">該当：<b class="font-display text-lg" id="count">0</b> 件</div>
+        <div class="flex items-center gap-2 text-[15px]">
+          <span class="text-neutral-400">表示件数</span>
+          <select class="border border-[color:var(--line)] px-2 py-1 bg-white"><option>10件</option><option>20件</option></select>
+          <button id="dl" class="border border-[color:var(--line)] px-3 py-1.5 hover:bg-neutral-50">データダウンロード</button>
+        </div>
+      </div>
+
+      <div class="card px-4 py-2.5 text-[15px] text-neutral-600 mb-3 flex items-center gap-2" style="background:var(--lav)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#393b56" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        見積を選択して、そのまま発注手続きへ進むことができます。
+      </div>
+
+      <!-- 一覧 -->
+      <div class="card overflow-x-auto">
+        <table class="w-full text-sm dt min-w-[900px]">
+          <thead class="text-[15px] text-neutral-500" style="background:var(--paper)">
+            <tr>
+              <th class="text-left px-4 py-3">見積日</th>
+              <th class="text-left py-3">見積番号</th>
+              <th class="text-left py-3">件名</th>
+              <th class="text-right py-3">合計金額（税別）</th>
+              <th class="text-left py-3 pl-4">有効期限</th>
+              <th class="text-left py-3">見積状況</th>
+              <th class="text-left py-3">担当者</th>
+              <th class="text-right px-4 py-3">操作</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[color:var(--line)]" id="rows"></tbody>
+        </table>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'quotes',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'見積一覧'}],
+    onReady:function(){
+      var a = KMECS.account();
+      if(!a){
+        document.getElementById('guest').classList.remove('hidden');
+        document.getElementById('main').classList.add('hidden');
+        return;
+      }
+
+      function render(){
+        var kw = document.getElementById('kw').value.trim().toLowerCase();
+        var st = document.getElementById('fStatus').value;
+        var ty = document.getElementById('fType').value;
+
+        var list = QUOTES.filter(function(q){
+          if(q.acc !== a.key) return false;               // 自社宛の見積のみ
+          if(st && q.status !== st) return false;
+          if(ty && q.type !== ty) return false;
+          if(kw && (q.no+' '+q.title).toLowerCase().indexOf(kw)<0) return false;
+          return true;
+        });
+        document.getElementById('count').textContent = list.length;
+
+        document.getElementById('rows').innerHTML = list.map(function(q){
+          var expired = q.status==='期限切れ';
+          var total = quoteTotal(q);
+          return '<tr class="'+(expired?'opacity-60':'')+'">'
+            + '<td class="px-4 py-3.5 text-neutral-500 font-display text-[16px]">'+q.date+'</td>'
+            + '<td class="py-3.5"><a href="quote-order.html?no='+q.no+'" class="font-display font-bold hover:underline" style="color:#e60012">'+q.no+'</a>'
+            + (q.techCheck?'<div class="text-[14px] text-amber-600 mt-0.5">技術部 構成チェック要</div>':'')+'</td>'
+            + '<td class="py-3.5"><div class="text-[16px] text-neutral-700">'+q.title+'</div>'
+            + '<div class="text-[14px] text-neutral-400 mt-0.5">'+q.type+' ・ '+q.lines.length+'明細</div></td>'
+            + '<td class="py-3.5 text-right font-display font-bold text-ink">'+yen(total)+'</td>'
+            + '<td class="py-3.5 pl-4 text-[15px] text-neutral-500"><div class="font-display">'+q.due+'</div>'
+            + '<div class="text-[14px] '+(q.left<=5&&!expired?'text-[color:var(--brand)] font-bold':'text-neutral-400')+'">'+(expired?'—':'（あと'+q.left+'日）')+'</div></td>'
+            + '<td class="py-3.5">'+(expired
+                ? '<span class="badge bg-neutral-200 text-neutral-600">期限切れ</span>'
+                : '<span class="badge bg-emerald-100 text-emerald-700">有効</span>')+'</td>'
+            + '<td class="py-3.5 text-[15px] text-neutral-600">'+q.staff+'</td>'
+            + '<td class="px-4 py-3.5 text-right whitespace-nowrap">'
+            + '<a href="quote-order.html?no='+q.no+'" class="text-[14px] border border-[color:var(--line)] px-2.5 py-1.5 hover:bg-neutral-50 mr-1">詳細</a>'
+            + (expired
+                ? '<span class="text-[14px] bg-neutral-200 text-neutral-400 px-2.5 py-1.5">発注不可</span>'
+                : '<a href="quote-order.html?no='+q.no+'" class="text-[14px] text-white px-2.5 py-1.5 inline-block" style="background:#e60012">この見積で発注</a>')
+            + '</td></tr>';
+        }).join('');
+      }
+
+      document.getElementById('kw').addEventListener('input', render);
+      document.getElementById('search').addEventListener('click', render);
+      document.getElementById('fStatus').addEventListener('change', render);
+      document.getElementById('fType').addEventListener('change', render);
+      var dl=document.getElementById('dl');
+      if(dl) dl.addEventListener('click', function(){ alert('見積データをCSVでダウンロードしました。（モック）'); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

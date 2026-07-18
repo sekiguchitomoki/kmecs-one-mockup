@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 説明 -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-center gap-4" style="border-left:3px solid #14887b">
+    <div class="text-[15px] leading-relaxed flex-1 min-w-[280px]">
+      <b class="text-ink">銀行入金データを自動照合し、顧客コード（エリアで番号が異なる）を突合して消込します。</b><br>
+      <span class="text-neutral-500">手数料相殺・一部入金は自動検知して差額を提示。未入金は締め日を元に理由を自動判定します。</span>
+    </div>
+    <div class="flex items-center gap-2 text-[14px]">
+      <span class="px-2.5 py-1.5" style="background:var(--lav)">銀行入金データ 12件</span>
+      <span class="text-neutral-300">›</span>
+      <span class="px-2.5 py-1.5 text-white" style="background:#14887b">自動照合 10件</span>
+      <span class="text-neutral-300">›</span>
+      <span class="px-2.5 py-1.5 text-white" style="background:#e60012">要確認 2件</span>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">本日の入金</div><div class="font-display text-2xl font-black text-ink mt-1">¥1,240,000</div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">自動消込済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">10<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">要確認</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">2<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未入金（期日超過）</div><div class="font-display text-2xl font-black text-amber-600 mt-1">¥580,800</div></div>
+  </div>
+
+  <!-- 銀行入金データ -->
+  <div class="adm-card overflow-hidden mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[16px] font-bold text-ink">銀行入金データ（照合結果）</div>
+      <div class="flex gap-2">
+        <button id="imp" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-1.5">入金データ取込</button>
+        <button id="bulk" class="text-[14px] text-white px-3 py-1.5 font-bold" style="background:#e60012">消込してIBMへ入力</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1000px]">
+        <thead><tr>
+          <th class="px-4 py-2.5 text-left"><input type="checkbox" id="all" class="accent-[#e60012]"></th>
+          <th class="text-left py-2.5">入金日</th><th class="text-left py-2.5">振込名義</th>
+          <th class="text-left py-2.5">顧客 / 顧客コード</th><th class="text-right py-2.5">入金額</th>
+          <th class="text-right py-2.5">請求額</th><th class="text-right py-2.5">差額</th>
+          <th class="text-left py-2.5 pl-3">照合</th><th class="text-right px-4 py-2.5">操作</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 未入金 -->
+  <div class="adm-card overflow-hidden">
+    <div class="px-4 py-3 border-b border-[#dcdce6]"><div class="text-[16px] font-bold text-ink">未入金一覧（理由の自動判定）</div></div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[800px]">
+        <thead><tr><th class="text-left px-4 py-2.5">請求番号</th><th class="text-left py-2.5">顧客</th><th class="text-right py-2.5">請求額</th><th class="text-left py-2.5 pl-3">支払期日</th><th class="text-left py-2.5">経過</th><th class="text-left py-2.5">推定理由</th><th class="text-right px-4 py-2.5">操作</th></tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="unpaidRows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[14px] text-neutral-400 mt-3">※ モックのため、実際の銀行データ取込・IBM入金インプットは行われません。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var PAY = [
+    { date:'2026/07/15', name:'カ）サンプルデンシ', acc:'A', paid:309760, billed:309760, st:'auto',  inv:'IV-2607-003' },
+    { date:'2026/07/15', name:'トウカイセイキ（カ', acc:'B', paid:56320,  billed:56800,  st:'fee',   inv:'IV-2607-005' },
+    { date:'2026/07/14', name:'カ）サンプルデンシ ヨコハマ', acc:'A', paid:281600, billed:281600, st:'code', inv:'IV-2607-001' },
+    { date:'2026/07/14', name:'カ）サンプルデンシ', acc:'A', paid:126000, billed:126000, st:'auto',  inv:'IV-2607-006' },
+  ];
+  function stBadge(s){
+    if(s==='auto') return '<span class="badge bg-emerald-100 text-emerald-700">● 自動照合OK</span>';
+    if(s==='fee')  return '<span class="badge bg-amber-100 text-amber-700">手数料相殺</span><div class="text-[14px] text-neutral-400 mt-0.5">差額を手数料と判定</div>';
+    return '<span class="badge text-white" style="background:#e60012">顧客コード要確認</span><div class="text-[14px] text-neutral-400 mt-0.5">エリア別番号の可能性</div>';
+  }
+
+  KMECS.renderAdminShell({
+    active:'admin-payment',
+    title:'入金消込',
+    sub:'⑥入金 — 銀行入金確認 → 顧客コード突合 → 消込 → IBMへ入金インプット',
+    onReady:function(){
+      function render(){
+        document.getElementById('rows').innerHTML = PAY.map(function(p,i){
+          var a = ACCOUNTS[p.acc];
+          var diff = p.paid - p.billed;
+          return '<tr class="'+(p.st==='code'?'bg-[#fff5f5]':'')+'">'
+            + '<td class="px-4 py-3"><input type="checkbox" class="chk accent-[#e60012]" data-i="'+i+'" '+(p.st==='auto'?'checked':'')+'></td>'
+            + '<td class="py-3 text-neutral-500 font-display text-[15px]">'+p.date+'</td>'
+            + '<td class="py-3 text-neutral-600 text-[15px] font-display">'+p.name+'</td>'
+            + '<td class="py-3 text-neutral-600 text-[16px]">'+a.company+'<div class="text-[14px] text-neutral-400 font-display">'+a.custCode+' ・ '+p.inv+'</div></td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(p.paid)+'</td>'
+            + '<td class="py-3 text-right font-display text-neutral-500">'+yen(p.billed)+'</td>'
+            + '<td class="py-3 text-right font-display '+(diff===0?'text-neutral-300':'text-amber-600 font-bold')+'">'+(diff===0?'—':yen(diff))+'</td>'
+            + '<td class="py-3 pl-3">'+stBadge(p.st)+'</td>'
+            + '<td class="px-4 py-3 text-right">'+(p.st==='auto'
+                ? '<button class="one text-[14px] text-white px-2.5 py-1.5" data-i="'+i+'" style="background:#14887b">消込</button>'
+                : '<button class="one text-[14px] text-white px-2.5 py-1.5" data-i="'+i+'" style="background:#e60012">確認して消込</button>')+'</td></tr>';
+        }).join('');
+        document.querySelectorAll('.one').forEach(function(b){
+          b.addEventListener('click', function(){
+            var i = +b.getAttribute('data-i');
+            alert(PAY[i].inv+' を消込し、IBMへ入金インプットしました。顧客ポータルの入金状況が「入金済」に更新されます。（モック）');
+            PAY.splice(i,1); render();
+          });
+        });
+      }
+
+      var UNPAID = [
+        { inv:'IV-2607-002', acc:'B', amount:638880, due:'2026/07/10', days:5,  reason:'締め日相違（20日締め・翌月10日払い）' },
+        { inv:'IV-2607-004', acc:'A', amount:223520, due:'2026/08/31', days:-47, reason:'期日前（正常）' },
+      ];
+      document.getElementById('unpaidRows').innerHTML = UNPAID.map(function(u){
+        var a = ACCOUNTS[u.acc];
+        var over = u.days > 0;
+        return '<tr><td class="px-4 py-3 font-display font-bold text-ink">'+u.inv+'</td>'
+          + '<td class="py-3 text-neutral-600 text-[16px]">'+a.company+'<div class="text-[14px] text-neutral-400">'+a.terms+'</div></td>'
+          + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(u.amount)+'</td>'
+          + '<td class="py-3 pl-3 text-[15px] font-display text-neutral-600">'+u.due+'</td>'
+          + '<td class="py-3">'+(over
+              ? '<span class="badge text-white" style="background:#e60012">'+u.days+'日超過</span>'
+              : '<span class="badge bg-neutral-100 text-neutral-500">期日前</span>')+'</td>'
+          + '<td class="py-3 text-[15px] text-neutral-600">'+u.reason+'</td>'
+          + '<td class="px-4 py-3 text-right">'+(over
+              ? '<button class="text-[14px] text-white px-2.5 py-1.5" style="background:#e60012">督促メール</button>'
+              : '<button class="text-[14px] border border-[#dcdce6] text-neutral-400 px-2.5 py-1.5" disabled>—</button>')+'</td></tr>';
+      }).join('');
+
+      document.getElementById('all').addEventListener('change', function(e){
+        document.querySelectorAll('.chk').forEach(function(c){ c.checked = e.target.checked; });
+      });
+      document.getElementById('bulk').addEventListener('click', function(){
+        var n = document.querySelectorAll('.chk:checked').length;
+        alert(n>0 ? n+' 件を消込し、IBMへ入金インプットしました。（モック）' : '消込する入金を選択してください。');
+      });
+      document.getElementById('imp').addEventListener('click', function(){
+        alert('銀行の入金データ（全銀フォーマット）を取込み、請求データと自動照合しました。（モック）');
+      });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

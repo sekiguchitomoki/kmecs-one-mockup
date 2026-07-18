@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+
+    <div id="guest" class="hidden card p-16 text-center">
+      <div class="font-bold text-ink">注文情報の表示にはログインが必要です</div>
+      <a href="login.html" class="btn-red mt-5">ログイン</a>
+    </div>
+
+    <div id="main">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div>
+          <div class="sec-label">ORDER DETAIL</div>
+          <h1 class="sec-title text-3xl mt-1">注文詳細 <span class="font-display" id="oNo">WO-24073</span></h1>
+          <p class="text-[15px] text-neutral-500 mt-1.5" id="oMeta"></p>
+        </div>
+        <div class="flex gap-2" id="oBadges"></div>
+      </div>
+
+      <!-- 進捗 -->
+      <div class="card p-6 mb-6">
+        <div class="text-[17px] font-bold text-ink mb-5">進行状況</div>
+        <div class="overflow-x-auto"><div id="stepper" class="flex items-center min-w-[620px]"></div></div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <!-- 明細 -->
+          <div class="card overflow-hidden">
+            <div class="px-5 py-3 border-b border-[color:var(--line)]"><div class="text-[17px] font-bold text-ink">注文明細</div></div>
+            <table class="w-full text-sm dt">
+              <thead class="text-[15px] text-neutral-500" style="background:var(--paper)"><tr><th class="text-left px-5 py-2.5">品目</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">得値</th><th class="text-right px-5 py-2.5">小計</th></tr></thead>
+              <tbody class="divide-y divide-[color:var(--line)]" id="lines"></tbody>
+            </table>
+          </div>
+
+          <!-- メモ -->
+          <div class="card p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-[17px] font-bold text-ink">メモ / やりとり履歴</div>
+              <span class="text-[14px] text-neutral-400">出荷FW・特殊要件を記録できます</span>
+            </div>
+            <ul class="space-y-3.5 text-[16px]" id="memoList">
+              <li class="flex gap-3"><span class="text-[14px] text-neutral-400 w-24 shrink-0 font-display">07/12 14:40</span><div class="text-neutral-600"><b class="text-ink">お客様</b>：EDS-408AはFW v3.9で出荷希望。</div></li>
+              <li class="flex gap-3"><span class="text-[14px] text-neutral-400 w-24 shrink-0 font-display">07/13 09:10</span><div class="text-neutral-600"><b style="color:#e60012">営業 鈴木</b>：承知しました。FW指定で手配済みです。</div></li>
+              <li class="flex gap-3"><span class="text-[14px] text-neutral-400 w-24 shrink-0 font-display">07/14 16:20</span><div class="text-neutral-600"><b style="color:#e60012">業務 山田</b>：一部を先行出荷、残りは7/18予定です。</div></li>
+            </ul>
+            <div class="flex gap-2 mt-5">
+              <input id="memoIn" class="flex-1 border border-[color:var(--line)] px-3 py-2.5 text-[16px] outline-none focus:border-[color:var(--brand)]" placeholder="メモを追加 / 営業・業務へ連絡…">
+              <button id="memoSend" class="btn-ink !py-2.5 !px-5 !text-[16px]">送信</button>
+            </div>
+          </div>
+
+          <!-- 自動メール配信履歴 -->
+          <div class="card p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-[17px] font-bold text-ink">進捗メール配信履歴</div>
+              <label class="flex items-center gap-1.5 text-[14px] text-neutral-500"><input type="checkbox" checked class="accent-[#e60012]"> 各工程ごとに自動配信</label>
+            </div>
+            <ul class="space-y-2 text-[15px]">
+              <li class="flex items-center gap-3 py-1.5 border-b border-[color:var(--line)]"><span class="badge bg-emerald-100 text-emerald-700">送信済</span><span class="text-neutral-400 font-display w-24">07/12 14:35</span><span class="text-neutral-600">ご注文を受け付けました（受注）</span></li>
+              <li class="flex items-center gap-3 py-1.5 border-b border-[color:var(--line)]"><span class="badge bg-emerald-100 text-emerald-700">送信済</span><span class="text-neutral-400 font-display w-24">07/13 11:02</span><span class="text-neutral-600">納期回答のお知らせ（2026/07/17）</span></li>
+              <li class="flex items-center gap-3 py-1.5"><span class="badge bg-neutral-100 text-neutral-400">予定</span><span class="text-neutral-400 font-display w-24">出荷時</span><span class="text-neutral-400">出荷完了・送り状番号のお知らせ</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 配送 -->
+          <div class="card p-5">
+            <div class="sec-label">SHIPPING</div>
+            <div class="text-[17px] font-bold text-ink mt-1 mb-3">配送・トラッキング</div>
+            <dl class="text-[16px] space-y-2.5" id="shipInfo"></dl>
+            <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" rel="noopener" class="btn-red-o w-full mt-4">ヤマト追跡ページで確認</a>
+          </div>
+
+          <!-- 納期・入金 -->
+          <div class="card p-5">
+            <div class="sec-label">STATUS</div>
+            <div class="text-[17px] font-bold text-ink mt-1 mb-3">納期・入金状況</div>
+            <dl class="text-[16px] space-y-2.5" id="statusInfo"></dl>
+          </div>
+
+          <div class="card p-5" style="background:var(--paper)">
+            <div class="text-[16px] font-bold text-ink mb-2">この注文について相談</div>
+            <p class="text-[14px] text-neutral-500 leading-relaxed">メッセージは担当営業と業務に届きます。</p>
+            <a id="cLink" href="contact.html" class="btn-red-o w-full mt-3">営業に連絡する</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  function payBadgeD(p){
+    if(p==='未入金') return '<span class="badge text-white" style="background:#e60012">未入金</span>';
+    if(p==='入金済') return '<span class="badge bg-emerald-100 text-emerald-700">入金済</span>';
+    if(p==='請求済') return '<span class="badge bg-amber-100 text-amber-700">請求済</span>';
+    return '<span class="badge bg-neutral-100 text-neutral-500">未請求</span>';
+  }
+  var STEPS = CUST_STEPS;
+  var o = getCustOrder(qs('no'));   // ?no= から注文を特定（無ければ先頭）
+  var LINES = o.lines;
+  var CURRENT = o.step;             // 完了工程数（= 現在の工程インデックス）
+
+  KMECS.renderUserShell({
+    active:'orders',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'注文・進捗',href:'orders.html'},{label:o.no}],
+    onReady:function(){
+      var a = KMECS.account();
+      if(!a){ document.getElementById('guest').classList.remove('hidden'); document.getElementById('main').classList.add('hidden'); return; }
+      var cust = getCustomer(a.custCode) || CUSTOMERS[0];
+
+      // ヘッダー
+      document.getElementById('oNo').textContent = o.no;
+      document.getElementById('oMeta').innerHTML = '受注日 '+o.date+'　｜　経路：'+o.route+'　｜　担当 '+cust.rep;
+      var stepName = STEPS[Math.min(o.step, STEPS.length-1)];
+      var stLabel = o.step>=6?'完了（入金済）':(o.step>=4?'出荷済・'+stepName+'工程':o.step+'工程まで完了・'+stepName+'対応中');
+      document.getElementById('oBadges').innerHTML =
+        '<span class="badge text-white" style="background:#e60012">'+stLabel+'</span>'
+        + '<span class="badge bg-neutral-100 text-neutral-500">'+o.pay+'</span>';
+
+      // 工程サブラベル（注文データから生成）
+      var SUB=[];
+      SUB[0] = o.route.indexOf('見積')>=0 ? o.route.replace('見積 ','') : '受付';
+      SUB[1] = 'IBM受注/発注IP済';
+      SUB[2] = o.lead ? '納期回答 '+o.lead.slice(5) : '対応中';
+      SUB[3] = o.slip ? '出荷済 '+(o.shipDate||'').slice(5) : '出荷準備中';
+      SUB[4] = (o.pay==='未請求')?'—':'請求済';
+      SUB[5] = (o.pay==='入金済')?'入金済':'—';
+
+      var s='';
+      for(var i=0;i<STEPS.length;i++){
+        var cls = i<CURRENT?'step-done':(i===CURRENT?'step-current':'step-todo');
+        var lb  = i<CURRENT?'✓':(i+1);
+        s += '<div class="flex flex-col items-center"><div class="step-dot '+cls+'">'+lb+'</div>'
+           + '<div class="text-[14px] mt-1.5 '+(i<=CURRENT?'text-ink font-bold':'text-neutral-300')+'">'+STEPS[i]+'</div>'
+           + '<div class="text-[13px] mt-0.5 text-neutral-400 whitespace-nowrap">'+(i<=CURRENT?SUB[i]:'')+'</div></div>';
+        if(i<STEPS.length-1) s += '<div class="step-line '+(i<CURRENT?'on':'')+' mb-6"></div>';
+      }
+      document.getElementById('stepper').innerHTML = s;
+
+      // 明細
+      document.getElementById('lines').innerHTML = LINES.map(function(l){
+        var p = getProduct(l.code);
+        return '<tr><td class="px-5 py-3 text-[16px] text-neutral-700">'+p.name+'<div class="text-[14px] text-neutral-400 font-display">'+p.code+'</div></td>'
+          + '<td class="text-right font-display">'+l.qty+'</td>'
+          + '<td class="text-right">'+priceOrMask(p.price)+'</td>'
+          + '<td class="px-5 text-right">'+subtotalOrMask(p.price,l.qty)+'</td></tr>';
+      }).join('');
+
+      // 配送・トラッキング
+      document.getElementById('shipInfo').innerHTML = o.slip
+        ? '<div class="flex justify-between"><dt class="text-neutral-500">配送業者</dt><dd class="text-ink">ヤマト運輸</dd></div>'
+          + '<div class="flex justify-between"><dt class="text-neutral-500">送り状番号</dt><dd class="text-ink font-display font-bold">'+o.slip+'</dd></div>'
+          + '<div class="flex justify-between"><dt class="text-neutral-500">出荷日</dt><dd class="text-ink font-display">'+o.shipDate+'</dd></div>'
+          + '<div class="flex justify-between"><dt class="text-neutral-500">お届け予定</dt><dd class="text-ink font-display">'+o.arriveDate+'</dd></div>'
+        : '<div class="text-[15px] text-neutral-500">出荷準備中です。送り状番号は出荷時に反映され、メールでもお知らせします。</div>';
+
+      // 納期・入金状況
+      document.getElementById('statusInfo').innerHTML =
+        '<div class="flex justify-between"><dt class="text-neutral-500">回答納期</dt><dd class="text-ink font-display">'+(o.lead||'調整中')+'</dd></div>'
+        + '<div class="flex justify-between"><dt class="text-neutral-500">請求状況</dt><dd>'+payBadgeD(o.pay)+'</dd></div>'
+        + '<div class="flex justify-between"><dt class="text-neutral-500">合計金額</dt><dd class="text-ink font-display font-bold">'+yen(o.amount)+'</dd></div>'
+        + '<div class="flex justify-between"><dt class="text-neutral-500">支払条件</dt><dd class="text-ink">'+a.terms+'</dd></div>';
+
+      // メモ送信（画面に追記）
+      function sendMemo(){
+        var inp=document.getElementById('memoIn'), v=inp.value.trim();
+        if(!v){ inp.focus(); return; }
+        var li=document.createElement('li');
+        li.className='flex gap-3';
+        li.innerHTML='<span class="text-[14px] text-neutral-400 w-24 shrink-0 font-display">07/17 '+
+          String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0')+
+          '</span><div class="text-neutral-600"><b class="text-ink">お客様</b>：'+
+          v.replace(/</g,'&lt;')+'</div>';
+        document.getElementById('memoList').appendChild(li);
+        inp.value='';
+      }
+      document.getElementById('memoSend').addEventListener('click', sendMemo);
+      document.getElementById('memoIn').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); sendMemo(); } });
+      document.getElementById('cLink').href='contact.html?order='+o.no; // 問合せに注文番号を引き継ぐ
+    }
+  });
+</script>
+</body>
+</html>

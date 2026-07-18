@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+
+    <div id="guest" class="hidden card p-16 text-center">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" class="mx-auto mb-3"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="font-bold text-ink">見積内容の表示にはログインが必要です</div>
+      <a href="login.html" class="btn-red mt-5">ログイン</a>
+    </div>
+
+    <div id="main">
+      <div class="sec-label">QUOTE ORDER</div>
+      <h1 class="sec-title text-3xl mt-1 mb-6" id="qTitle">見積内容から発注</h1>
+
+      <div id="alert"></div>
+
+      <!-- 見積ヘッダー -->
+      <div class="card p-5 mb-4">
+        <div class="grid sm:grid-cols-4 gap-4 text-[16px]" id="qMeta"></div>
+      </div>
+
+      <!-- 明細 -->
+      <div class="card overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 px-5 py-3 border-b border-[color:var(--line)]" style="background:var(--paper)">
+          <div class="text-[17px] font-bold text-ink">見積明細</div>
+          <div class="text-[14px] text-neutral-500">チェックした行のみ発注されます（部分注文）</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm dt min-w-[760px]">
+            <thead class="text-[15px] text-neutral-500 border-b border-[color:var(--line)]">
+              <tr>
+                <th class="px-4 py-2.5 text-left"><input type="checkbox" id="all" class="accent-[#e60012]"> 発注</th>
+                <th class="text-left py-2.5">区分</th>
+                <th class="text-left py-2.5">品目 / 型番</th>
+                <th class="text-right py-2.5">数量</th>
+                <th class="text-right py-2.5">単価</th>
+                <th class="text-right px-4 py-2.5">小計</th>
+              </tr>
+            </thead>
+            <tbody id="lines" class="divide-y divide-[color:var(--line)]"></tbody>
+          </table>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-[color:var(--line)]" style="background:var(--paper)">
+          <div class="text-[15px] text-neutral-500">※ 部材（取扱外・特注）は見積提示価格です。製品は御社の得値を適用しています。</div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="text-[16px] text-neutral-600">選択合計：<span id="sum" class="font-display text-xl font-bold text-ink">¥0</span></div>
+            <button id="save" class="border border-[color:var(--line)] text-neutral-600 text-[16px] px-4 py-2.5 hover:bg-white">一時保存</button>
+            <a href="cart.html" class="btn-red !py-2.5 !px-5 !text-[16px]">選択した品目をカートへ</a>
+          </div>
+        </div>
+      </div>
+      <div id="saved" class="hidden mt-2 text-[15px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2">一時保存しました。マイページの「保存した見積」から再開できます。（モック）</div>
+
+      <!-- 補足情報 -->
+      <div class="grid lg:grid-cols-3 gap-4 mt-6">
+        <div class="card p-5">
+          <div class="sec-label">DELIVERY</div>
+          <div class="text-[17px] font-bold text-ink mt-1 mb-2">納期情報</div>
+          <div class="text-[15px] text-neutral-600 leading-relaxed" id="leadInfo"></div>
+        </div>
+        <div class="card p-5">
+          <div class="sec-label">PCN / EOL</div>
+          <div class="text-[17px] font-bold text-ink mt-1 mb-2">製品変更情報</div>
+          <div class="text-[15px] text-neutral-600 leading-relaxed" id="pcnInfo"></div>
+        </div>
+        <div class="card p-5">
+          <div class="sec-label">CONTACT</div>
+          <div class="text-[17px] font-bold text-ink mt-1 mb-2">この見積について相談</div>
+          <p class="text-[15px] text-neutral-500 leading-relaxed">数量変更・納期短縮・構成のご相談は担当営業へ。メッセージは担当営業と業務に届きます。</p>
+          <a href="contact.html" class="btn-red-o mt-3 w-full">営業に連絡する</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var Q = getQuote(qs('no') || 'QT26060025');
+
+  KMECS.renderUserShell({
+    active:'quotes',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'見積一覧',href:'quotes.html'},{label:Q.no}],
+    onReady:function(){
+      var a = KMECS.account();
+      if(!a){
+        document.getElementById('guest').classList.remove('hidden');
+        document.getElementById('main').classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('qTitle').innerHTML = '見積 <span class="font-display">'+Q.no+'</span> から発注';
+
+      // 期限切れ / 技術チェックのアラート
+      var al = '';
+      if(Q.status==='期限切れ'){
+        al += '<div class="border-l-4 bg-white card px-4 py-3 text-[16px] mb-4" style="border-left-color:#e60012"><b style="color:#e60012">この見積は有効期限が切れています。</b><span class="text-neutral-500 ml-1">再見積を担当営業へご依頼ください。</span></div>';
+      }
+      if(Q.techCheck){
+        al += '<div class="border-l-4 bg-white card px-4 py-3 text-[16px] mb-4 flex items-start gap-2" style="border-left-color:#393b56">'
+          + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#393b56" stroke-width="2" class="mt-0.5 shrink-0"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'
+          + '<div><b class="text-ink">構成品のため、技術部による構成チェックが入ります。</b>'
+          + '<span class="text-neutral-500 ml-1">ご発注後に技術部が構成を確認し、問題があれば担当営業よりご連絡します。</span></div></div>';
+      }
+      document.getElementById('alert').innerHTML = al;
+
+      document.getElementById('qMeta').innerHTML =
+        '<div><div class="sec-label">見積番号</div><div class="font-display font-bold text-ink mt-1">'+Q.no+'</div></div>'
+        + '<div><div class="sec-label">発行日 / 有効期限</div><div class="text-ink mt-1 font-display">'+Q.date+' → '+Q.due+'</div>'
+        + '<div class="text-[14px] '+(Q.status==='期限切れ'?'text-neutral-400':'text-[color:var(--brand)] font-bold')+'">'+(Q.status==='期限切れ'?'期限切れ':'あと'+Q.left+'日')+'</div></div>'
+        + '<div><div class="sec-label">宛先 / 担当</div><div class="text-ink mt-1">'+a.company+'</div><div class="text-[14px] text-neutral-500">営業：'+Q.staff+'</div></div>'
+        + '<div><div class="sec-label">見積種別</div><div class="mt-1"><span class="badge '+(Q.type==='特殊見積'?'text-white':'bg-neutral-200 text-neutral-700')+'" '+(Q.type==='特殊見積'?'style="background:#393b56"':'')+'>'+Q.type+'</span></div>'
+        + '<div class="text-[14px] text-neutral-500 mt-1">'+(Q.type==='特殊見積'?'Fraba / IPC組込':'ODU / MOXA')+'</div></div>';
+
+      // 明細
+      function kindBadge(k){
+        if(k.indexOf('部材')>=0)  return '<span class="badge bg-amber-100 text-amber-700">'+k+'</span>';
+        if(k.indexOf('構成')>=0)  return '<span class="badge text-white" style="background:#393b56">'+k+'</span>';
+        return '<span class="badge bg-neutral-100 text-neutral-600">'+k+'</span>';
+      }
+      document.getElementById('lines').innerHTML = Q.lines.map(function(l,i){
+        var price = quoteLinePrice(l);
+        var isCustom = !!l.custom;
+        return '<tr>'
+          + '<td class="px-4 py-3"><input type="checkbox" class="rowchk accent-[#e60012]" data-i="'+i+'" checked></td>'
+          + '<td class="py-3">'+kindBadge(l.kind)+'</td>'
+          + '<td class="py-3">'
+          + (isCustom
+              ? '<div class="font-medium text-ink text-[16px]">'+l.custom+'</div><div class="text-[14px] text-neutral-400 font-display">'+l.cust_code+' ・ 取扱製品以外</div>'
+              : '<a href="product-detail.html?code='+l.code+'" class="font-medium text-[16px] hover:underline" style="color:#e60012">'+getProduct(l.code).name+'</a><div class="text-[14px] text-neutral-400 font-display">'+MAKERS[getProduct(l.code).maker].name+' ・ '+l.code+'</div>')
+          + '</td>'
+          + '<td class="py-3 text-right font-display">'+l.qty+'</td>'
+          + '<td class="py-3 text-right font-display">'+yen(price)+'</td>'
+          + '<td class="px-4 py-3 text-right font-display font-bold text-ink">'+yen(price*l.qty)+'</td>'
+          + '</tr>';
+      }).join('');
+
+      function recalc(){
+        var s=0;
+        document.querySelectorAll('.rowchk').forEach(function(c){
+          if(c.checked){ var l=Q.lines[c.getAttribute('data-i')]; s += quoteLinePrice(l)*l.qty; }
+        });
+        document.getElementById('sum').textContent = yen(s);
+      }
+      document.querySelectorAll('.rowchk').forEach(function(c){ c.addEventListener('change', recalc); });
+      document.getElementById('all').checked = true;
+      document.getElementById('all').addEventListener('change', function(e){
+        document.querySelectorAll('.rowchk').forEach(function(c){ c.checked = e.target.checked; });
+        recalc();
+      });
+      recalc();
+
+      document.getElementById('save').addEventListener('click', function(){
+        document.getElementById('saved').classList.remove('hidden');
+      });
+
+      // 納期情報
+      document.getElementById('leadInfo').innerHTML = Q.lines.map(function(l){
+        if(l.custom) return '<div class="flex justify-between py-1 border-b border-[color:var(--line)]"><span>'+l.cust_code+'</span><span class="text-neutral-500">別途手配</span></div>';
+        var p = getProduct(l.code);
+        return '<div class="flex justify-between py-1 border-b border-[color:var(--line)]"><span class="font-display">'+p.code+'</span><span class="'+(p.stock>0?'text-emerald-600':'text-amber-600')+'">'+p.lead+'</span></div>';
+      }).join('');
+
+      // PCN/EOL
+      var eol = Q.lines.filter(function(l){ return !l.custom && getProduct(l.code).tag==='EOL予定'; });
+      document.getElementById('pcnInfo').innerHTML = eol.length
+        ? eol.map(function(l){ return '<div class="flex items-start gap-1.5"><span class="badge text-white" style="background:#e60012">EOL</span><span>'+getProduct(l.code).code+' は生産終了予定です。<a href="notifications.html" class="underline" style="color:#e60012">後継品を見る</a></span></div>'; }).join('')
+        : '<span class="text-neutral-400">この見積内に PCN / EOL 対象の製品はありません。</span>';
+    }
+  });
+</script>
+</body>
+</html>

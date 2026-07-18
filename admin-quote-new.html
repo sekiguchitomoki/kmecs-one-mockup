@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <a id="backLink" href="admin-quotes.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 見積管理に戻る</a>
+
+  <!-- 見積業務の流れ（説明用・クリック不可） -->
+  <div class="adm-card p-4 mb-4">
+    <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-bold text-neutral-400 border border-[#dcdce6] px-1.5 py-0.5">図</span><span class="text-[13px] font-bold text-ink">見積業務の流れ</span><span class="text-[12px] text-neutral-400">この画面は ③見積作成 の工程です</span></div>
+    <div class="flex items-stretch text-[13px]">
+      <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-l" style="background:#f2faf6"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px]" style="background:#14887b">✓</span><div class="leading-tight"><div class="text-neutral-700 font-bold">①見積依頼</div><div class="text-[11px] text-neutral-400">受付済</div></div></div>
+      <div class="self-center text-neutral-300 px-1">›</div>
+      <div class="flex-1 flex items-center gap-2 px-3 py-2" style="background:#f2faf6"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px]" style="background:#14887b">✓</span><div class="leading-tight"><div class="text-neutral-700 font-bold">②メーカー見積取得</div><div class="text-[11px] text-neutral-400">取得済</div></div></div>
+      <div class="self-center text-neutral-300 px-1">›</div>
+      <div class="flex-1 flex items-center gap-2 px-3 py-2 text-white" style="background:#e60012"><span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px]" style="background:#fff;color:#e60012">3</span><div class="leading-tight"><div class="font-bold">見積作成</div><div class="text-[11px] text-white/80">◀ 今ここ</div></div></div>
+      <div class="self-center text-neutral-300 px-1">›</div>
+      <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-r" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-neutral-400 text-[11px] border border-neutral-300">4</span><div class="leading-tight"><div class="text-neutral-500 font-bold">④顧客へ送付</div><div class="text-[11px] text-neutral-400">ポータル掲載・発注へ</div></div></div>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2 space-y-4">
+      <!-- 見積情報 -->
+      <div class="adm-card p-5">
+        <div class="text-[14px] font-bold text-ink mb-3">見積情報</div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="text-[13px] font-bold text-neutral-600">顧客 <span style="color:#e60012">*</span></label>
+            <select id="cust" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">件名 <span style="color:#e60012">*</span></label>
+            <input id="title" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px]" placeholder="例：産業用スイッチ 構成一式"></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">見積種別</label>
+            <select id="type" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"><option>一般見積（ODU / MOXA）</option><option>特殊見積（Fraba / IPC組込）</option></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">有効期限</label>
+            <input id="due" type="date" value="2026-08-17" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px]"></div>
+        </div>
+        <label class="flex items-center gap-2 text-[14px] text-neutral-700 mt-3"><input type="checkbox" id="tech" class="accent-[#e60012]"> 技術部の構成チェックを依頼する（構成品を含む場合）</label>
+        <div id="custInfo" class="mt-2 text-[13px] text-neutral-500"></div>
+      </div>
+
+      <!-- 明細 -->
+      <div class="adm-card overflow-hidden">
+        <div class="px-5 py-3 border-b border-[#dcdce6] flex items-center justify-between flex-wrap gap-2">
+          <div class="text-[14px] font-bold text-ink">見積明細</div>
+          <div class="flex gap-1 flex-wrap">
+            <input id="pcode" list="prodList" class="border border-[#dcdce6] px-2 py-1.5 text-[13px] font-display" placeholder="型番で追加" style="width:140px">
+            <input id="pqty" type="number" value="1" min="1" class="border border-[#dcdce6] px-2 py-1.5 text-[13px] w-14 text-center">
+            <button id="addLine" class="text-[13px] text-white px-2.5 py-1.5" style="background:#393b56">＋製品</button>
+            <button id="addCustom" class="text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-2.5 py-1.5">＋部材（取扱外/特注）</button>
+          </div>
+        </div>
+        <datalist id="prodList"></datalist>
+        <div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>
+          <th class="text-left px-4 py-2.5">区分</th><th class="text-left py-2.5">品目 / 型番</th>
+          <th class="text-right py-2.5">単価</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">小計</th><th class="px-3"></th>
+        </tr></thead><tbody id="lines"></tbody></table></div>
+        <div id="noline" class="px-4 py-6 text-center text-[14px] text-neutral-400">製品または部材を追加してください。</div>
+      </div>
+    </div>
+
+    <!-- 金額・確定 -->
+    <div class="space-y-4">
+      <div class="adm-card p-5 sticky top-16">
+        <div class="text-[14px] font-bold text-ink mb-3">見積金額</div>
+        <div class="space-y-2 text-[14px]" id="totals"><div class="text-neutral-400 text-center py-4">明細を追加してください</div></div>
+        <button id="save" class="w-full mt-4 border border-[#dcdce6] bg-white text-neutral-700 py-2.5 text-[14px]">下書き保存</button>
+        <button id="send" class="w-full mt-2 text-white py-3 font-bold" style="background:#e60012">見積を作成して送付</button>
+        <div class="text-[12px] text-neutral-400 mt-2 leading-relaxed">送付すると見積番号が採番され、顧客ポータルの「見積一覧」に掲載＋メール送付されます（モック）。顧客はこの見積からそのまま発注できます。</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-[13px] text-neutral-400 mt-4">※ モックのため、実際の保存・送付は行われません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-quotes',
+    title:'見積を作成',
+    sub:'顧客・件名・明細を入力して見積を作成。得値（顧客掛率）を自動適用・部材も追加可',
+    onReady:function(){
+      var LINES=[]; // {custom?:name, code?, qty, price?}
+      document.getElementById('cust').innerHTML=CUSTOMERS.map(function(c){return '<option value="'+c.code+'">'+c.company+'（'+c.code+'）</option>';}).join('');
+      document.getElementById('prodList').innerHTML=PRODUCTS.slice(0,120).map(function(p){return '<option value="'+p.code+'">'+p.name+'</option>';}).join('');
+
+      function curCust(){ return getCustomer(document.getElementById('cust').value); }
+      function unit(code){ var c=curCust(); return Math.round(getProduct(code).price*(c?c.rate:0.8)/10)*10; }
+      function linePrice(l){ return l.custom? l.price : unit(l.code); }
+
+      function syncCust(){
+        var c=curCust();
+        document.getElementById('custInfo').innerHTML = c ? '得値ランク'+c.rank+' ・ 掛率'+Math.round(c.rate*100)+'% ・ 担当営業 '+c.rep : '';
+        renderLines();
+      }
+      function renderLines(){
+        document.getElementById('noline').style.display=LINES.length?'none':'';
+        document.getElementById('lines').innerHTML=LINES.map(function(l,i){
+          var name = l.custom? l.custom : getProduct(l.code).name;
+          var code = l.custom? '部材（取扱外/特注）' : getProduct(l.code).code;
+          var badge = l.custom? '<span class="badge bg-amber-100 text-amber-700">部材</span>' : '<span class="badge text-white" style="background:#393b56">製品</span>';
+          var up = linePrice(l);
+          return '<tr class="border-b border-[#eee]"><td class="px-4 py-2">'+badge+'</td>'
+            + '<td class="py-2"><div class="text-[14px] text-ink">'+name+'</div><div class="text-[11px] text-neutral-400 font-display">'+code+'</div></td>'
+            + '<td class="py-2 text-right">'+(l.custom
+                ? '<input type="number" value="'+l.price+'" data-i="'+i+'" class="pin border border-[#dcdce6] px-2 py-1 text-[13px] w-24 text-right font-display">'
+                : '<span class="font-display">'+yen(up)+'</span>')+'</td>'
+            + '<td class="py-2 text-right"><input type="number" min="1" value="'+l.qty+'" data-i="'+i+'" class="qin border border-[#dcdce6] px-2 py-1 text-[13px] w-16 text-center"></td>'
+            + '<td class="py-2 text-right font-display font-bold text-ink">'+yen(up*l.qty)+'</td>'
+            + '<td class="px-3 py-2 text-right"><button class="del text-neutral-400 hover:text-[color:var(--brand)]" data-i="'+i+'">×</button></td></tr>';
+        }).join('');
+        document.querySelectorAll('.qin').forEach(function(inp){ inp.addEventListener('input', function(){ LINES[+inp.getAttribute('data-i')].qty=Math.max(1,+inp.value||1); renderTotals(); }); });
+        document.querySelectorAll('.pin').forEach(function(inp){ inp.addEventListener('input', function(){ LINES[+inp.getAttribute('data-i')].price=Math.max(0,+inp.value||0); renderLines(); }); });
+        document.querySelectorAll('.del').forEach(function(b){ b.addEventListener('click', function(){ LINES.splice(+b.getAttribute('data-i'),1); renderLines(); }); });
+        renderTotals();
+      }
+      function renderTotals(){
+        if(!LINES.length){ document.getElementById('totals').innerHTML='<div class="text-neutral-400 text-center py-4">明細を追加してください</div>'; return; }
+        var sub=LINES.reduce(function(s,l){return s+linePrice(l)*l.qty;},0), tax=Math.round(sub*0.1);
+        document.getElementById('totals').innerHTML=
+          '<div class="flex justify-between"><span class="text-neutral-500">小計</span><span class="font-display">'+yen(sub)+'</span></div>'
+          + '<div class="flex justify-between"><span class="text-neutral-500">消費税(10%)</span><span class="font-display">'+yen(tax)+'</span></div>'
+          + '<div class="flex justify-between items-center pt-2 mt-1 border-t-2 border-ink"><span class="font-bold text-ink">見積合計</span><span class="font-display text-xl font-black text-ink">'+yen(sub+tax)+'</span></div>';
+      }
+      function addProduct(){
+        var code=document.getElementById('pcode').value.trim().toUpperCase();
+        var qty=Math.max(1,+document.getElementById('pqty').value||1);
+        var p=PRODUCTS.filter(function(x){return x.code.toUpperCase()===code;})[0];
+        if(!p){ alert('型番が見つかりません。'); return; }
+        LINES.push({code:p.code, qty:qty});
+        document.getElementById('pcode').value=''; document.getElementById('pqty').value=1; renderLines();
+      }
+      document.getElementById('addLine').addEventListener('click', addProduct);
+      document.getElementById('pcode').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addProduct(); } });
+      document.getElementById('addCustom').addEventListener('click', function(){
+        var name=prompt('部材名（取扱製品以外・特注など）を入力','DINレール取付キット（他社品）');
+        if(!name) return;
+        var price=+prompt('単価（税別）を入力','3200')||0;
+        LINES.push({custom:name, price:price, qty:1}); renderLines();
+      });
+      document.getElementById('cust').addEventListener('change', syncCust);
+
+      function submit(sent){
+        var c=curCust(), title=document.getElementById('title').value.trim();
+        if(!c){ alert('顧客を選択してください。'); return; }
+        if(!title){ alert('件名を入力してください。'); return; }
+        if(!LINES.length){ alert('明細を1件以上追加してください。'); return; }
+        var no='QT2607'+String(50+LINES.length).padStart(4,'0');
+        if(sent) alert('見積 '+no+' を作成し、'+c.company+' へ送付しました。\n顧客ポータルの見積一覧に掲載されました。（モック）');
+        else alert('見積 '+no+' を下書き保存しました。（モック）');
+        location.href='admin-quotes.html';
+      }
+      document.getElementById('send').addEventListener('click', function(){ submit(true); });
+      document.getElementById('save').addEventListener('click', function(){ submit(false); });
+
+      // 見積依頼から遷移した場合は顧客・明細・件名を引き継ぐ（③見積作成）
+      var fromId = qs('from'), fromReq = null;
+      if(fromId && window.getQuoteRequest){
+        fromReq = getQuoteRequest(fromId);
+        document.getElementById('cust').value = fromReq.cust;
+        document.getElementById('title').value = reqLineName(fromReq.lines[0]) + (fromReq.lines.length>1?' 他':'');
+        if(fromReq.type==='特殊見積'){ document.getElementById('type').selectedIndex=1; document.getElementById('tech').checked=true; }
+        fromReq.lines.forEach(function(l){ LINES.push(l.custom? {custom:l.custom, price:(l.mkCost||0), qty:l.qty} : {code:l.code, qty:l.qty}); });
+        document.getElementById('backLink').setAttribute('href','admin-quote-request.html?id='+fromReq.id);
+        document.getElementById('backLink').textContent='‹ 見積依頼 '+fromReq.id+' に戻る';
+      }
+
+      syncCust();
+      if(fromReq){
+        document.getElementById('custInfo').innerHTML =
+          '<span class="badge bg-emerald-100 text-emerald-700">見積依頼 '+fromReq.id+' から作成</span> '
+          + document.getElementById('custInfo').innerHTML;
+      }
+    }
+  });
+</script>
+</body>
+</html>

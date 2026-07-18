@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- ================= HERO ================= -->
+  <section class="text-white relative" style="background:url(assets/img/mvimg.jpg) center center/cover no-repeat">
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(5,6,15,.85) 0%,rgba(5,6,15,.55) 45%,rgba(5,6,15,.15) 100%)"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-28 text-center">
+      <p class="text-[16px] sm:text-sm tracking-wide text-neutral-300">見積〜受注〜発注〜出荷〜請求を、ひとつのポータルで。</p>
+      <p class="text-[16px] sm:text-sm tracking-wide text-neutral-300 mt-1">WEB統合型受発注システム</p>
+      <h1 class="font-display font-black text-5xl sm:text-7xl xl:text-8xl tracking-tight mt-6">K.MECS <span style="color:#e60012">ONE</span></h1>
+      <p class="text-[15px] text-neutral-400 mt-4 font-display tracking-[.3em]">WEB-BASED ORDER SYSTEM</p>
+      <form action="products.html" class="flex gap-0 mt-10 max-w-2xl mx-auto">
+        <input name="q" placeholder="型番・キーワードを入力（例: AMC / EDS-408A / エンコーダ）" class="flex-1 px-5 py-4 text-sm text-ink outline-none">
+        <button class="btn-red !py-4 !px-8">検索</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- バナーエリア -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-px" style="background:#d0d0d8">
+    <a href="products.html" class="group bg-white block">
+      <div class="h-44 sm:h-52 overflow-hidden" style="background:#f3f4f6">
+        <img src="assets/img/ban-search.png" onerror="this.onerror=null;this.src='assets/img/cat-connector.jpg';this.style.transform='';this.className='max-w-full max-h-full object-contain m-auto'" alt="" class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500" style="transform:scale(1.35)">
+      </div>
+      <div class="px-4 py-3.5 text-white flex items-center justify-between gap-2" style="background:#0d1024">
+        <div>
+          <div class="font-display text-[16px] font-bold tracking-widest text-neutral-400">SEARCH</div>
+          <div class="text-[17px] font-bold mt-0.5">製品を探す</div>
+          <div class="text-[16px] text-neutral-400 mt-0.5">型番・カテゴリから検索</div>
+        </div>
+        <span class="shrink-0 w-7 h-7 flex items-center justify-center transition-colors" style="background:#e60012">
+          <span style="border-left:6px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent"></span>
+        </span>
+      </div>
+    </a>
+    <a href="quotes.html" class="group bg-white block">
+      <div class="h-44 sm:h-52 overflow-hidden" style="background:#f3f4f6">
+        <img src="assets/img/ban-quote.png" onerror="this.onerror=null;this.src='assets/img/cat-ipc.jpg';this.style.transform='';this.className='max-w-full max-h-full object-contain m-auto'" alt="" class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500" style="transform:scale(1.35)">
+      </div>
+      <div class="px-4 py-3.5 text-white flex items-center justify-between gap-2" style="background:#0d1024">
+        <div>
+          <div class="font-display text-[16px] font-bold tracking-widest text-neutral-400">QUOTE</div>
+          <div class="text-[17px] font-bold mt-0.5">見積番号から発注</div>
+          <div class="text-[16px] text-neutral-400 mt-0.5">営業送付済の見積で発注</div>
+        </div>
+        <span class="shrink-0 w-7 h-7 flex items-center justify-center transition-colors" style="background:#e60012">
+          <span style="border-left:6px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent"></span>
+        </span>
+      </div>
+    </a>
+    <a href="orders.html" class="group bg-white block">
+      <div class="h-44 sm:h-52 overflow-hidden" style="background:#f3f4f6">
+        <img src="assets/img/ban-status.png" onerror="this.onerror=null;this.src='assets/img/cat-wired.jpg';this.style.transform='';this.className='max-w-full max-h-full object-contain m-auto'" alt="" class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500" style="transform:scale(1.35)">
+      </div>
+      <div class="px-4 py-3.5 text-white flex items-center justify-between gap-2" style="background:#0d1024">
+        <div>
+          <div class="font-display text-[16px] font-bold tracking-widest text-neutral-400">STATUS</div>
+          <div class="text-[17px] font-bold mt-0.5">納期・進捗を確認</div>
+          <div class="text-[16px] text-neutral-400 mt-0.5">送り状番号もこちら</div>
+        </div>
+        <span class="shrink-0 w-7 h-7 flex items-center justify-center transition-colors" style="background:#e60012">
+          <span style="border-left:6px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent"></span>
+        </span>
+      </div>
+    </a>
+    <a href="notifications.html" class="group bg-white block">
+      <div class="h-44 sm:h-52 overflow-hidden" style="background:#f3f4f6">
+        <img src="assets/img/ban-pcn.png" onerror="this.onerror=null;this.src='assets/img/cat-sensor.jpg';this.style.transform='';this.className='max-w-full max-h-full object-contain m-auto'" alt="" class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500" style="transform:scale(1.35)">
+      </div>
+      <div class="px-4 py-3.5 text-white flex items-center justify-between gap-2" style="background:#0d1024">
+        <div>
+          <div class="font-display text-[16px] font-bold tracking-widest text-neutral-400">PCN / EOL</div>
+          <div class="text-[17px] font-bold mt-0.5">製品変更情報</div>
+          <div class="text-[16px] text-neutral-400 mt-0.5">購入履歴に紐づく通知</div>
+        </div>
+        <span class="shrink-0 w-7 h-7 flex items-center justify-center transition-colors" style="background:#e60012">
+          <span style="border-left:6px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent"></span>
+        </span>
+      </div>
+    </a>
+  </section>
+
+  <!-- ログイン状態バナー -->
+  <div id="stateBanner"></div>
+
+  <!-- ================= 私たちの思い ================= -->
+  <section class="text-white overflow-hidden" style="background:#151830">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-16 grid lg:grid-cols-2 gap-10 items-center">
+      <div class="flex justify-center">
+        <div class="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full flex items-center justify-center"
+             style="background:radial-gradient(circle at 70% 30%, #ffd54a 0%, #ff8a00 25%, #e60012 45%, #7a0030 65%, #0d1024 78%)">
+          <div class="absolute inset-[14%] rounded-full" style="background:#151830"></div>
+          <div class="relative text-center leading-relaxed">
+            <div class="text-lg sm:text-xl font-bold">"ONE"を体現する</div>
+            <div class="text-lg sm:text-xl font-bold mt-1">私たちの思い</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm leading-loose text-neutral-300">
+          ケーメックスONEは<br>
+          お客様の潜在的な課題を解決し、<br>
+          世界水準の競争力を提供するテクニカルパートナーです。<br>
+          世界中の製品を提供する技術商社として創業70年。<br>
+          お客様の課題を解決する<br>
+          コンサルティングソリューションを提供いたします。
+        </p>
+        <a href="#" class="btn-red mt-8">ケーメックスONEについて</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRODUCT LINEUP ================= -->
+  <section class="bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20">
+      <h2 class="sec-title text-5xl sm:text-6xl leading-none">PRODUCT<br>LINEUP</h2>
+      <p class="text-sm text-neutral-600 mt-5">取り扱い製品を探す</p>
+
+      <!-- 4つの探し方 -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+        <button class="tab-head on text-left" data-tab="kw">
+          <div class="sec-label" style="color:#e60012">SEARCH FOR KEYWORD</div>
+          <div class="text-base font-bold text-ink mt-1">キーワードから製品を探す</div>
+        </button>
+        <button class="tab-head text-left" data-tab="cat">
+          <div class="sec-label">SEARCH FOR CATEGORY</div>
+          <div class="text-base font-bold text-ink mt-1">カテゴリから製品を探す</div>
+        </button>
+        <button class="tab-head text-left" data-tab="mk">
+          <div class="sec-label">SEARCH FOR MAKER</div>
+          <div class="text-base font-bold text-ink mt-1">メーカーから製品を探す</div>
+        </button>
+        <button class="tab-head text-left" data-tab="sol">
+          <div class="sec-label">SEARCH FROM SOLUTIONS</div>
+          <div class="text-base font-bold text-ink mt-1">業界事例から製品を探す</div>
+        </button>
+      </div>
+
+      <!-- キーワード -->
+      <div class="tabpane kw mt-8">
+        <form action="products.html" class="flex max-w-3xl">
+          <input name="q" placeholder="型番・メーカー名・キーワード" class="flex-1 border border-[color:var(--line)] px-4 py-3.5 text-sm outline-none focus:border-[color:var(--brand)]">
+          <button class="btn-red">検索</button>
+        </form>
+        <div class="flex flex-wrap gap-2 mt-4 text-[15px]">
+          <span class="text-neutral-400 py-1.5">注目のキーワード：</span>
+          <a href="products.html?q=AMC" class="border border-[color:var(--line)] px-3 py-1.5 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">ODU AMC</a>
+          <a href="products.html?q=EDS" class="border border-[color:var(--line)] px-3 py-1.5 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">MOXA EDS</a>
+          <a href="products.html?q=エンコーダ" class="border border-[color:var(--line)] px-3 py-1.5 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">エンコーダ</a>
+          <a href="products.html?q=IPC" class="border border-[color:var(--line)] px-3 py-1.5 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">産業用PC</a>
+        </div>
+      </div>
+
+      <!-- カテゴリ -->
+      <div class="tabpane cat hidden mt-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-8" id="catGrid"></div>
+        <div class="text-center mt-12"><a href="products.html" class="btn-red">もっと見る</a></div>
+      </div>
+
+      <!-- メーカー -->
+      <div class="tabpane mk hidden mt-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5" id="mkGrid"></div>
+        <div class="text-center mt-12"><a href="maker.html?m=moxa" class="btn-red">取扱メーカー一覧へ</a></div>
+      </div>
+
+      <!-- 業界事例（/leading/ 全カテゴリ）-->
+      <div class="tabpane sol hidden mt-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" id="solGrid"></div>
+        <div class="text-center mt-12"><a href="leading.html" class="btn-red">導入事例一覧へ</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 取り扱いメーカー ================= -->
+  <section class="relative py-16" style="background:#22243a">
+    <div class="absolute inset-0" style="background:url(assets/img/bg1.jpg) center/cover no-repeat;opacity:.55"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8">
+      <div class="sec-label text-neutral-400">OUR GLOBAL PARTNER</div>
+      <h2 class="text-white text-2xl font-bold mt-1 mb-8">取り扱いメーカー</h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5" id="makerGrid"></div>
+      <div class="text-center mt-10"><a href="products.html" class="btn-red">もっと見る</a></div>
+    </div>
+  </section>
+
+  <!-- ================= COLUMN ================= -->
+  <section class="bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20">
+      <div class="flex gap-6">
+        <div class="flex-1 order-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- 注目コラム（大） -->
+          <a href="#" id="colFeatured" class="group relative block overflow-hidden min-h-[300px] lg:min-h-[420px]"></a>
+          <!-- 右 2×2 -->
+          <div class="grid grid-cols-2 gap-4" id="colGrid"></div>
+        </div>
+        <div class="hidden lg:flex flex-col items-center shrink-0 order-2 pl-2">
+          <h2 class="sec-title vertical text-5xl tracking-widest">COLUMN</h2>
+          <span class="text-[15px] text-neutral-400 vertical mt-4">技術コラム</span>
+        </div>
+      </div>
+      <div class="text-center mt-10"><a href="column.html" class="btn-red-o">コラム一覧はこちら</a></div>
+    </div>
+  </section>
+
+  <!-- ================= NEWS ================= -->
+  <section style="background:var(--paper)">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-16 grid lg:grid-cols-4 gap-8">
+      <div>
+        <div class="sec-label">お知らせ</div>
+        <h2 class="sec-title text-4xl mt-1">NEWS</h2>
+        <a href="news.html" class="btn-red-o mt-6">ニュース一覧はこちら</a>
+      </div>
+      <div class="lg:col-span-3 divide-y divide-[color:var(--line)]" id="newsList"></div>
+    </div>
+  </section>
+
+  <!-- ================= SUPPORT ================= -->
+  <section class="bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-16 text-center">
+      <div class="sec-label">サポート</div>
+      <h2 class="sec-title text-4xl mt-1 mb-10">SUPPORT</h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <a href="#" class="card card-h p-8">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.6" class="mx-auto"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+          <div class="text-sm font-bold text-ink mt-4">ダウンロード</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">データシート・マニュアルを<br>ダウンロードできます</p>
+        </a>
+        <a href="#" class="card card-h p-8">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.6" class="mx-auto"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3 2.4V13"/><path d="M12 17h.01"/></svg>
+          <div class="text-sm font-bold text-ink mt-4">よくあるご質問</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">皆様から寄せられる<br>よくあるご質問を掲載します</p>
+        </a>
+        <a href="#" class="card card-h p-8">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.6" class="mx-auto"><circle cx="12" cy="9" r="5"/><path d="m8.5 13.5-1.5 7 5-2.5 5 2.5-1.5-7"/></svg>
+          <div class="text-sm font-bold text-ink mt-4">認定資格</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">認定資格に関する<br>ご案内はこちら</p>
+        </a>
+        <a href="#" class="card card-h p-8">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.6" class="mx-auto"><path d="M5 21V4h9l1 2h5v9h-6l-1-2H5"/></svg>
+          <div class="text-sm font-bold text-ink mt-4">規格</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">国際規格に関する<br>ご案内はこちら</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'',
+    onReady:function(){
+      var a = KMECS.account();
+
+      // ログイン状態バナー
+      document.getElementById('stateBanner').innerHTML = a
+        ? '<div class="bg-white border-b border-[color:var(--line)]"><div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-3 flex flex-wrap items-center justify-between gap-3">'
+          + '<div class="text-[16px]"><b class="text-ink">'+a.company+'</b> でログイン中 <span class="badge text-white ml-1" style="background:#e60012">得値ランク'+a.rank+'</span>'
+          + '<span class="text-[14px] text-neutral-500 ml-2">お客様専用価格（得値）を表示中 ・ '+a.terms+'</span></div>'
+          + '<a href="mypage.html" class="btn-ink !py-2 !px-5 !text-[15px]">マイページへ</a></div></div>'
+        : '<div class="bg-white border-b-2" style="border-color:#e60012"><div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-3 flex flex-wrap items-center justify-between gap-3">'
+          + '<div class="text-[16px] flex items-start gap-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="2" class="mt-0.5 shrink-0"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+          + '<div><b class="text-ink">価格は表示されていません。</b><span class="text-[14px] text-neutral-500 ml-1">既存お取引先様向けのB2B専用サイトです。ログインするとお客様ごとの得値（お取引条件を反映したお客様価格）が表示されます。</span></div></div>'
+          + '<a href="login.html" class="btn-red !py-2.5 !px-5 !text-[15px] whitespace-nowrap">ログインして価格を見る</a></div></div>';
+
+      // カテゴリグリッド
+      document.getElementById('catGrid').innerHTML = CATEGORIES.map(function(c){
+        return '<a href="products.html?cat='+c.key+'" class="group">'
+          + '<div class="sweep h-40 overflow-hidden bg-white border border-[color:var(--line)] flex items-center justify-center"><img src="'+c.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
+          + '<div class="sec-label mt-3 group-hover:text-[color:var(--brand)] transition-colors">'+c.en+'</div>'
+          + '<div class="text-[17px] font-bold text-ink mt-0.5">'+c.ja+'</div></a>';
+      }).join('');
+
+      // メーカー（OUR GLOBAL PARTNER セクション）— 製品写真＋ロゴを大きくきれいに
+      document.getElementById('makerGrid').innerHTML = Object.keys(MAKERS).map(function(k){
+        var m = MAKERS[k];
+        return '<a href="maker.html?m='+k+'" class="card card-h sweep bg-white overflow-hidden flex flex-col">'
+          + '<div class="aspect-[16/9] overflow-hidden bg-white flex items-center justify-center"><img src="'+m.logo+'" alt="'+m.name+'" class="w-full h-full object-contain sweep-img"></div>'
+          + '<div class="px-4 py-3 border-t border-[color:var(--line)] flex items-center justify-between">'
+          + '<span class="text-[14px] text-neutral-500">'+m.country+' ・ <b class="text-ink">'+productsByMaker(k).length+'商品</b></span>'
+          + '<span class="text-[14px] font-bold" style="color:#e60012">見る ›</span></div></a>';
+      }).join('');
+
+      // メーカーから探す（/products/makers/ 全社。MOXA/ODU/POSITAL は大きく）
+      function makerCard(m, big){
+        var href = m.key ? 'maker.html?m='+m.key : 'products.html';
+        var logoH = big ? 'max-h-16 sm:max-h-20' : 'max-h-10';
+        var imgH  = big ? 'h-32 sm:h-40' : 'h-20';
+        var nameSz= big ? 'text-2xl sm:text-3xl' : 'text-[15px]';
+        var inner = m.logo
+          ? '<div class="'+imgH+' bg-white flex items-center justify-center p-4 border-b border-[color:var(--line)] overflow-hidden"><img src="'+m.logo+'" alt="'+m.name+'" class="'+logoH+' w-auto object-contain sweep-img"></div>'
+          : '<div class="'+imgH+' flex items-center justify-center border-b border-[color:var(--line)]" style="background:#22243a"><span class="font-display font-black '+(big?'text-4xl':'text-xl')+' text-white sweep-img">'+m.name+'</span></div>';
+        return '<a href="'+href+'" class="card card-h sweep overflow-hidden flex flex-col'+(big?' ring-1 ring-[color:var(--brand)]':'')+'">'
+          + inner
+          + '<div class="'+(big?'p-4':'p-3')+' flex items-center justify-between gap-2">'
+          + '<div><div class="font-display font-black '+nameSz+' text-ink leading-none">'+m.name+'</div>'
+          + '<div class="text-[13px] text-neutral-500 mt-1">'+m.note+'</div></div>'
+          + '<span class="font-bold shrink-0" style="color:#e60012">›</span></div></a>';
+      }
+      var mkEl = document.getElementById('mkGrid');
+      var bigs = MAKERS_ALL.filter(function(m){ return m.big; });
+      var subs = MAKERS_ALL.filter(function(m){ return !m.big; });
+      mkEl.className = 'space-y-6';
+      mkEl.innerHTML =
+        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-5">'+ bigs.map(function(m){ return makerCard(m,true); }).join('') +'</div>'
+        + '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">'+ subs.map(function(m){ return makerCard(m,false); }).join('') +'</div>';
+
+      // 業界事例から探す（/leading/ 全カテゴリ）
+      document.getElementById('solGrid').innerHTML = INDUSTRIES.map(function(s){
+        return '<a href="leading.html?ind='+s.key+'" class="card card-h sweep overflow-hidden flex flex-col">'
+          + '<div class="h-32 overflow-hidden"><img src="'+s.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
+          + '<div class="p-4"><div class="sec-label group-hover:text-[color:var(--brand)]">'+s.en+'</div>'
+          + '<div class="text-[16px] font-bold text-ink mt-1">'+s.ja+'</div>'
+          + '<p class="text-[14px] text-neutral-500 mt-1 leading-relaxed">'+s.note+'</p></div></a>';
+      }).join('');
+
+      // コラム — 注目（大）
+      var cf = COLUMNS[0];
+      document.getElementById('colFeatured').setAttribute('href','column.html?id='+cf.id);
+      document.getElementById('colFeatured').innerHTML =
+        '<img src="'+IMG.columns[0]+'" alt="" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">'
+        + '<div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(230,0,18,.15) 0%,rgba(230,0,18,.35) 55%,rgba(120,0,10,.85) 100%)"></div>'
+        + '<div class="absolute left-0 right-0 bottom-0 p-6 text-white">'
+        + '<div class="text-[18px] font-bold leading-snug drop-shadow">'+cf.title+'</div>'
+        + '<div class="flex items-center gap-3 mt-3"><span class="text-[15px] font-display opacity-90">'+cf.date+'</span>'
+        + '<span class="badge bg-white/90 text-ink">'+cf.tag+'</span></div></div>';
+
+      // コラム — 右 2×2
+      document.getElementById('colGrid').innerHTML = COLUMNS.slice(1,5).map(function(c,i){
+        return '<a href="column.html?id='+c.id+'" class="group relative block overflow-hidden min-h-[145px] lg:min-h-[202px]">'
+          + '<img src="'+IMG.columns[i+1]+'" alt="" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">'
+          + '<div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(230,0,18,.12) 0%,rgba(230,0,18,.3) 55%,rgba(120,0,10,.8) 100%)"></div>'
+          + '<div class="absolute left-0 right-0 bottom-0 p-4 text-white">'
+          + '<div class="text-[15px] font-bold leading-snug drop-shadow line-clamp-3">'+c.title+'</div>'
+          + '<div class="flex items-center gap-2 mt-2"><span class="text-[13px] font-display opacity-90">'+c.date+'</span>'
+          + '<span class="badge bg-white/90 text-ink text-[13px]">'+c.tag+'</span></div></div></a>';
+      }).join('');
+
+      // ニュース
+      document.getElementById('newsList').innerHTML = NEWS.map(function(n){
+        return '<a href="news.html?id='+n.id+'" class="flex flex-wrap items-center gap-3 py-4 group">'
+          + '<span class="text-[15px] text-neutral-400 font-display w-20">'+n.date+'</span>'
+          + '<span class="badge border border-[color:var(--line)] text-neutral-500">'+n.cat+'</span>'
+          + '<span class="text-[16px] text-neutral-700 group-hover:text-[color:var(--brand)] flex-1 min-w-0">'+n.title+'</span></a>';
+      }).join('');
+
+      // タブ
+      document.querySelectorAll('.tab-head').forEach(function(b){
+        b.addEventListener('click', function(){
+          document.querySelectorAll('.tab-head').forEach(function(x){
+            x.classList.remove('on');
+            x.querySelector('.sec-label').style.color = '';
+          });
+          b.classList.add('on');
+          b.querySelector('.sec-label').style.color = '#e60012';
+          document.querySelectorAll('.tabpane').forEach(function(p){ p.classList.add('hidden'); });
+          document.querySelector('.tabpane.'+b.getAttribute('data-tab')).classList.remove('hidden');
+        });
+      });
+    }
+  });
+</script>
+</body>
+</html>

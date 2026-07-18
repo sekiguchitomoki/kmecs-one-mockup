@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+
+  <!-- 絞り込み -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-[200px]">
+      <label class="text-[13px] font-bold text-neutral-600">キーワード</label>
+      <input id="fKw" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="件名・受注番号・内容">
+    </div>
+    <div><label class="text-[13px] font-bold text-neutral-600">状況</label>
+      <select id="fSt" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white">
+        <option value="">すべて</option><option value="open">未対応</option><option value="working">対応中</option><option value="done">完了</option>
+      </select></div>
+    <div><label class="text-[13px] font-bold text-neutral-600">顧客</label>
+      <select id="fCust" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+    <div><label class="text-[13px] font-bold text-neutral-600">担当</label>
+      <select id="fStaff" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+    <button id="fClear" class="text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-2">クリア</button>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+      <div class="text-[15px] font-bold text-ink">問合せ一覧 <span class="text-[13px] font-normal text-neutral-400 ml-1"><b id="cnt" class="text-ink">0</b> 件</span></div>
+      <span class="text-[12px] text-neutral-400">顧客ポータル・電話・メールからの問合せを一本化</span>
+    </div>
+    <div class="divide-y divide-[#eceef5]" id="rows"></div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際の返信送信は行われません。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-inquiries',
+    title:'問合せ管理',
+    sub:'③問合せ — 受注〜出荷の間の顧客対応（納期・仕様・数量不足・請求など）を一元管理',
+    onReady:function(){
+      var custCodes=INQUIRIES.map(function(q){return q.cust;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fCust').innerHTML='<option value="">全顧客</option>'+custCodes.map(function(c){
+        var x=getCustomer(c); return '<option value="'+c+'">'+(x?x.company:c)+'</option>'; }).join('');
+      var staffs=INQUIRIES.map(function(q){return q.staff;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fStaff').innerHTML='<option value="">全担当</option>'+staffs.map(function(s){return '<option>'+s+'</option>';}).join('');
+
+      function filtered(){
+        var kw=document.getElementById('fKw').value.trim(),
+            st=document.getElementById('fSt').value,
+            cu=document.getElementById('fCust').value,
+            sf=document.getElementById('fStaff').value;
+        return INQUIRIES.filter(function(q){
+          if(st && q.status!==st) return false;
+          if(cu && q.cust!==cu) return false;
+          if(sf && q.staff!==sf) return false;
+          if(kw && (q.subject+q.body+q.order+q.id).indexOf(kw)<0) return false;
+          return true;
+        });
+      }
+
+      function render(){
+        var open=INQUIRIES.filter(function(q){return q.status==='open';}).length;
+        var working=INQUIRIES.filter(function(q){return q.status==='working';}).length;
+        var done=INQUIRIES.filter(function(q){return q.status==='done';}).length;
+        document.getElementById('kpi').innerHTML=
+          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">未対応</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+open+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">対応中</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+working+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">完了</div><div class="font-display text-2xl font-black text-ink mt-1">'+done+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均初動</div><div class="font-display text-2xl font-black text-ink mt-1">1.8<span class="text-[13px] font-normal text-neutral-400 ml-1">時間</span></div></div>';
+
+        var list=filtered();
+        document.getElementById('cnt').textContent=list.length;
+        document.getElementById('rows').innerHTML = list.map(function(q){
+          var c=getCustomer(q.cust)||{company:q.cust}, s=INQ_STATUS[q.status];
+          return '<div class="px-4 py-3.5">'
+            + '<div class="flex items-center gap-2 flex-wrap">'
+            + '<span class="badge '+s.cls+'" style="background:'+s.bg+'">'+s.ja+'</span>'
+            + '<span class="badge bg-neutral-100 text-neutral-600">'+q.ch+'</span>'
+            + '<span class="text-[15px] font-bold text-ink">'+q.subject+'</span>'
+            + '<span class="ml-auto text-[12px] text-neutral-400 font-display">'+q.at+'</span></div>'
+            + '<div class="text-[14px] text-neutral-600 mt-1.5 leading-relaxed">'+q.body+'</div>'
+            + (q.reply?'<div class="text-[13px] text-neutral-600 mt-2 pl-3 border-l-2" style="border-color:#14887b"><b class="text-ink">返信：</b>'+q.reply+'</div>':'')
+            + '<div class="flex items-center gap-3 mt-2.5 flex-wrap text-[13px]">'
+            + '<a href="admin-customer-detail.html?code='+q.cust+'" class="text-neutral-600 hover:underline">'+c.company+'</a>'
+            + '<span class="text-neutral-300">|</span>'
+            + '<a href="admin-order-detail.html?no='+q.order+'" class="font-display hover:underline" style="color:#e60012">'+q.order+' ›</a>'
+            + '<span class="text-neutral-300">|</span>'
+            + '<span class="text-neutral-400">担当 '+q.staff+'</span>'
+            + '<span class="ml-auto flex gap-1">'
+            + (q.status!=='done'
+                ? '<button class="rep text-[13px] text-white px-2.5 py-1.5" data-id="'+q.id+'" style="background:#e60012">返信する</button>'
+                  + '<button class="dn text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5" data-id="'+q.id+'">完了にする</button>'
+                : '<span class="text-[12px] text-neutral-400">対応済み</span>')
+            + '</span></div></div>';
+        }).join('') || '<div class="px-4 py-8 text-center text-neutral-400 text-[14px]">条件に一致する問合せがありません。</div>';
+
+        document.querySelectorAll('.rep').forEach(function(b){
+          b.addEventListener('click', function(){
+            var q=getInquiry(b.getAttribute('data-id'));
+            var t=prompt('「'+q.subject+'」への返信を入力', '');
+            if(t===null || !t.trim()) return;
+            q.reply=t.trim(); q.status='working';
+            alert('返信を送信しました。顧客ポータルの注文詳細にも表示されます。（モック）');
+            render();
+          });
+        });
+        document.querySelectorAll('.dn').forEach(function(b){
+          b.addEventListener('click', function(){
+            var q=getInquiry(b.getAttribute('data-id'));
+            q.status='done'; render();
+          });
+        });
+      }
+      ['fKw','fSt','fCust','fStaff'].forEach(function(id){
+        document.getElementById(id).addEventListener('input', render);
+        document.getElementById(id).addEventListener('change', render);
+      });
+      document.getElementById('fClear').addEventListener('click', function(){
+        ['fKw','fSt','fCust','fStaff'].forEach(function(id){ document.getElementById(id).value=''; }); render();
+      });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

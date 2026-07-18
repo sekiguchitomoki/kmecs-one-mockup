@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 営業担当者ごとの売上 -->
+  <div class="text-[15px] font-bold text-ink mb-3">営業担当者ごとの売上（担当顧客の年間売上合計・目標達成率）</div>
+  <div class="grid md:grid-cols-3 gap-3 mb-6" id="repCards"></div>
+
+  <div class="grid lg:grid-cols-2 gap-4 mb-4">
+    <!-- 担当別 売上バー -->
+    <div class="adm-card p-5">
+      <div class="text-[15px] font-bold text-ink mb-4">担当別 売上構成</div>
+      <div class="space-y-3" id="repBars"></div>
+    </div>
+    <!-- 担当別 顧客数・未入金 -->
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] text-[15px] font-bold text-ink">担当別 サマリ</div>
+      <div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>
+        <th class="text-left px-4 py-2.5">担当者</th><th class="text-left py-2.5">部署</th>
+        <th class="text-right py-2.5">担当顧客</th><th class="text-right py-2.5">売上</th>
+        <th class="text-right py-2.5">未入金</th><th class="text-right px-4 py-2.5">達成率</th>
+      </tr></thead><tbody class="divide-y divide-[#eceef5]" id="repRows"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- 顧客ランキング -->
+  <div class="adm-card overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[15px] font-bold text-ink">顧客ランキング（年間売上）</div>
+      <div class="flex flex-wrap gap-1">
+        <select id="fRep" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"></select>
+        <button id="sortSales" class="px-3 py-1.5 text-[13px] text-white" style="background:#e60012">売上順</button>
+        <button id="sortGrowth" class="px-3 py-1.5 text-[13px] border border-[#dcdce6] bg-white text-neutral-600">成長率順</button>
+        <button id="sortUnpaid" class="px-3 py-1.5 text-[13px] border border-[#dcdce6] bg-white text-neutral-600">未入金順</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[950px]">
+        <thead><tr>
+          <th class="text-center px-4 py-2.5">順位</th><th class="text-left py-2.5">顧客</th>
+          <th class="text-left py-2.5">担当営業</th><th class="text-left py-2.5">得値</th>
+          <th class="text-right py-2.5">年間売上</th><th class="text-right py-2.5">前年比</th>
+          <th class="text-right py-2.5">受注</th><th class="text-right py-2.5">未入金</th>
+          <th class="text-right px-4 py-2.5">構成比</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rankRows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、数値はダミーです。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-reps',
+    title:'営業担当者・顧客ランキング',
+    sub:'担当営業ごとの売上・目標達成率・担当顧客、顧客ランキング',
+    onReady:function(){
+      var totalSales=CUSTOMERS.reduce(function(s,c){return s+c.salesYear;},0);
+      function repStat(r){
+        var cs=CUSTOMERS.filter(function(c){return c.rep===r.name;});
+        var sales=cs.reduce(function(s,c){return s+c.salesYear;},0);
+        var unpaid=cs.reduce(function(s,c){return s+c.unpaid;},0);
+        return { cs:cs, sales:sales, unpaid:unpaid, rate:Math.round(sales/r.target*100) };
+      }
+      var reps=REPS.map(function(r){ return Object.assign({}, r, repStat(r)); }).sort(function(a,b){return b.sales-a.sales;});
+      var repMax=reps[0].sales;
+
+      // 担当カード
+      document.getElementById('repCards').innerHTML=reps.map(function(r,i){
+        var ok=r.rate>=100;
+        return '<div class="adm-card p-5">'
+          + '<div class="flex items-center justify-between"><div class="flex items-center gap-2">'
+          + '<span class="w-8 h-8 rounded-full flex items-center justify-center text-white font-display font-black" style="background:'+(i===0?'#e60012':'#393b56')+'">'+(i+1)+'</span>'
+          + '<div><div class="text-[16px] font-bold text-ink">'+r.name+'</div><div class="text-[12px] text-neutral-400">'+r.dept+'</div></div></div>'
+          + '<span class="badge '+(ok?'':'')+'" style="background:'+(ok?'#dcfce7':'#fef3c7')+';color:'+(ok?'#166534':'#92400e')+'">達成 '+r.rate+'%</span></div>'
+          + '<div class="mt-3"><div class="font-display text-2xl font-black text-ink">'+yen(r.sales)+'</div>'
+          + '<div class="text-[12px] text-neutral-400">目標 '+yen(r.target)+' ・ 担当 '+r.cs.length+'社</div></div>'
+          + '<div class="mt-2 h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+Math.min(100,r.rate)+'%;background:'+(ok?'#14887b':'#e60012')+'"></div></div>'
+          + '</div>';
+      }).join('');
+
+      // 担当別バー
+      document.getElementById('repBars').innerHTML=reps.map(function(r){
+        var pct=Math.round(r.sales/repMax*100);
+        return '<div><div class="flex justify-between text-[13px] mb-1"><b class="text-ink">'+r.name+'</b><span class="font-display text-neutral-500">'+yen(r.sales)+'</span></div>'
+          + '<div class="h-3" style="background:#eee"><div class="h-3" style="width:'+pct+'%;background:#e60012"></div></div></div>';
+      }).join('');
+
+      // 担当別テーブル
+      document.getElementById('repRows').innerHTML=reps.map(function(r){
+        return '<tr><td class="px-4 py-3 text-[15px] font-bold text-ink">'+r.name+'</td>'
+          + '<td class="py-3 text-[13px] text-neutral-500">'+r.dept+'</td>'
+          + '<td class="py-3 text-right font-display">'+r.cs.length+'社</td>'
+          + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(r.sales)+'</td>'
+          + '<td class="py-3 text-right font-display '+(r.unpaid>0?'font-bold':'text-neutral-300')+'" '+(r.unpaid>0?'style="color:#e60012"':'')+'>'+(r.unpaid>0?yen(r.unpaid):'—')+'</td>'
+          + '<td class="px-4 py-3 text-right font-display '+(r.rate>=100?'text-emerald-600':'text-amber-600')+' font-bold">'+r.rate+'%</td></tr>';
+      }).join('');
+
+      // 顧客ランキング
+      document.getElementById('fRep').innerHTML='<option value="">全担当</option>'+REPS.map(function(r){return '<option>'+r.name+'</option>';}).join('');
+      var SORT='sales';
+      function rankBadge(rk){ var c=rk==='A'?'#e60012':rk==='B'?'#393b56':'#8b8ea8'; return '<span class="badge text-white" style="background:'+c+'">得値'+rk+'</span>'; }
+      function renderRank(){
+        var rep=document.getElementById('fRep').value;
+        var list=CUSTOMERS.filter(function(c){ return !rep || c.rep===rep; });
+        if(SORT==='sales') list.sort(function(a,b){return b.salesYear-a.salesYear;});
+        if(SORT==='growth') list.sort(function(a,b){return (b.salesYear/b.salesPrev)-(a.salesYear/a.salesPrev);});
+        if(SORT==='unpaid') list.sort(function(a,b){return b.unpaid-a.unpaid;});
+        document.getElementById('rankRows').innerHTML=list.map(function(c,i){
+          var yoy=Math.round((c.salesYear/c.salesPrev-1)*100);
+          var share=(c.salesYear/totalSales*100).toFixed(1);
+          var medal=i===0?'#e60012':i===1?'#c0a02c':i===2?'#b0703a':'#9aa0ad';
+          return '<tr class="hover:bg-[#fafafe]">'
+            + '<td class="px-4 py-3 text-center"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-display font-black text-[13px]" style="background:'+medal+'">'+(i+1)+'</span></td>'
+            + '<td class="py-3"><div class="text-[15px] font-bold text-ink">'+c.company+'</div><div class="text-[12px] text-neutral-400">'+c.code+' ・ '+c.area+'</div></td>'
+            + '<td class="py-3 text-[14px] text-neutral-700">'+c.rep+'</td>'
+            + '<td class="py-3">'+rankBadge(c.rank)+'</td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-3 text-right font-display '+(yoy>=0?'text-emerald-600':'text-[color:var(--brand)]')+'">'+(yoy>=0?'+':'')+yoy+'%</td>'
+            + '<td class="py-3 text-right font-display text-neutral-600">'+c.ordersCount+'</td>'
+            + '<td class="py-3 text-right font-display '+(c.unpaid>0?'font-bold':'text-neutral-300')+'" '+(c.unpaid>0?'style="color:#e60012"':'')+'>'+(c.unpaid>0?yen(c.unpaid):'—')+'</td>'
+            + '<td class="px-4 py-3 text-right font-display text-neutral-600">'+share+'%</td></tr>';
+        }).join('');
+      }
+      function setSort(s,btn){ SORT=s;
+        ['sortSales','sortGrowth','sortUnpaid'].forEach(function(id){ var b=document.getElementById(id); b.className='px-3 py-1.5 text-[13px] border border-[#dcdce6] bg-white text-neutral-600'; b.style.background=''; });
+        btn.className='px-3 py-1.5 text-[13px] text-white'; btn.style.background='#e60012'; renderRank();
+      }
+      document.getElementById('sortSales').addEventListener('click', function(){ setSort('sales', this); });
+      document.getElementById('sortGrowth').addEventListener('click', function(){ setSort('growth', this); });
+      document.getElementById('sortUnpaid').addEventListener('click', function(){ setSort('unpaid', this); });
+      document.getElementById('fRep').addEventListener('change', renderRank);
+      renderRank();
+    }
+  });
+</script>
+</body>
+</html>

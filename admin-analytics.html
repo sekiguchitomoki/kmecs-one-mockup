@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+    <div class="text-[13px] text-neutral-500">対象期間：<b class="text-ink" id="pLabel">今年度（2026年度）</b></div>
+    <div class="flex gap-1 text-[13px] items-center">
+      <select id="mSel" class="hidden border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white mr-1"></select>
+      <button class="pb px-3 py-1.5" data-p="year">今年度</button>
+      <button class="pb px-3 py-1.5" data-p="prev">前年度</button>
+      <button class="pb px-3 py-1.5" data-p="month">月次</button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+
+  <div class="grid lg:grid-cols-3 gap-4 mb-4">
+    <!-- 月次売上 -->
+    <div class="adm-card p-5 lg:col-span-2">
+      <div class="text-[15px] font-bold text-ink mb-1" id="chartTitle">月次売上推移</div>
+      <div class="text-[13px] text-neutral-400 mb-4" id="chartSub">単位：百万円　／　棒＝今年度 ・ 線＝前年同月</div>
+      <div class="flex items-end gap-1.5 h-52" id="monthly"></div>
+    </div>
+    <!-- メーカー別構成比 -->
+    <div class="adm-card p-5">
+      <div class="text-[15px] font-bold text-ink mb-4">メーカー別 売上構成</div>
+      <div class="space-y-3" id="byMaker"></div>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-4">
+    <!-- 顧客別ランキング -->
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6]"><div class="text-[15px] font-bold text-ink">顧客別 売上ランキング</div></div>
+      <div class="p-4 space-y-3" id="byCust"></div>
+    </div>
+    <!-- 受注ステータス構成＋経路 -->
+    <div class="space-y-4">
+      <div class="adm-card p-5">
+        <div class="text-[15px] font-bold text-ink mb-4">受注ステータス構成（金額ベース）</div>
+        <div class="flex h-6 overflow-hidden mb-3" id="statusBar"></div>
+        <div class="grid grid-cols-2 gap-2 text-[13px]" id="statusLegend"></div>
+      </div>
+      <div class="adm-card p-5">
+        <div class="text-[15px] font-bold text-ink mb-1">エリア別 売上</div>
+        <div class="text-[13px] text-neutral-400 mb-3">全国の売上分布</div>
+        <div class="space-y-2.5" id="byArea"></div>
+      </div>
+    </div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、数値はダミーです。実際のBIツール／基幹データとは連携していません。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var MK_COLOR={ moxa:'#e60012', odu:'#393b56', fraba:'#14887b', ipc:'#8b8ea8' };
+  var MK_NAME={ moxa:'MOXA', odu:'ODU', fraba:'POSITAL', ipc:'AXIOMTEK/IPC' };
+
+  KMECS.renderAdminShell({
+    active:'admin-analytics',
+    title:'売上分析',
+    sub:'年間売上・前年比・メーカー別 / 顧客別 / エリア別・受注ステータス構成',
+    onReady:function(){
+      // ---- 年度合計（顧客マスタが真値。月次はこの合計を月別シェアで按分） ----
+      var totalSales=CUSTOMERS.reduce(function(s,c){return s+c.salesYear;},0);
+      var totalPrev =CUSTOMERS.reduce(function(s,c){return s+c.salesPrev;},0);
+      var totalUnpaid=CUSTOMERS.reduce(function(s,c){return s+c.unpaid;},0);
+      var orderCnt  =CUSTOMERS.reduce(function(s,c){return s+c.ordersCount;},0);
+
+      var months=['4','5','6','7','8','9','10','11','12','1','2','3'];
+      var shapeCur =[14,16,19,22,18,21,24,20,26,23,25,28];
+      var shapePrev=[13,15,17,19,17,19,21,19,23,21,22,25];
+      var sum=function(a){return a.reduce(function(s,v){return s+v;},0);};
+      var sumCur=sum(shapeCur), sumPrev=sum(shapePrev);
+      // 月別売上（円）＝ 年度合計 × その月のシェア
+      var mCur =shapeCur.map(function(v){ return Math.round(totalSales*v/sumCur); });
+      var mPrev=shapePrev.map(function(v){ return Math.round(totalPrev*v/sumPrev); });
+      var mPrev2=mPrev.map(function(v){ return Math.round(v*0.9); }); // 前々年度（前年度表示時の比較線）
+      var mil=function(v){ return (v/1000000).toFixed(1); };
+
+      var period='year', mi=3; // 既定：今年度 / 月次選択時は7月
+
+      // 月セレクタ
+      document.getElementById('mSel').innerHTML=months.map(function(m,i){
+        return '<option value="'+i+'"'+(i===3?' selected':'')+'>'+m+'月</option>';
+      }).join('');
+
+      // 期間ごとの数値定義
+      function ctx(){
+        var share=shapeCur[mi]/sumCur;
+        if(period==='year')  return { label:'今年度（2026年度）', sales:totalSales, base:totalPrev, baseLabel:'前年比',
+                                      cnt:orderCnt, salesOf:function(c){return c.salesYear;}, factor:1,
+                                      salesLabel:'年間売上', cntLabel:'受注件数' };
+        if(period==='prev')  return { label:'前年度（2025年度）', sales:totalPrev, base:Math.round(totalPrev*0.9), baseLabel:'前々年比',
+                                      cnt:Math.round(orderCnt*totalPrev/totalSales), salesOf:function(c){return c.salesPrev;}, factor:totalPrev/totalSales,
+                                      salesLabel:'年間売上（前年度）', cntLabel:'受注件数（前年度）' };
+        return { label:months[mi]+'月（単月）', sales:mCur[mi], base:mPrev[mi], baseLabel:'前年同月比',
+                 cnt:Math.max(1,Math.round(orderCnt*share)), salesOf:function(c){return Math.round(c.salesYear*share);}, factor:share,
+                 salesLabel:months[mi]+'月 売上', cntLabel:months[mi]+'月 受注件数' };
+      }
+
+      function render(){
+        var x=ctx();
+        var yoy=Math.round((x.sales/x.base-1)*100);
+        var avg=Math.round(x.sales/x.cnt);
+        document.getElementById('pLabel').textContent=x.label;
+        document.getElementById('mSel').className = period==='month'
+          ? 'border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white mr-1'
+          : 'hidden border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white mr-1';
+
+        // 期間ボタンの見た目
+        document.querySelectorAll('.pb').forEach(function(b){
+          var on=b.getAttribute('data-p')===period;
+          b.className='pb px-3 py-1.5 '+(on?'text-white':'border border-[#dcdce6] bg-white text-neutral-600');
+          b.style.background=on?'#e60012':'';
+        });
+
+        // KPI
+        document.getElementById('kpi').innerHTML=
+          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">'+x.salesLabel+'</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(x.sales)+'</div><div class="text-[12px] '+(yoy>=0?"text-emerald-600":"text-[color:var(--brand)]")+' mt-0.5">'+x.baseLabel+' '+(yoy>=0?"+":"")+yoy+'%</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">'+x.cntLabel+'</div><div class="font-display text-2xl font-black text-ink mt-1">'+x.cnt+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均受注単価</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(avg)+'</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">未回収（現在）</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+yen(totalUnpaid)+'</div></div>';
+
+        // 月次チャート（期間で棒／線を切替）
+        var bars  = period==='prev' ? mPrev  : mCur;
+        var line  = period==='prev' ? mPrev2 : mPrev;
+        var max=Math.max.apply(null, bars.concat(line));
+        document.getElementById('chartTitle').textContent = period==='prev' ? '月次売上推移（前年度）' : '月次売上推移（今年度）';
+        document.getElementById('chartSub').textContent = period==='prev'
+          ? '単位：百万円　／　棒＝前年度 ・ 線＝前々年度'
+          : (period==='month' ? '単位：百万円　／　棒＝今年度（選択月を強調） ・ 線＝前年同月' : '単位：百万円　／　棒＝今年度 ・ 線＝前年同月');
+        document.getElementById('monthly').innerHTML=months.map(function(m,i){
+          var hc=Math.round(bars[i]/max*100), hp=Math.round(line[i]/max*100);
+          var sel = period==='month' && i===mi;
+          var col = sel ? '#e60012' : (period==='month' ? '#f7b3b8' : '#e60012');
+          return '<div class="flex-1 flex flex-col items-center justify-end h-full relative group cursor-pointer mBar" data-i="'+i+'">'
+            + '<div class="absolute -top-1 text-[11px] font-display font-bold text-ink '+(sel?'':'opacity-0 group-hover:opacity-100')+'">'+mil(bars[i])+'</div>'
+            + '<div class="w-full relative flex items-end justify-center" style="height:100%">'
+            + '<div class="w-2/3" style="height:'+hc+'%;background:'+col+'"></div>'
+            + '<div class="absolute w-full border-t-2 border-dashed" style="bottom:'+hp+'%;border-color:#393b56"></div></div>'
+            + '<div class="text-[11px] '+(sel?'font-bold text-ink':'text-neutral-400')+' mt-1">'+m+'</div></div>';
+        }).join('');
+        // 棒クリックでその月へ
+        document.querySelectorAll('.mBar').forEach(function(b){
+          b.addEventListener('click', function(){
+            mi=+b.getAttribute('data-i'); period='month';
+            document.getElementById('mSel').value=mi; render();
+          });
+        });
+
+        // メーカー別（受注金額を期間係数でスケール）
+        var mk={}; ADMIN_ORDERS.forEach(function(o){ mk[o.maker]=(mk[o.maker]||0)+o.amount*x.factor; });
+        var mkTotal=Object.keys(mk).reduce(function(s,k){return s+mk[k];},0);
+        document.getElementById('byMaker').innerHTML=Object.keys(mk).sort(function(a,b){return mk[b]-mk[a];}).map(function(k){
+          var pct=Math.round(mk[k]/mkTotal*100);
+          return '<div><div class="flex justify-between text-[13px] mb-1"><span class="font-bold text-ink">'+MK_NAME[k]+'</span><span class="font-display text-neutral-500">'+pct+'%<span class="text-neutral-400 ml-1.5">'+yen(Math.round(mk[k]))+'</span></span></div>'
+            + '<div class="h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+pct+'%;background:'+MK_COLOR[k]+'"></div></div></div>';
+        }).join('');
+
+        // 顧客別ランキング
+        var cs=CUSTOMERS.slice().sort(function(a,b){return x.salesOf(b)-x.salesOf(a);});
+        var cmax=x.salesOf(cs[0])||1;
+        document.getElementById('byCust').innerHTML=cs.map(function(c,i){
+          var v=x.salesOf(c), pct=Math.round(v/cmax*100);
+          return '<div><div class="flex justify-between text-[13px] mb-1">'
+            + '<span class="text-ink"><b class="font-display mr-1.5" style="color:#e60012">'+(i+1)+'</b>'
+            + '<a href="admin-customer-detail.html?code='+c.code+'" class="hover:underline">'+c.company+'</a></span>'
+            + '<span class="font-display font-bold text-ink">'+yen(v)+'</span></div>'
+            + '<div class="h-2" style="background:#eee"><div class="h-2" style="width:'+pct+'%;background:#393b56"></div></div></div>';
+        }).join('');
+
+        // 受注ステータス構成
+        var st={}; ADMIN_ORDERS.forEach(function(o){ st[o.status]=(st[o.status]||0)+o.amount*x.factor; });
+        var stTotal=Object.keys(st).reduce(function(s,k){return s+st[k];},0);
+        var order=['arranging','shipped','billed','unpaid','paid'];
+        document.getElementById('statusBar').innerHTML=order.filter(function(k){return st[k];}).map(function(k){
+          var pct=st[k]/stTotal*100; var s=ORDER_STATUS[k];
+          return '<div style="width:'+pct+'%;background:'+s.bg+'" title="'+s.ja+'"></div>';
+        }).join('');
+        document.getElementById('statusLegend').innerHTML=order.filter(function(k){return st[k];}).map(function(k){
+          var s=ORDER_STATUS[k];
+          return '<div class="flex items-center gap-2"><span class="w-3 h-3 shrink-0" style="background:'+s.bg+';border:1px solid #ccc"></span>'
+            + '<span class="text-neutral-600">'+s.ja+'</span><span class="ml-auto font-display text-neutral-500">'+yen(Math.round(st[k]))+'</span></div>';
+        }).join('');
+
+        // エリア別
+        var ar={}; CUSTOMERS.forEach(function(c){ ar[c.area]=(ar[c.area]||0)+x.salesOf(c); });
+        var arMax=Math.max.apply(null,Object.keys(ar).map(function(k){return ar[k];}));
+        document.getElementById('byArea').innerHTML=Object.keys(ar).sort(function(a,b){return ar[b]-ar[a];}).map(function(k){
+          var pct=Math.round(ar[k]/arMax*100);
+          return '<div class="flex items-center gap-3"><span class="w-12 text-[13px] text-neutral-600 shrink-0">'+k+'</span>'
+            + '<div class="flex-1 h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+pct+'%;background:#e60012"></div></div>'
+            + '<span class="w-24 text-right font-display text-[13px] text-neutral-600">'+yen(ar[k])+'</span></div>';
+        }).join('');
+      }
+
+      document.querySelectorAll('.pb').forEach(function(b){
+        b.addEventListener('click', function(){ period=b.getAttribute('data-p'); render(); });
+      });
+      document.getElementById('mSel').addEventListener('change', function(){ mi=+this.value; render(); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

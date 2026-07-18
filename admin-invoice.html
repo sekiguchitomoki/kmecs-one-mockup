@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 課題解決の説明 -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-center gap-4" style="border-left:3px solid #14887b">
+    <div class="text-[15px] leading-relaxed flex-1 min-w-[280px]">
+      <b class="text-ink">IBMは製品単位で登録されているため、従来は経理が注文書単位に整理し直してから請求書を作成していました。</b><br>
+      <span class="text-neutral-500">本システムでは <b style="color:#14887b">注文書単位へ自動集約</b> して請求書を起案します（定型業務の自動処理／入力作業の削減）。</span>
+    </div>
+    <div class="flex items-center gap-2 text-[14px]">
+      <span class="px-2.5 py-1.5" style="background:var(--lav)">IBM：製品単位 32行</span>
+      <span class="text-neutral-300">›</span>
+      <span class="px-2.5 py-1.5 text-white" style="background:#14887b">自動集約：注文書単位 6件</span>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+
+  <!-- 発行種別 -->
+  <div class="adm-card p-5 mb-4">
+    <div class="text-[16px] font-bold text-ink mb-1">請求書 発行種別（IBMから出力）</div>
+    <p class="text-[14px] text-neutral-400 mb-3">郵送が7割。ポータル掲載＋メール送付へ移行し、封入・郵送作業を削減します。</p>
+    <div class="grid sm:grid-cols-3 gap-3">
+      <div><div class="flex justify-between text-[14px] mb-1"><span class="text-neutral-600">郵送</span><span class="font-display font-bold text-ink">70%</span></div><div class="h-2" style="background:#e8e8ee"><div class="h-2" style="width:70%;background:#393b56"></div></div></div>
+      <div><div class="flex justify-between text-[14px] mb-1"><span class="text-neutral-600">メール</span><span class="font-display font-bold text-ink">10%</span></div><div class="h-2" style="background:#e8e8ee"><div class="h-2" style="width:10%;background:#e60012"></div></div></div>
+      <div><div class="flex justify-between text-[14px] mb-1"><span class="text-neutral-600">EDI / FAX</span><span class="font-display font-bold text-ink">20%</span></div><div class="h-2" style="background:#e8e8ee"><div class="h-2" style="width:20%;background:#14887b"></div></div></div>
+    </div>
+  </div>
+
+  <!-- 絞り込み -->
+  <div class="adm-card p-4 mb-4">
+    <div class="flex flex-wrap items-end gap-3">
+      <div class="flex-1 min-w-[180px]">
+        <label class="text-[13px] font-bold text-neutral-600">キーワード</label>
+        <input id="fKw" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="請求番号・顧客・注文番号">
+      </div>
+      <div><label class="text-[13px] font-bold text-neutral-600">締め日（期間）</label>
+        <div class="flex items-center gap-1 mt-1">
+          <input id="fFrom" type="date" class="border border-[#dcdce6] px-2 py-2 text-[14px]">
+          <span class="text-neutral-400">〜</span>
+          <input id="fTo" type="date" class="border border-[#dcdce6] px-2 py-2 text-[14px]">
+        </div>
+      </div>
+      <div><label class="text-[13px] font-bold text-neutral-600">顧客</label>
+        <select id="fCust" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+      <div><label class="text-[13px] font-bold text-neutral-600">状態</label>
+        <select id="fStatus" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white">
+          <option value="">すべて</option><option value="draft">未発行</option><option value="unpaid">発行済・未入金</option><option value="paid">入金済</option>
+        </select></div>
+      <div><label class="text-[13px] font-bold text-neutral-600">支払期日</label>
+        <select id="fDue" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white">
+          <option value="">すべて</option><option value="over">期日超過</option><option value="soon">7日以内</option>
+        </select></div>
+      <button id="fClear" class="text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-2">クリア</button>
+    </div>
+    <div class="flex flex-wrap gap-1.5 mt-3 text-[13px]">
+      <span class="text-neutral-400 self-center mr-1">クイック:</span>
+      <button class="qf px-2.5 py-1 border border-[#dcdce6] bg-white text-neutral-600" data-q="thismonth">今月締め</button>
+      <button class="qf px-2.5 py-1 border border-[#dcdce6] bg-white text-neutral-600" data-q="draft">未発行のみ</button>
+      <button class="qf px-2.5 py-1 border border-[#dcdce6] bg-white text-neutral-600" data-q="over">期日超過の未入金</button>
+    </div>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[16px] font-bold text-ink">請求一覧（注文書単位に自動集約）<span class="text-[13px] font-normal text-neutral-400 ml-2" id="cnt"></span></div>
+      <div class="flex gap-2">
+        <button id="close1" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-1.5">締め処理を実行</button>
+        <button id="bulk" class="text-[14px] text-white px-3 py-1.5 font-bold" style="background:#e60012">選択分を一括発行</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1000px]">
+        <thead>
+          <tr>
+            <th class="px-4 py-2.5 text-left"><input type="checkbox" id="all" class="accent-[#e60012]"></th>
+            <th class="text-left py-2.5">請求番号</th>
+            <th class="text-left py-2.5">顧客</th>
+            <th class="text-left py-2.5">対象注文</th>
+            <th class="text-left py-2.5">締め / 支払期日</th>
+            <th class="text-right py-2.5">請求金額</th>
+            <th class="text-left py-2.5 pl-3">送付</th>
+            <th class="text-left py-2.5">状態</th>
+            <th class="text-right px-4 py-2.5">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[14px] text-neutral-400 mt-3">※ モックのため、実際のPDF生成・メール送信・IBM連携は行われません（ボタンは状態変化のみ再現）。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var INV = INVOICES; // data.js の共有マスタ
+  function invTotal(v){ return invSubtotal(v); }
+  function stBadge(s){
+    if(s==='paid')   return '<span class="badge bg-emerald-100 text-emerald-700">発行済・入金済</span>';
+    if(s==='unpaid') return '<span class="badge text-white" style="background:#e60012">発行済・未入金</span>';
+    return '<span class="badge bg-neutral-200 text-neutral-600">未発行（起案済）</span>';
+  }
+
+  KMECS.renderAdminShell({
+    active:'admin-invoice',
+    title:'請求書発行',
+    sub:'⑤請求 — 締め処理 → 注文書単位に自動集約 → 請求書発行 → ポータル掲載・送付 → 入金消込へ',
+    onReady:function(){
+      function tot(v){ return Math.round(invTotal(v)*1.1); }
+      function renderKpi(){
+        var target=INV.length;
+        var issued=INV.filter(function(v){return v.status!=='draft';}).length;
+        var unpaid=INV.filter(function(v){return v.status==='unpaid';}).reduce(function(s,v){return s+tot(v);},0);
+        var paid=INV.filter(function(v){return v.status==='paid';}).reduce(function(s,v){return s+tot(v);},0);
+        document.getElementById('kpi').innerHTML=
+          '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">今月の請求対象</div><div class="font-display text-2xl font-black text-ink mt-1">'+target+'<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">発行済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">'+issued+'<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未入金</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+yen(unpaid)+'</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">入金済</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(paid)+'</div></div>';
+      }
+      var TODAY = new Date(2026,6,18); // 2026/07/18
+      function pDate(s){ var p=(s||'').split('/'); return p.length===3? new Date(+p[0],+p[1]-1,+p[2]) : null; }
+      function filtered(){
+        var kw=document.getElementById('fKw').value.trim(),
+            from=pDate(document.getElementById('fFrom').value.replace(/-/g,'/')),
+            to=pDate(document.getElementById('fTo').value.replace(/-/g,'/')),
+            cu=document.getElementById('fCust').value,
+            st=document.getElementById('fStatus').value,
+            du=document.getElementById('fDue').value;
+        return INV.map(function(v,i){return {v:v,i:i};}).filter(function(o){
+          var v=o.v, a=invC(v), cd=pDate(v.close), dd=pDate(v.due);
+          if(st && v.status!==st) return false;
+          if(cu && v.cust!==cu) return false;
+          if(from && cd && cd<from) return false;
+          if(to && cd && cd>to) return false;
+          if(du==='over' && !(dd && dd<TODAY && v.status!=='paid')) return false;
+          if(du==='soon' && !(dd && (dd-TODAY)>=0 && (dd-TODAY)<=7*86400000)) return false;
+          if(kw && (v.no+a.company+a.custCode+v.orders.join(' ')).indexOf(kw)<0) return false;
+          return true;
+        });
+      }
+      function render(){
+        renderKpi();
+        var list=filtered();
+        document.getElementById('cnt').textContent = '（'+list.length+' / '+INV.length+' 件）';
+        document.getElementById('rows').innerHTML = list.map(function(o){
+          var v=o.v, i=o.i, a = invC(v);
+          var dd=pDate(v.due), over = dd && dd<TODAY && v.status!=='paid';
+          return '<tr class="'+(over?'bg-[#fff8f0]':'')+'">'
+            + '<td class="px-4 py-3"><input type="checkbox" class="chk accent-[#e60012]" data-i="'+i+'"></td>'
+            + '<td class="py-3 font-display font-bold text-ink">'+v.no+'</td>'
+            + '<td class="py-3 text-neutral-600 text-[16px]">'+a.company+'<div class="text-[14px] text-neutral-400">得値'+a.rank+' ・ '+a.custCode+'</div></td>'
+            + '<td class="py-3"><div class="font-display text-[15px] text-neutral-600">'+v.orders.join(' / ')+'</div>'
+            + '<div class="text-[14px] text-neutral-400">'+v.lines.length+'品目を集約</div></td>'
+            + '<td class="py-3 text-[15px] text-neutral-500"><div class="font-display">'+v.close+'</div><div class="font-display '+(over?'text-[color:var(--brand)] font-bold':'text-ink font-bold')+'">'+v.due+(over?' ⚠':'')+'</div></td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(Math.round(invTotal(v)*1.1))+'</td>'
+            + '<td class="py-3 pl-3"><span class="badge '+(a.invoiceBy==='メール'?'bg-emerald-100 text-emerald-700':'bg-neutral-200 text-neutral-600')+'">'+a.invoiceBy+'</span></td>'
+            + '<td class="py-3">'+stBadge(v.status)+'</td>'
+            + '<td class="px-4 py-3 text-right"><a href="admin-invoice-detail.html?no='+v.no+'" class="inline-block '+(v.status==='draft'
+                ? 'text-white px-2.5 py-1.5" style="background:#e60012">請求書を発行 ›'
+                : 'border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5">請求書を表示 ›')+'</a></td></tr>';
+        }).join('') || '<tr><td colspan="9" class="px-4 py-8 text-center text-neutral-400 text-[14px]">条件に一致する請求がありません。</td></tr>';
+      }
+
+      // 顧客ドロップダウン（請求のある顧客のみ）
+      var custCodes = INV.map(function(v){return v.cust;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fCust').innerHTML = '<option value="">全顧客</option>'+custCodes.map(function(code){
+        var c=getCustomer(code); return '<option value="'+code+'">'+(c?c.company:code)+'</option>'; }).join('');
+
+      ['fKw','fFrom','fTo','fCust','fStatus','fDue'].forEach(function(id){
+        document.getElementById(id).addEventListener('input', render);
+        document.getElementById(id).addEventListener('change', render);
+      });
+      document.getElementById('fClear').addEventListener('click', function(){
+        ['fKw','fFrom','fTo','fCust','fStatus','fDue'].forEach(function(id){ document.getElementById(id).value=''; });
+        render();
+      });
+      // クイックフィルタ
+      document.querySelectorAll('.qf').forEach(function(b){
+        b.addEventListener('click', function(){
+          var q=b.getAttribute('data-q');
+          ['fKw','fFrom','fTo','fCust','fStatus','fDue'].forEach(function(id){ document.getElementById(id).value=''; });
+          if(q==='thismonth'){ document.getElementById('fFrom').value='2026-07-01'; document.getElementById('fTo').value='2026-07-31'; }
+          if(q==='draft'){ document.getElementById('fStatus').value='draft'; }
+          if(q==='over'){ document.getElementById('fStatus').value='unpaid'; document.getElementById('fDue').value='over'; }
+          render();
+        });
+      });
+
+      document.getElementById('all').addEventListener('change', function(e){
+        document.querySelectorAll('.chk').forEach(function(c){ c.checked = e.target.checked; });
+      });
+      document.getElementById('bulk').addEventListener('click', function(){
+        var n=0;
+        document.querySelectorAll('.chk:checked').forEach(function(c){
+          var i=+c.getAttribute('data-i');
+          if(INV[i].status==='draft'){ INV[i].status='unpaid'; n++; }
+        });
+        render();
+        alert(n>0 ? n+' 件の請求書を一括発行しました。（モック）' : '未発行の請求を選択してください。');
+      });
+      document.getElementById('close1').addEventListener('click', function(){
+        var n=INV.filter(function(v){return v.status==='draft';}).length;
+        alert('締め処理を実行しました。\nIBMの製品単位データを注文書単位に集約し、未発行の請求 '+n+' 件を起案しました。（モック）');
+      });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

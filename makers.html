@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- ヒーロー -->
+  <section class="relative text-white" style="background:#22243a">
+    <div class="absolute inset-0" style="background:url(assets/img/bg1.jpg) center/cover no-repeat;opacity:.5"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-14">
+      <div class="sec-label text-neutral-400">OUR GLOBAL PARTNER</div>
+      <h1 class="font-display font-black text-4xl mt-2">取扱メーカー</h1>
+      <p class="text-neutral-400 text-[15px] mt-3 max-w-2xl leading-relaxed">世界中のトップメーカーの製品を提供する技術商社です。産業用ネットワークの MOXA、高信頼コネクタの ODU、エンコーダの POSITAL を主力に、産業用PC・カメラ・入力機器まで幅広く取り扱っています。</p>
+    </div>
+  </section>
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+    <!-- 主力メーカー -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">FEATURED PARTNERS</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">主力メーカー</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12" id="bigGrid"></div>
+
+    <!-- 全メーカー -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">ALL MAKERS</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">取扱メーカー一覧</h2>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="subGrid"></div>
+
+    <!-- 問い合わせ -->
+    <div class="card p-8 mt-12 flex flex-wrap items-center justify-between gap-4" style="background:var(--paper)">
+      <div>
+        <h3 class="text-base font-bold text-ink">掲載外メーカー・特注品のご相談</h3>
+        <p class="text-[15px] text-neutral-500 mt-1.5">お探しのメーカー・型番がない場合もお気軽にお問い合わせください。海外調達・カスタム対応も承ります。</p>
+      </div>
+      <a href="contact.html" class="btn-ink whitespace-nowrap">営業に問い合わせる</a>
+    </div>
+  </div>
+
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  function makerCard(m, big){
+    var href = m.key ? 'maker.html?m='+m.key : 'products.html';
+    var cnt = m.key ? productsByMaker(m.key).length : 0;
+    if(big){
+      return '<a href="'+href+'" class="card card-h sweep bg-white overflow-hidden flex flex-col ring-1 ring-[color:var(--brand)]">'
+        + '<div class="aspect-[16/9] overflow-hidden bg-white flex items-center justify-center"><img src="'+m.logo+'" alt="'+m.name+'" class="w-full h-full object-contain sweep-img"></div>'
+        + '<div class="px-5 py-4 border-t border-[color:var(--line)]">'
+        + '<div class="font-display font-black text-2xl text-ink leading-none">'+m.name+'</div>'
+        + '<div class="text-[14px] text-neutral-500 mt-1.5">'+m.note+(cnt?'　・　'+cnt+'商品':'')+'</div>'
+        + '<div class="mt-2 text-[14px] font-bold" style="color:#e60012">製品を見る ›</div></div></a>';
+    }
+    var inner = m.logo
+      ? '<div class="aspect-[16/9] bg-white flex items-center justify-center p-2 border-b border-[color:var(--line)] overflow-hidden"><img src="'+m.logo+'" alt="'+m.name+'" class="w-full h-full object-contain sweep-img"></div>'
+      : '<div class="aspect-[16/9] flex items-center justify-center border-b border-[color:var(--line)]" style="background:#22243a"><span class="font-display font-black text-2xl text-white sweep-img">'+m.name+'</span></div>';
+    return '<a href="'+href+'" class="card card-h sweep overflow-hidden flex flex-col">'
+      + inner
+      + '<div class="p-4 flex items-center justify-between gap-2">'
+      + '<div><div class="font-display font-black text-[17px] text-ink leading-none">'+m.name+'</div>'
+      + '<div class="text-[13px] text-neutral-500 mt-1">'+m.note+'</div></div>'
+      + '<span class="font-bold shrink-0" style="color:#e60012">›</span></div></a>';
+  }
+
+  KMECS.renderUserShell({
+    active:'makers',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'取扱メーカー'}],
+    onReady:function(){
+      document.getElementById('bigGrid').innerHTML = MAKERS_ALL.filter(function(m){return m.big;}).map(function(m){ return makerCard(m,true); }).join('');
+      document.getElementById('subGrid').innerHTML = MAKERS_ALL.filter(function(m){return !m.big;}).map(function(m){ return makerCard(m,false); }).join('');
+    }
+  });
+</script>
+</body>
+</html>

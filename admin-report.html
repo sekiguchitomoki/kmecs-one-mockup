@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 説明 -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-center gap-4" style="border-left:3px solid #e60012">
+    <div class="text-[15px] leading-relaxed flex-1 min-w-[280px]">
+      <b class="text-ink">RFM分析</b>：<b style="color:#e60012">R</b>ecency（最終取引からの経過）・<b style="color:#e60012">F</b>requency（受注頻度）・<b style="color:#e60012">M</b>onetary（売上金額）の3軸で顧客をスコアリングし、セグメント別に施策を立案します。
+    </div>
+    <div class="flex gap-2">
+      <label class="text-[14px] text-neutral-500 self-center">分析対象期間</label>
+      <select id="win" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-700 px-3 py-2">
+        <option value="6">直近6ヶ月</option>
+        <option value="12" selected>直近12ヶ月</option>
+        <option value="24">直近24ヶ月</option>
+      </select>
+      <button id="csv" class="text-[14px] text-white px-3 py-2 font-bold" style="background:#393b56">CSVエクスポート</button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+
+  <div class="grid lg:grid-cols-3 gap-4 mb-4">
+    <!-- セグメント分布 -->
+    <div class="adm-card p-5 lg:col-span-2">
+      <div class="text-[15px] font-bold text-ink mb-1">顧客セグメント分布</div>
+      <div class="text-[13px] text-neutral-400 mb-4">R×F マトリクス（バブル＝顧客数 ・ 色＝セグメント）</div>
+      <div class="overflow-x-auto"><div id="matrix" class="min-w-[520px]"></div></div>
+    </div>
+    <!-- セグメント別サマリ -->
+    <div class="adm-card p-5">
+      <div class="text-[15px] font-bold text-ink mb-4">セグメント別 構成</div>
+      <div class="space-y-3" id="segSummary"></div>
+    </div>
+  </div>
+
+  <!-- 顧客別 RFM 一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[15px] font-bold text-ink">顧客別 RFM スコア</div>
+      <div class="flex flex-wrap gap-1" id="segFilter"></div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1050px]">
+        <thead><tr>
+          <th class="text-left px-4 py-2.5">顧客</th>
+          <th class="text-right py-2.5">最終取引<br><span class="font-normal text-[11px]">(R:日数)</span></th>
+          <th class="text-right py-2.5">受注件数<br><span class="font-normal text-[11px]">(F)</span></th>
+          <th class="text-right py-2.5">年間売上<br><span class="font-normal text-[11px]">(M)</span></th>
+          <th class="text-center py-2.5">R</th><th class="text-center py-2.5">F</th><th class="text-center py-2.5">M</th>
+          <th class="text-center py-2.5">RFM</th>
+          <th class="text-left py-2.5 pl-3">セグメント</th>
+          <th class="text-left py-2.5">推奨アクション</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、数値はダミーです。基準日 2026/07/17 として算出しています。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  // セグメント定義（色・施策）
+  var SEG = {
+    champ:  { name:'優良顧客',      color:'#e60012', action:'手厚いフォロー・新製品優先案内・特別条件の維持' },
+    loyal:  { name:'常連',          color:'#ff6b6b', action:'クロスセル・上位機種の提案・定期フォロー' },
+    potential:{ name:'見込み育成',  color:'#f0a500', action:'購入頻度UP施策・キャンペーン・掛率見直し' },
+    newbie: { name:'新規',          color:'#14887b', action:'オンボーディング・初回サポート強化' },
+    attention:{ name:'離反注意',    color:'#8b5cf6', action:'早期フォロー・不満ヒアリング・再アプローチ' },
+    dormant:{ name:'休眠',          color:'#6b7280', action:'掘り起こしDM・特別オファーで再取引を促す' },
+  };
+  // 基準日
+  var TODAY = new Date(2026,6,17);
+  function daysSince(str){ var p=str.split('/'); var d=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((TODAY-d)/86400000); }
+  // 5段階スコア（大きいほど良い）
+  function scoreR(d){ return d<=7?5:d<=20?4:d<=40?3:d<=90?2:1; }
+  function scoreF(f){ return f>=45?5:f>=35?4:f>=25?3:f>=18?2:1; }
+  function scoreM(m){ return m>=20000000?5:m>=15000000?4:m>=10000000?3:m>=6000000?2:1; }
+  function segOf(r,f,m){
+    var avg=(r+f+m)/3;
+    if(r>=4 && f>=4 && m>=4) return 'champ';
+    if(f>=4 && m>=3) return 'loyal';
+    if(r<=2 && (f>=3||m>=3)) return 'attention';
+    if(r<=2) return 'dormant';
+    if(r>=4 && f<=2) return 'newbie';
+    if(avg>=3) return 'potential';
+    return 'dormant';
+  }
+  // 分析対象期間（月）内に取引のある顧客のみを母集団とする
+  function build(winMonths){
+    var limit = winMonths*30.44;
+    return CUSTOMERS.map(function(c){
+      var r=daysSince(c.lastOrder), sr=scoreR(r), sf=scoreF(c.ordersCount), sm=scoreM(c.salesYear);
+      var seg=segOf(sr,sf,sm);
+      return { c:c, r:r, sr:sr, sf:sf, sm:sm, seg:seg, rfm:''+sr+sf+sm };
+    }).filter(function(d){ return d.r <= limit; });
+  }
+
+  KMECS.renderAdminShell({
+    active:'admin-report',
+    title:'RFM分析レポート',
+    sub:'Recency / Frequency / Monetary による顧客セグメント分析・施策立案',
+    onReady:function(){
+      var data, FILTER='';
+
+      function renderAll(){
+      data=build(+document.getElementById('win').value || 12);
+      if(!data.length){
+        ['kpi','matrix','segSummary','segFilter','rows'].forEach(function(id){ document.getElementById(id).innerHTML=''; });
+        document.getElementById('rows').innerHTML='<tr><td colspan="10" class="px-4 py-6 text-center text-neutral-400">この期間に取引のある顧客がありません。</td></tr>';
+        return;
+      }
+
+      // KPI
+      var champ=data.filter(function(d){return d.seg==='champ';}).length;
+      var risk=data.filter(function(d){return d.seg==='attention'||d.seg==='dormant';}).length;
+      var avgM=Math.round(data.reduce(function(s,d){return s+d.c.salesYear;},0)/data.length);
+      document.getElementById('kpi').innerHTML=
+        '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">分析対象顧客</div><div class="font-display text-2xl font-black text-ink mt-1">'+data.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">優良顧客</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+champ+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">離反注意・休眠</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+risk+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均 年間売上(M)</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(avgM)+'</div></div>';
+
+      // R×F マトリクス（5×5）
+      var cell={};
+      data.forEach(function(d){ var k=d.sr+'-'+d.sf; (cell[k]=cell[k]||[]).push(d); });
+      var mx='<div style="display:grid;grid-template-columns:40px repeat(5,1fr);gap:4px">';
+      mx+='<div></div>'+[1,2,3,4,5].map(function(f){return '<div class="text-center text-[11px] text-neutral-400 pb-1">F'+f+'</div>';}).join('');
+      for(var r=5;r>=1;r--){
+        mx+='<div class="flex items-center justify-center text-[11px] text-neutral-400">R'+r+'</div>';
+        for(var f=1;f<=5;f++){
+          var arr=cell[r+'-'+f]||[];
+          var seg = arr.length? arr[0].seg : '';
+          var bg = seg? SEG[seg].color : '#f4f4f8';
+          var sz = arr.length? Math.min(46, 22+arr.length*8) : 0;
+          mx+='<div class="flex items-center justify-center" style="height:52px;background:'+(arr.length?'rgba(0,0,0,0.02)':'#fafafa')+';border:1px solid #eee">'
+            + (arr.length? '<span title="'+arr.map(function(x){return x.c.company;}).join(', ')+'" style="width:'+sz+'px;height:'+sz+'px;border-radius:9999px;background:'+bg+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">'+arr.length+'</span>' : '')
+            + '</div>';
+        }
+      }
+      mx+='</div><div class="text-[11px] text-neutral-400 mt-2">横：Frequency（受注頻度）　縦：Recency（直近取引）　右上ほど優良</div>';
+      document.getElementById('matrix').innerHTML=mx;
+
+      // セグメント別サマリ
+      var segCount={}; data.forEach(function(d){ segCount[d.seg]=(segCount[d.seg]||0)+1; });
+      document.getElementById('segSummary').innerHTML=Object.keys(SEG).filter(function(k){return segCount[k];}).map(function(k){
+        var pct=Math.round(segCount[k]/data.length*100);
+        return '<div><div class="flex justify-between items-center text-[13px] mb-1"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:'+SEG[k].color+'"></span><b class="text-ink">'+SEG[k].name+'</b></span>'
+          + '<span class="font-display text-neutral-500">'+segCount[k]+'社 ('+pct+'%)</span></div>'
+          + '<div class="h-2" style="background:#eee"><div class="h-2" style="width:'+pct+'%;background:'+SEG[k].color+'"></div></div></div>';
+      }).join('');
+
+      // セグメントフィルタ
+      var segs=[['','すべて']].concat(Object.keys(SEG).filter(function(k){return segCount[k];}).map(function(k){return [k,SEG[k].name];}));
+      if(FILTER && !segCount[FILTER]) FILTER=''; // 期間変更で消えたセグメントは解除
+      function renderFilter(){
+        document.getElementById('segFilter').innerHTML=segs.map(function(o){
+          var on=o[0]===FILTER;
+          return '<button class="segf px-2.5 py-1 text-[12px]" data-s="'+o[0]+'" style="'+(on?'background:#e60012;color:#fff':'background:#f4f4f8;color:#555')+'">'+o[1]+'</button>';
+        }).join('');
+        document.querySelectorAll('.segf').forEach(function(b){ b.addEventListener('click', function(){ FILTER=b.getAttribute('data-s'); renderFilter(); renderRows(); }); });
+      }
+
+      function segBadge(k){ return '<span class="badge text-white" style="background:'+SEG[k].color+'">'+SEG[k].name+'</span>'; }
+      function sc(v){ var c=v>=4?'#e60012':v>=3?'#393b56':'#b0b0b0'; return '<span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-[12px] font-bold font-display" style="background:'+c+'">'+v+'</span>'; }
+
+      function renderRows(){
+        var list=data.filter(function(d){ return !FILTER || d.seg===FILTER; })
+                     .sort(function(a,b){ return (b.sr+b.sf+b.sm)-(a.sr+a.sf+a.sm); });
+        document.getElementById('rows').innerHTML=list.map(function(d){
+          var c=d.c;
+          return '<tr class="hover:bg-[#fafafe]">'
+            + '<td class="px-4 py-3"><div class="text-[15px] font-bold text-ink">'+c.company+'</div><div class="text-[12px] text-neutral-400">'+c.code+' ・ '+c.area+'</div></td>'
+            + '<td class="py-3 text-right font-display '+(d.r>90?'text-[color:var(--brand)] font-bold':'text-neutral-600')+'">'+d.r+'日前</td>'
+            + '<td class="py-3 text-right font-display text-neutral-600">'+c.ordersCount+'</td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-3 text-center">'+sc(d.sr)+'</td><td class="py-3 text-center">'+sc(d.sf)+'</td><td class="py-3 text-center">'+sc(d.sm)+'</td>'
+            + '<td class="py-3 text-center font-display font-bold text-ink">'+d.rfm+'</td>'
+            + '<td class="py-3 pl-3">'+segBadge(d.seg)+'</td>'
+            + '<td class="py-3 text-[13px] text-neutral-600">'+SEG[d.seg].action+'</td></tr>';
+        }).join('');
+      }
+
+      renderFilter(); renderRows();
+      } // end renderAll
+
+      document.getElementById('win').addEventListener('change', renderAll);
+      document.getElementById('csv').addEventListener('click', function(){
+        alert('RFM分析結果（直近'+document.getElementById('win').value+'ヶ月 / '+data.length+'社）をCSVでエクスポートしました。（モック）');
+      });
+      renderAll();
+    }
+  });
+</script>
+</body>
+</html>

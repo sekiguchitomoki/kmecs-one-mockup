@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 検索ボックス -->
+  <div class="adm-card p-5 mb-4">
+    <div class="flex gap-2">
+      <input id="kw" class="flex-1 border border-[#dcdce6] px-4 py-3 text-[16px] outline-none focus:border-[color:var(--brand)]" placeholder="キーワード検索（会社名・顧客コード・型番・注文番号・請求番号  など）">
+      <button id="go" class="text-white px-6 font-bold" style="background:#e60012">検索</button>
+    </div>
+    <!-- 対象タブ -->
+    <div class="flex flex-wrap gap-1 mt-4" id="typeTabs"></div>
+    <!-- ステータス絞り込み -->
+    <div class="mt-3 pt-3 border-t border-[#eee]">
+      <div class="text-[13px] font-bold text-neutral-500 mb-2">ステータスで絞り込み</div>
+      <div class="flex flex-wrap gap-2" id="statusChips"></div>
+    </div>
+  </div>
+
+  <!-- 結果件数 -->
+  <div class="flex items-center justify-between mb-3">
+    <div class="text-[15px]">検索結果：<b class="font-display text-lg" id="cnt">0</b> 件</div>
+    <div class="text-[13px] text-neutral-400" id="ctx"></div>
+  </div>
+
+  <!-- 結果 -->
+  <div id="results"></div>
+  <div id="empty" class="hidden adm-card p-12 text-center text-[15px] text-neutral-400">該当する結果がありません。キーワードやステータスを変更してください。</div>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var TYPE='order';
+  var STATUS=''; // 選択中ステータス
+  // lucide/feather風ラインアイコン（clipboard-list / user / package / receipt）
+  var TYPES=[
+    {k:'order',    label:'受注', ic:'<path d="M9 4h6a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M8.5 12h.01M12 12h4M8.5 16h.01M12 16h4"/>'},
+    {k:'customer', label:'顧客', ic:'<path d="M16 21v-2a4 4 0 0 0-3-3.87M13 3.13a4 4 0 0 1 0 7.75M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>'},
+    {k:'product',  label:'商品', ic:'<path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/><path d="M7.5 4.5 16.5 9.5"/>'},
+    {k:'invoice',  label:'請求', ic:'<path d="M5 3v18l2-1.2 2 1.2 2-1.2 2 1.2 2-1.2 2 1.2V3l-2 1.2L15 3l-2 1.2L11 3 9 4.2 7 3 5 4.2Z"/><path d="M9 8h6M9 12h6M9 16h3"/>'},
+  ];
+  function svgIcon(d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">'+d+'</svg>'; }
+  function typeCount(k){
+    if(k==='order') return ADMIN_ORDERS.length;
+    if(k==='customer') return CUSTOMERS.length;
+    if(k==='product') return PRODUCTS.length;
+    if(k==='invoice') return INVOICES.length;
+    return 0;
+  }
+  // 請求ダミー（入金/未入金）
+  var INVOICES=[
+    { no:'IV-2607-001', cust:'1042-01', amount:281600, due:'2026/07/31', paid:false },
+    { no:'IV-2607-002', cust:'2055-03', amount:638880, due:'2026/07/10', paid:false },
+    { no:'IV-2607-003', cust:'1042-01', amount:128700, due:'2026/07/31', paid:true },
+    { no:'IV-2606-050', cust:'8006-01', amount:342000, due:'2026/06/30', paid:true },
+    { no:'IV-2607-006', cust:'5088-04', amount:1280000, due:'2026/08/31', paid:false },
+    { no:'IV-2606-041', cust:'3011-02', amount:214000, due:'2026/06/30', paid:true },
+  ];
+
+  function custName(code){ var c=getCustomer(code); return c?c.company:code; }
+
+  KMECS.renderAdminShell({
+    active:'admin-search',
+    title:'横断検索',
+    sub:'顧客・商品・受注・請求を横断検索。手配中 / 出荷済 / 請求済 / 未入金 / 入金済 で絞り込み',
+    onReady:function(){
+      var q=qs('q'); if(q) document.getElementById('kw').value=q;
+
+      // ステータス選択肢（タイプ別）
+      function statusOptions(){
+        if(TYPE==='order') return [['','すべて'],['arranging','手配中'],['shipped','出荷済'],['billed','請求済'],['unpaid','未入金'],['paid','入金済']];
+        if(TYPE==='invoice') return [['','すべて'],['unpaid','未入金'],['paid','入金済']];
+        if(TYPE==='product') return [['','すべて'],['stock','在庫あり'],['nostock','取寄'],['eol','EOL予定']];
+        if(TYPE==='customer') return [['','すべて'],['unpaid','未入金あり'],['A','得値A'],['B','得値B'],['C','得値C']];
+        return [['','すべて']];
+      }
+
+      function renderTabs(){
+        document.getElementById('typeTabs').className='flex items-stretch gap-1 border-b overflow-x-auto';
+        document.getElementById('typeTabs').style.borderColor='#dcdce6';
+        document.getElementById('typeTabs').setAttribute('role','tablist');
+        document.getElementById('typeTabs').innerHTML=TYPES.map(function(t){
+          var on=t.k===TYPE, cnt=typeCount(t.k);
+          var labelCol = on?'#111':'#555';
+          var iconCol  = on?'#e60012':'#9a9aa8';
+          var badge = on ? 'background:#fde7e9;color:#e60012' : 'background:#eef0f4;color:#555';
+          return '<button role="tab" aria-selected="'+on+'" aria-label="'+t.label+' '+cnt+'件" data-k="'+t.k+'" '
+            + 'class="tabBtn group relative flex items-center gap-2 px-4 h-11 text-[14px] font-medium whitespace-nowrap transition-colors '+(on?'':'hover:bg-black/[0.03]')+'" style="color:'+labelCol+'">'
+            + '<span class="tabIco" style="color:'+iconCol+';display:inline-flex" '+(on?'':'data-hov="1"')+'>'+svgIcon(t.ic)+'</span>'
+            + '<span>'+t.label+'</span>'
+            + '<span class="ml-0.5 min-w-[20px] px-1.5 h-5 inline-flex items-center justify-center rounded-full text-[11px] font-semibold" style="'+badge+'">'+cnt+'</span>'
+            + (on?'<span class="absolute left-2 right-2 -bottom-px h-[2px] rounded-full" style="background:#e60012"></span>':'<span class="tabUnder absolute left-2 right-2 -bottom-px h-[2px] rounded-full opacity-0 group-hover:opacity-100" style="background:#dcdce6"></span>')
+            + '</button>';
+        }).join('');
+        document.querySelectorAll('.tabBtn').forEach(function(b){
+          b.addEventListener('click', function(){ TYPE=b.getAttribute('data-k'); STATUS=''; renderTabs(); renderChips(); run(); });
+          // ホバーで非選択アイコンをネイビーに
+          var ico=b.querySelector('.tabIco[data-hov]');
+          if(ico){ b.addEventListener('mouseenter',function(){ico.style.color='#393b56';}); b.addEventListener('mouseleave',function(){ico.style.color='#9a9aa8';}); }
+        });
+      }
+      function renderChips(){
+        document.getElementById('statusChips').innerHTML=statusOptions().map(function(o){
+          var on=o[0]===STATUS;
+          return '<button class="chip px-3 py-1.5 text-[13px]" data-s="'+o[0]+'" style="'+(on?'background:#e60012;color:#fff':'background:#f4f4f8;color:#555')+'">'+o[1]+'</button>';
+        }).join('');
+        document.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click', function(){ STATUS=b.getAttribute('data-s'); renderChips(); run(); }); });
+      }
+
+      function stBadge(k){ var s=ORDER_STATUS[k]; return '<span class="badge '+s.cls+'" style="background:'+s.bg+'">'+s.ja+'</span>'; }
+
+      function run(){
+        var kw=document.getElementById('kw').value.trim();
+        var rows='', n=0;
+        document.getElementById('ctx').textContent='対象：'+(TYPES.filter(function(t){return t.k===TYPE;})[0].label);
+
+        if(TYPE==='order'){
+          var list=ADMIN_ORDERS.filter(function(o){
+            if(STATUS && o.status!==STATUS) return false;
+            if(kw && (o.no+custName(o.cust)+o.items).indexOf(kw)<0) return false; return true; });
+          n=list.length;
+          rows='<div class="adm-card overflow-x-auto"><table class="w-full adm-table min-w-[900px]"><thead><tr>'
+            + '<th class="text-left px-4 py-2.5">注文番号</th><th class="text-left py-2.5">顧客</th><th class="text-left py-2.5">品目</th><th class="text-left py-2.5">経路</th><th class="text-right py-2.5">金額</th><th class="text-left py-2.5 pl-3">状況</th><th class="text-right px-4 py-2.5">操作</th></tr></thead><tbody class="divide-y divide-[#eceef5]">'
+            + list.map(function(o){ return '<tr class="hover:bg-[#fafafe]"><td class="px-4 py-3 font-display font-bold text-ink">'+o.no+'</td>'
+              + '<td class="py-3 text-neutral-700">'+custName(o.cust)+'</td><td class="py-3 text-neutral-600 text-[14px]">'+o.items+'</td>'
+              + '<td class="py-3 text-[13px] text-neutral-500">'+o.route+'</td><td class="py-3 text-right font-display font-bold text-ink">'+yen(o.amount)+'</td>'
+              + '<td class="py-3 pl-3">'+stBadge(o.status)+'</td><td class="px-4 py-3 text-right"><a href="admin-order-detail.html?no='+o.no+'" class="text-[13px]" style="color:#e60012">開く ›</a></td></tr>'; }).join('')
+            + '</tbody></table></div>';
+        }
+        else if(TYPE==='customer'){
+          var list=CUSTOMERS.filter(function(c){
+            if(STATUS==='unpaid' && c.unpaid<=0) return false;
+            if((STATUS==='A'||STATUS==='B'||STATUS==='C') && c.rank!==STATUS) return false;
+            if(kw && (c.company+c.code+c.contact).indexOf(kw)<0) return false; return true; });
+          n=list.length;
+          rows='<div class="grid sm:grid-cols-2 gap-3">'+list.map(function(c){
+            return '<a href="admin-customer-detail.html?code='+c.code+'" class="adm-card p-4 hover:border-[color:var(--brand)] block">'
+              + '<div class="flex items-center justify-between"><span class="text-[15px] font-bold text-ink">'+c.company+'</span>'
+              + '<span class="badge text-white" style="background:'+(c.rank==="A"?"#e60012":c.rank==="B"?"#393b56":"#8b8ea8")+'">得値'+c.rank+'</span></div>'
+              + '<div class="text-[13px] text-neutral-400 mt-0.5">'+c.code+' ・ '+c.area+' ・ '+c.contact+' 様</div>'
+              + '<div class="flex gap-4 mt-2 text-[13px]"><span>年間売上 <b class="font-display">'+yen(c.salesYear)+'</b></span>'
+              + '<span>未入金 <b class="font-display" style="color:'+(c.unpaid>0?"#e60012":"#999")+'">'+(c.unpaid>0?yen(c.unpaid):"—")+'</b></span></div></a>';
+          }).join('')+'</div>';
+        }
+        else if(TYPE==='product'){
+          var list=PRODUCTS.filter(function(p){
+            if(STATUS==='stock' && p.stock<=0) return false;
+            if(STATUS==='nostock' && p.stock>0) return false;
+            if(STATUS==='eol' && p.tag!=='EOL予定') return false;
+            if(kw && (p.name+p.code+p.catJa+MAKERS[p.maker].name).indexOf(kw)<0) return false; return true; });
+          n=list.length;
+          rows='<div class="adm-card overflow-x-auto"><table class="w-full adm-table min-w-[800px]"><thead><tr>'
+            + '<th class="text-left px-4 py-2.5">型番</th><th class="text-left py-2.5">商品名</th><th class="text-left py-2.5">メーカー</th><th class="text-right py-2.5">標準価格</th><th class="text-right py-2.5">在庫</th><th class="text-left py-2.5 pl-3">状態</th></tr></thead><tbody class="divide-y divide-[#eceef5]">'
+            + list.slice(0,60).map(function(p){ return '<tr class="hover:bg-[#fafafe]"><td class="px-4 py-3"><a href="admin-products.html?code='+p.code+'" class="font-display font-bold" style="color:#e60012">'+p.code+'</a></td>'
+              + '<td class="py-3 text-neutral-700 text-[14px]">'+p.name+'</td><td class="py-3 text-[13px] text-neutral-500">'+MAKERS[p.maker].name+'</td>'
+              + '<td class="py-3 text-right font-display">'+yen(p.price)+'</td>'
+              + '<td class="py-3 text-right font-display '+(p.stock>0?'text-emerald-600':'text-amber-600')+'">'+(p.stock>0?p.stock:'取寄')+'</td>'
+              + '<td class="py-3 pl-3">'+(p.tag==='EOL予定'?'<span class="badge text-white" style="background:#e60012">EOL予定</span>':(p.stock>0?'<span class="badge bg-emerald-100 text-emerald-700">在庫あり</span>':'<span class="badge bg-amber-100 text-amber-700">取寄</span>'))+'</td></tr>'; }).join('')
+            + '</tbody></table></div>'+(list.length>60?'<div class="text-[13px] text-neutral-400 mt-2 text-center">上位60件を表示（該当 '+list.length+' 件）</div>':'');
+        }
+        else if(TYPE==='invoice'){
+          var list=INVOICES.filter(function(v){
+            if(STATUS==='unpaid' && v.paid) return false;
+            if(STATUS==='paid' && !v.paid) return false;
+            if(kw && (v.no+custName(v.cust)).indexOf(kw)<0) return false; return true; });
+          n=list.length;
+          rows='<div class="adm-card overflow-x-auto"><table class="w-full adm-table min-w-[800px]"><thead><tr>'
+            + '<th class="text-left px-4 py-2.5">請求番号</th><th class="text-left py-2.5">顧客</th><th class="text-right py-2.5">請求額</th><th class="text-left py-2.5 pl-3">支払期日</th><th class="text-left py-2.5">入金状況</th><th class="text-right px-4 py-2.5">操作</th></tr></thead><tbody class="divide-y divide-[#eceef5]">'
+            + list.map(function(v){ return '<tr class="hover:bg-[#fafafe]"><td class="px-4 py-3 font-display font-bold text-ink">'+v.no+'</td>'
+              + '<td class="py-3 text-neutral-700">'+custName(v.cust)+'</td><td class="py-3 text-right font-display font-bold text-ink">'+yen(v.amount)+'</td>'
+              + '<td class="py-3 pl-3 text-[13px] font-display text-neutral-600">'+v.due+'</td>'
+              + '<td class="py-3">'+(v.paid?'<span class="badge bg-emerald-100 text-emerald-700">入金済</span>':'<span class="badge text-white" style="background:#e60012">未入金</span>')+'</td>'
+              + '<td class="px-4 py-3 text-right"><a href="admin-invoice-detail.html?no='+v.no+'" class="text-[13px]" style="color:#e60012">開く ›</a></td></tr>'; }).join('')
+            + '</tbody></table></div>';
+        }
+
+        document.getElementById('cnt').textContent=n;
+        document.getElementById('empty').classList.toggle('hidden', n>0);
+        document.getElementById('results').innerHTML = n>0 ? rows : '';
+      }
+
+      document.getElementById('go').addEventListener('click', run);
+      document.getElementById('kw').addEventListener('input', run);
+      renderTabs(); renderChips(); run();
+    }
+  });
+</script>
+</body>
+</html>

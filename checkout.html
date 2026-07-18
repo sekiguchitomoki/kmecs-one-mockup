@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+    <div class="sec-label">CHECKOUT</div>
+    <h1 class="sec-title text-3xl mt-1 mb-6">注文確認</h1>
+
+    <div id="guest" class="hidden card p-16 text-center">
+      <div class="font-bold text-ink">ご注文にはログインが必要です</div>
+      <a href="login.html" class="btn-red mt-5">ログイン</a>
+    </div>
+
+    <div id="main" class="grid lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-4">
+        <div class="card p-5">
+          <div class="flex items-center justify-between mb-3"><div class="text-[17px] font-bold text-ink">お届け先</div><a href="mypage.html" class="text-[14px] hover:underline" style="color:#e60012">変更</a></div>
+          <div class="text-[16px] text-neutral-700 leading-relaxed" id="ship"></div>
+        </div>
+        <div class="card p-5">
+          <div class="text-[17px] font-bold text-ink mb-3">お支払条件</div>
+          <div class="text-[16px] text-neutral-700" id="terms"></div>
+        </div>
+        <div class="card p-5">
+          <div class="text-[17px] font-bold text-ink mb-2">メモ / 特記事項</div>
+          <div class="text-[16px] text-neutral-600 p-3" style="background:var(--paper)">EDS-408AはFW v3.9で出荷希望。納品書は分割不可。</div>
+        </div>
+        <div class="card overflow-hidden">
+          <div class="px-5 py-3 border-b border-[color:var(--line)]"><div class="text-[17px] font-bold text-ink">注文明細</div></div>
+          <table class="w-full text-sm dt">
+            <thead class="text-[15px] text-neutral-500" style="background:var(--paper)"><tr><th class="text-left px-5 py-2.5">品目</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">得値</th><th class="text-right px-5 py-2.5">小計</th></tr></thead>
+            <tbody class="divide-y divide-[color:var(--line)]" id="lines"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div class="card p-5 sticky top-24">
+          <div class="text-[17px] font-bold text-ink mb-3">ご請求予定金額</div>
+          <div class="space-y-2 text-[16px] text-neutral-600" id="totals"></div>
+          <a href="order-complete.html" class="btn-red w-full mt-4 !py-4">注文を確定する</a>
+          <a href="cart.html" class="block text-center mt-2 text-[14px] text-neutral-500 hover:underline">カートに戻る</a>
+          <p class="text-[14px] text-neutral-400 mt-4 leading-relaxed pt-3 border-t border-[color:var(--line)]">「注文を確定する」を押すと受注処理が開始され、社内基幹（IBM）へ受注／発注が自動インプットされます。各工程の進捗はメールでもお知らせします。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var CART = window.CART; // data.js の共通マスタ
+
+  KMECS.renderUserShell({
+    active:'',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'カート',href:'cart.html'},{label:'注文確認'}],
+    onReady:function(){
+      var a = KMECS.account();
+      if(!a){ document.getElementById('guest').classList.remove('hidden'); document.getElementById('main').classList.add('hidden'); return; }
+
+      document.getElementById('ship').innerHTML = a.company+' ／ 購買部<br>'+a.addr+'<br>ご担当：'+a.user+' 様';
+      document.getElementById('terms').innerHTML =
+        '<span class="badge bg-neutral-200 text-neutral-700">掛け売り</span> '+a.terms
+        + '<div class="text-[14px] text-neutral-400 mt-1.5">掛け売りで自動処理されます ・ 請求書送付：'+a.invoiceBy+'</div>';
+
+      document.getElementById('lines').innerHTML = CART.map(function(c){
+        var p = getProduct(c.code);
+        return '<tr><td class="px-5 py-3 text-[16px] text-neutral-700">'+p.name+'<div class="text-[14px] text-neutral-400 font-display">'+p.code+'</div></td>'
+          + '<td class="text-right font-display">'+c.qty+'</td>'
+          + '<td class="text-right font-display">'+yen(netPrice(p.price))+'</td>'
+          + '<td class="px-5 text-right">'+subtotalOrMask(p.price,c.qty)+'</td></tr>';
+      }).join('');
+
+      var sub = CART.reduce(function(s,c){ return s + netPrice(getProduct(c.code).price)*c.qty; },0);
+      var tax = Math.round(sub*0.1);
+      document.getElementById('totals').innerHTML =
+        '<div class="flex items-center gap-1.5 pb-2 mb-1 border-b border-[color:var(--line)]"><span class="badge text-white" style="background:#e60012">得値'+a.rank+'</span><span class="text-[14px] text-neutral-500">'+a.company+'</span></div>'
+        + '<div class="flex justify-between"><span>小計（得値）</span><span class="font-display">'+yen(sub)+'</span></div>'
+        + '<div class="flex justify-between"><span>消費税(10%)</span><span class="font-display">'+yen(tax)+'</span></div>'
+        + '<div class="flex justify-between items-center pt-3 mt-2 border-t-2 border-ink"><span class="font-bold text-ink">合計</span>'
+        + '<span class="font-display text-2xl font-black text-ink">'+yen(sub+tax)+'</span></div>';
+    }
+  });
+</script>
+</body>
+</html>

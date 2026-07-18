@@ -1,0 +1,185 @@
+/* KMECS ONE 受発注ポータル — kmecsone.jp トンマナ準拠
+   赤 #e60012 / ネイビー #393b56 / 黒 / 白 / Roboto + Noto Sans JP */
+:root{
+  --brand:#e60012;      /* KMECS レッド */
+  --brand-dark:#cc0000;
+  --navy:#393b56;       /* ダークネイビー面 */
+  --navy-deep:#22243a;
+  --ink:#000000;
+  --ink-soft:#212121;
+  --paper:#f8f8f8;
+  --lav:#f0f0fa;
+  --line:#e5e5e5;
+  --muted:#777;
+}
+html{ scroll-behavior:smooth; font-size:18px; }
+body{
+  font-family:"Noto Sans JP","Hiragino Kaku Gothic Pro","メイリオ",Meiryo,sans-serif;
+  line-height:1.75;
+  background:#fff; color:var(--ink-soft);
+  -webkit-font-smoothing:antialiased;
+}
+.font-display{ font-family:"Roboto","Noto Sans JP",sans-serif; }
+
+/* ============ セクション見出し（サイト踏襲：英語小見出し＋大見出し） ============ */
+.sec-label{ font-family:"Roboto",sans-serif; font-size:15px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+.sec-title{ font-family:"Roboto","Noto Sans JP",sans-serif; font-weight:700; letter-spacing:.01em; color:var(--ink); }
+/* 上に赤い細線が入るラベル（PRODUCT LINEUP のタブ見出し風） */
+.tab-head{ border-top:3px solid var(--line); padding-top:12px; }
+.tab-head.on{ border-top-color:var(--brand); }
+
+/* ============ ボタン（赤＋右向き三角）============
+   ホバー：左から白がスライドイン → 文字色が反転（背景色に） */
+.btn-red{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  background:var(--brand); color:#fff; font-weight:700; font-size:16px;
+  padding:16px 38px; position:relative; overflow:hidden; z-index:0;
+  transition:color .3s ease;
+}
+.btn-red::before{ /* 左→右へ白フィル（文字の背面）*/
+  content:""; position:absolute; inset:0; background:#fff; z-index:-1;
+  transform:scaleX(0); transform-origin:left center;
+  transition:transform .4s cubic-bezier(.22,.61,.36,1);
+}
+.btn-red:hover{ color:var(--brand); }
+.btn-red:hover::before{ transform:scaleX(1); }
+.btn-red::after{ content:""; width:0; height:0; border-left:5px solid currentColor; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+
+.btn-red-o{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  border:1px solid var(--brand); color:var(--brand); background:#fff; font-weight:700; font-size:15px;
+  padding:13px 32px; position:relative; overflow:hidden; z-index:0; transition:color .3s ease;
+}
+.btn-red-o::before{ content:""; position:absolute; inset:0; background:var(--brand); z-index:-1; transform:scaleX(0); transform-origin:left center; transition:transform .4s cubic-bezier(.22,.61,.36,1); }
+.btn-red-o:hover{ color:#fff; }
+.btn-red-o:hover::before{ transform:scaleX(1); }
+.btn-red-o::after{ content:""; width:0; height:0; border-left:5px solid currentColor; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+
+.btn-ink{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--ink); color:#fff; font-weight:700; font-size:16px; padding:15px 32px;
+  position:relative; overflow:hidden; z-index:0; transition:color .3s ease;
+}
+.btn-ink::before{ content:""; position:absolute; inset:0; background:#fff; z-index:-1; transform:scaleX(0); transform-origin:left center; transition:transform .4s cubic-bezier(.22,.61,.36,1); }
+.btn-ink:hover{ color:var(--ink); }
+.btn-ink:hover::before{ transform:scaleX(1); }
+
+/* ============ カード ============ */
+.card{ background:#fff; border:1px solid var(--line); }
+.card-h{ transition:.2s; }
+.card-h:hover{ box-shadow:0 6px 24px rgba(0,0,0,.09); transform:translateY(-2px); }
+
+/* バッジ */
+.badge{ display:inline-flex; align-items:center; gap:4px; font-size:14px; font-weight:700; padding:4px 11px; white-space:nowrap; }
+
+/* ============ 工程ステップ ============ */
+.step-dot{ width:32px; height:32px; border-radius:9999px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; font-family:"Roboto",sans-serif; }
+.step-done{ background:var(--brand); color:#fff; }
+.step-current{ background:var(--brand); color:#fff; box-shadow:0 0 0 4px rgba(230,0,18,.18); }
+.step-todo{ background:#e8e8e8; color:#b0b0b0; }
+.step-line{ flex:1; height:2px; background:#e8e8e8; min-width:10px; }
+.step-line.on{ background:var(--brand); }
+
+/* ============ プレースホルダー画像（ダーク・テック調） ============ */
+.ph{ background:linear-gradient(135deg,#2b2d44 0%,#393b56 55%,#4a4d6e 100%); position:relative; overflow:hidden; }
+.ph::before{ content:""; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:14px 14px; }
+.ph::after{ content:"IMAGE"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:"Roboto",sans-serif; font-size:10px; letter-spacing:.25em; color:rgba(255,255,255,.35); }
+.ph-light{ background:#eceef5; }
+.ph-light::after{ color:#b9bdcd; }
+
+/* ヒーロー（宇宙・テック調のダーク） */
+.hero-bg{
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 120%, rgba(230,0,18,.35) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 70% at 50% 130%, rgba(80,120,255,.35) 0%, transparent 55%),
+    linear-gradient(180deg,#05060f 0%,#0d1024 55%,#1a1d38 100%);
+  position:relative; overflow:hidden;
+}
+.hero-bg::before{ content:""; position:absolute; inset:0;
+  background-image:radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,.7),transparent),
+    radial-gradient(1px 1px at 70% 20%,rgba(255,255,255,.5),transparent),
+    radial-gradient(1px 1px at 40% 70%,rgba(255,255,255,.6),transparent),
+    radial-gradient(1px 1px at 85% 60%,rgba(255,255,255,.4),transparent),
+    radial-gradient(1px 1px at 15% 80%,rgba(255,255,255,.5),transparent),
+    radial-gradient(1px 1px at 60% 45%,rgba(255,255,255,.35),transparent);
+}
+
+table.dt th{ font-weight:700; }
+
+/* 縦書き（COLUMN 見出し） */
+.vertical{ writing-mode:vertical-rl; letter-spacing:.15em; }
+
+/* 管理画面：業務コンソール調（密度高め） */
+.adm body{ background:var(--lav); }
+.adm-table th{ background:#f4f4f8; font-size:15px; color:#555; font-weight:700; }
+.adm-table td{ font-size:16px; }
+.adm-card{ background:#fff; border:1px solid #dcdce6; }
+
+/* 入力系の可読性 */
+input,select,textarea,button{ font-size:16px; }
+input[type=checkbox]{ width:16px; height:16px; }
+
+/* ============ 左→右に流れるホバー ============ */
+.sweep{ position:relative; overflow:hidden; }
+.sweep::before{ /* 光沢が左から右へ流れる */
+  content:""; position:absolute; top:0; bottom:0; left:0; width:60%;
+  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
+  transform:translateX(-180%); transition:transform .65s cubic-bezier(.22,.61,.36,1);
+  pointer-events:none; z-index:6;
+}
+.sweep:hover::before{ transform:translateX(320%); }
+.sweep::after{ /* 下部レッドバーが左から右へ伸びる */
+  content:""; position:absolute; left:0; bottom:0; height:3px; width:100%;
+  background:var(--brand); transform:scaleX(0); transform-origin:left center;
+  transition:transform .4s ease; z-index:6;
+}
+.sweep:hover::after{ transform:scaleX(1); }
+.sweep-img{ transition:transform .55s cubic-bezier(.22,.61,.36,1); }
+.sweep:hover .sweep-img{ transform:scale(1.07); }
+
+/* ============ 請求書 印刷用 ============ */
+#invoiceSheet{ font-size:13px; color:#111; }
+#invoiceSheet .inv-title{ font-size:26px; letter-spacing:.4em; font-weight:700; text-align:center; }
+#invoiceSheet table{ width:100%; border-collapse:collapse; }
+#invoiceSheet .bar{ background:#f0f0f0; border:1px solid #cfcfcf; }
+#invoiceSheet .ln{ border-bottom:1px solid #333; }
+@media print{
+  /* 画面要素を隠し、請求書だけA4で印刷 */
+  body * { visibility:hidden !important; }
+  #printArea, #printArea * { visibility:visible !important; }
+  /* 画面外退避（left:-10000px 等のインラインstyle）を印刷時は必ず用紙内へ戻す */
+  #printArea{ position:absolute !important; left:0 !important; top:0 !important; width:100% !important; padding:0; margin:0; background:#fff; }
+  #modal{ position:static !important; background:#fff !important; padding:0 !important; }
+  .no-print{ display:none !important; }
+  @page{ size:A4; margin:14mm; }
+}
+
+/* ============ 管理画面（adm-scope）: 見やすさ優先・文字は控えめ ============ */
+/* 文字サイズを一段ダウン（Tailwind arbitrary クラスを上書き） */
+.adm-scope .text-\[18px\]{ font-size:15px; }
+.adm-scope .text-\[17px\]{ font-size:14px; }
+.adm-scope .text-\[16px\]{ font-size:14px; }
+.adm-scope .text-\[15px\]{ font-size:13px; }
+.adm-scope .text-\[14px\]{ font-size:13px; }
+.adm-scope .text-\[13px\]{ font-size:12px; }
+.adm-scope .text-\[12px\]{ font-size:11.5px; }
+.adm-scope .text-2xl{ font-size:1.5rem; }        /* KPI数字は保持（rem=18px基準→27px） */
+.adm-scope input, .adm-scope select, .adm-scope textarea, .adm-scope button{ font-size:13px; }
+.adm-scope .badge{ font-size:11px; padding:2px 8px; }
+
+/* カード：境界と余白を整理して塊を分かりやすく */
+.adm-scope .adm-card{ background:#fff; border:1px solid #e2e5ec; box-shadow:0 1px 2px rgba(20,30,60,.04); }
+.adm-scope .adm-card > .border-b{ background:#fbfcfe; }
+
+/* テーブル：ゼブラ＋行ホバー＋ヘッダを見やすく */
+.adm-scope .adm-table thead th{ background:#f5f6f9; color:#5b6270; font-size:11.5px; font-weight:700;
+  border-bottom:1px solid #e2e5ec; white-space:nowrap; padding-top:9px; padding-bottom:9px; }
+.adm-scope .adm-table tbody tr:nth-child(even){ background:#fafbfd; }
+.adm-scope .adm-table tbody tr:hover{ background:#eef3ff; }
+.adm-scope .adm-table td{ font-size:13px; padding-top:8px; padding-bottom:8px; }
+
+/* KPIカードの数字は視認性のため維持、ラベルは落ち着いた色 */
+.adm-scope .font-black{ letter-spacing:0; }

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[760px] mx-auto px-4 py-14 text-center">
+    <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5" style="background:#e60012">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="sec-label">ORDER COMPLETED</div>
+    <h1 class="sec-title text-3xl mt-1">ご注文を受け付けました</h1>
+    <p class="text-[16px] text-neutral-500 mt-3">受付番号を控えのうえ、進捗は「注文・進捗」からご確認ください。各工程の進捗はメールでも自動配信されます。</p>
+
+    <div class="card p-6 mt-8 text-left">
+      <div class="flex items-center justify-between pb-4 border-b border-[color:var(--line)]">
+        <span class="text-[16px] text-neutral-500">受付番号</span>
+        <span class="font-display text-2xl font-black text-ink" id="ackNo">WO-24076</span>
+      </div>
+      <dl class="text-[16px] mt-4 space-y-2.5" id="meta"></dl>
+    </div>
+
+    <div class="card p-6 mt-4 text-left">
+      <div class="text-[17px] font-bold text-ink mb-4">次のステップ</div>
+      <ol class="space-y-3 text-[16px] text-neutral-600">
+        <li class="flex gap-3"><span class="step-dot step-done">1</span><div class="pt-1">受注内容を社内基幹（IBM）へ<b class="text-ink">自動インプット中</b>です（受注／発注）。</div></li>
+        <li class="flex gap-3"><span class="step-dot step-todo">2</span><div class="pt-1">業務が納期を確定し、メール・ポータルでお知らせします。</div></li>
+        <li class="flex gap-3"><span class="step-dot step-todo">3</span><div class="pt-1">出荷時にヤマト送り状番号を掲載します。</div></li>
+        <li class="flex gap-3"><span class="step-dot step-todo">4</span><div class="pt-1">締め日に請求書を発行し、入金確認後に完了となります。</div></li>
+      </ol>
+    </div>
+
+    <div class="flex gap-2 justify-center mt-8">
+      <a href="orders.html" class="btn-red">注文・進捗を見る</a>
+      <a href="index.html" class="btn-red-o">トップに戻る</a>
+    </div>
+  </div>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.setCart(0);
+  KMECS.renderUserShell({
+    active:'',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'注文完了'}],
+    onReady:function(){
+      var a = KMECS.account();
+      document.getElementById('ackNo').textContent = NEW_ORDER_NO;
+      // 合計はカート（共通マスタ）＋ログイン会社の得値から算出＝checkoutと一致
+      var total = '—';
+      if(a){
+        var sub = CART.reduce(function(s,c){ return s + (netPrice(getProduct(c.code).price)||0)*c.qty; }, 0);
+        total = yen(Math.round(sub*1.1))+'（税込）';
+      }
+      var rows = [['受付日時','2026/07/18 09:40'],['合計金額', total]];
+      if(a){ rows.push(['お支払条件', a.terms+'（掛け売り）']); rows.push(['お届け先', a.company]); }
+      document.getElementById('meta').innerHTML = rows.map(function(r){
+        return '<div class="flex justify-between"><dt class="text-neutral-500">'+r[0]+'</dt><dd class="text-ink font-medium">'+r[1]+'</dd></div>';
+      }).join('');
+    }
+  });
+</script>
+</body>
+</html>

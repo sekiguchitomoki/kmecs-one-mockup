@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 業務フロー全体 -->
+  <div class="adm-card p-5 mb-4">
+    <div class="text-[15px] font-bold text-ink mb-3">受発注フロー全体（① 見積 → ⑥ 入金）</div>
+    <div class="flex flex-wrap items-stretch gap-2 text-[13px]" id="flow"></div>
+  </div>
+
+  <!-- KPI（全体）-->
+  <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-4" id="kpi"></div>
+
+  <!-- 要対応アラート -->
+  <div class="adm-card overflow-hidden mb-4">
+    <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+      <div class="text-[15px] font-bold text-ink">要対応・アラート</div>
+      <span class="badge text-white" style="background:#e60012" id="alertCount">0 件</span>
+    </div>
+    <div class="divide-y divide-[#eceef5]" id="alerts"></div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <!-- 業務メニュー -->
+    <div class="lg:col-span-2">
+      <div class="text-[15px] font-bold text-ink mb-3">業務メニュー</div>
+      <div class="grid sm:grid-cols-2 gap-3" id="menu"></div>
+    </div>
+
+    <!-- サイド：連携状態＋直近受注 -->
+    <div class="space-y-4">
+      <div class="adm-card p-5">
+        <div class="text-[14px] font-bold text-ink mb-3">システム連携ステータス</div>
+        <ul class="space-y-2.5 text-[13px]">
+          <li class="flex items-center justify-between"><span class="text-neutral-600">IBM 基幹（VPN）</span><span class="flex items-center gap-1.5 text-emerald-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>接続中</span></li>
+          <li class="flex items-center justify-between"><span class="text-neutral-600">ヤマト B2クラウド</span><span class="flex items-center gap-1.5 text-emerald-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>接続中</span></li>
+          <li class="flex items-center justify-between"><span class="text-neutral-600">顧客ポータル</span><span class="flex items-center gap-1.5 text-emerald-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>稼働中</span></li>
+          <li class="flex items-center justify-between"><span class="text-neutral-600">受注キュー連携</span><span class="flex items-center gap-1.5 text-amber-600"><span class="w-2 h-2 rounded-full bg-amber-500"></span>1件エラー</span></li>
+        </ul>
+      </div>
+
+      <div class="adm-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+          <div class="text-[14px] font-bold text-ink">直近の受注</div>
+          <a href="admin-orders.html" class="text-[12px]" style="color:#e60012">一覧 ›</a>
+        </div>
+        <div class="divide-y divide-[#eceef5]" id="recent"></div>
+      </div>
+
+      <div class="adm-card p-5" style="background:var(--lav)">
+        <div class="text-[14px] font-bold text-ink mb-1">担当部門</div>
+        <p class="text-[12px] text-neutral-500 leading-relaxed">カスタマーサービス / 経理 / 貿易 の各業務をこのコンソールから一元管理します。</p>
+        <a href="index.html" class="text-[12px] mt-2 inline-block" style="color:#e60012">← 顧客ポータルを見る</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-dashboard',
+    title:'管理ダッシュボード',
+    sub:'K.MECS ONE 業務コンソール ・ 受注 / 出荷 / 経理 / 貿易 を一元管理',
+    onReady:function(){
+      // フロー
+      // c=要対応件数、lbl=その件数が何を指すか（現場が一目で分かる表記）
+      var STEPS=[
+        {n:'①',t:'見積',href:'admin-quotes.html',c:3,lbl:'見積依頼'},
+        {n:'②',t:'受発注',href:'admin-orders.html',c:3,lbl:'要チェック'},
+        {n:'③',t:'問合せ',href:'admin-inquiries.html',c:2,lbl:'未対応'},
+        {n:'④',t:'出荷',href:'admin-shipping.html',c:3,lbl:'出荷待ち'},
+        {n:'⑤',t:'請求',href:'admin-invoice.html',c:3,lbl:'未発行'},
+        {n:'⑥',t:'入金',href:'admin-payment.html',c:2,lbl:'未消込'},
+      ];
+      document.getElementById('flow').innerHTML = STEPS.map(function(s,i){
+        return '<a href="'+s.href+'" class="flex-1 min-w-[120px] border border-[#dcdce6] p-3 hover:border-[color:var(--brand)] bg-white relative">'
+          + '<div class="flex items-center gap-2"><span class="font-display font-black text-xl" style="color:#e60012">'+s.n+'</span>'
+          + '<span class="font-bold text-ink">'+s.t+'</span></div>'
+          + (s.c>0
+              ? '<div class="flex items-baseline gap-1 mt-2"><span class="badge text-white" style="background:#e60012">'+s.lbl+'</span><span class="font-display font-black text-lg text-ink">'+s.c+'</span><span class="text-[11px] text-neutral-400">件</span></div>'
+              : '<span class="badge bg-neutral-100 text-neutral-400 mt-2">対応なし</span>')
+          + '</a>'+(i<STEPS.length-1?'<span class="self-center text-neutral-300">›</span>':'');
+      }).join('');
+
+      // KPI
+      var KPI=[
+        {l:'本日の受注',v:'18',u:'件',c:'text-ink'},
+        {l:'IBM自動連携済',v:'14',u:'件',c:'text-emerald-600'},
+        {l:'要チェック受注',v:'3',u:'件',c:'text-amber-600'},
+        {l:'出荷待ち',v:'3',u:'件',c:'text-ink'},
+        {l:'未入金',v:'¥862,400',u:'',c:'text-[color:var(--brand)]'},
+        {l:'見積依頼(未処理)',v:'3',u:'件',c:'text-[color:var(--brand)]'},
+      ];
+      document.getElementById('kpi').innerHTML = KPI.map(function(k){
+        return '<div class="adm-card p-4"><div class="text-[12px] text-neutral-500">'+k.l+'</div>'
+          + '<div class="font-display text-2xl font-black mt-1 '+k.c+'">'+k.v+(k.u?'<span class="text-[12px] font-normal text-neutral-400 ml-1">'+k.u+'</span>':'')+'</div></div>';
+      }).join('');
+
+      // アラート
+      var AL=[
+        {t:'受注 WO-24070 が IBM連携エラー（在庫マスタ不整合）',sub:'受注管理',href:'admin-order-detail.html?no=WO-24070',lv:'err'},
+        {t:'受注 3件 が「要チェック」— CS承認待ち',sub:'受注管理',href:'admin-orders.html',lv:'warn'},
+        {t:'問合せ 2件 が未対応（納期前倒し / FW指定）',sub:'問合せ管理',href:'admin-inquiries.html',lv:'warn'},
+        {t:'入金 2件 が要確認（手数料相殺 / 顧客コード）',sub:'入金消込',href:'admin-payment.html',lv:'warn'},
+        {t:'請求書 3件 が未発行（締め処理済・ドラフト）',sub:'請求書発行',href:'admin-invoice.html',lv:'warn'},
+        {t:'見積依頼 1件 が技術部の構成チェック待ち',sub:'見積管理',href:'admin-quotes.html',lv:'info'},
+        {t:'未入金 IV-2607-002 が支払期日を5日超過',sub:'請求書発行',href:'admin-invoice-detail.html?no=IV-2607-002',lv:'err'},
+      ];
+      function dot(lv){ return lv==='err'?'#e60012':(lv==='warn'?'#f0a500':'#393b56'); }
+      document.getElementById('alertCount').textContent = AL.length+' 件';
+      document.getElementById('alerts').innerHTML = AL.map(function(a){
+        return '<a href="'+a.href+'" class="flex items-center gap-3 px-4 py-3 hover:bg-[#fafafe]">'
+          + '<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:'+dot(a.lv)+'"></span>'
+          + '<span class="flex-1 text-[14px] text-neutral-700">'+a.t+'</span>'
+          + '<span class="badge bg-neutral-100 text-neutral-500 shrink-0">'+a.sub+'</span>'
+          + '<span class="text-neutral-300 shrink-0">›</span></a>';
+      }).join('');
+
+      // 業務メニュー
+      var MENU=[
+        {t:'横断検索',d:'顧客・商品・受注・請求をステータス（手配中/未入金 等）で検索',href:'admin-search.html',ic:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3'},
+        {t:'顧客管理',d:'顧客ごとの取引条件・売上・未入金・注文履歴',href:'admin-customers.html',ic:'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM3 21v-2a6 6 0 0 1 12 0v2'},
+        {t:'売上分析',d:'月次売上・前年比・メーカー別/顧客別/エリア別',href:'admin-analytics.html',ic:'M4 20V10M10 20V4M16 20v-7M22 20H2'},
+        {t:'受注管理・IBM連携',d:'全経路の受注一本化・受注/発注IP・納期/出荷入力',href:'admin-orders.html',ic:'M4 5h16M4 12h16M4 19h10'},
+        {t:'見積管理・作成',d:'見積依頼→メーカー見積取得→作成・送付。一般/特殊見積',href:'admin-quotes.html',ic:'M8 3h8l4 4v14H4V3zM8 13h8'},
+        {t:'問合せ管理',d:'ポータル/電話/メールの問合せを一本化・返信・完了管理',href:'admin-inquiries.html',ic:'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'},
+        {t:'出荷・ヤマト送り状発行',d:'出荷処理→送り状番号採番→顧客へ自動反映',href:'admin-shipping.html',ic:'M3 6h11v9H3zM14 9h4l3 3v3h-7z'},
+        {t:'請求書発行',d:'締め→注文書単位に自動集約→発行・送付',href:'admin-invoice.html',ic:'M8 3h8l4 4v14H4V3zM8 13h8M8 17h5'},
+        {t:'入金消込',d:'銀行入金の自動照合・顧客コード突合・IBM入力',href:'admin-payment.html',ic:'M3 6h18v12H3zM3 10h18'},
+        {t:'貿易 発注・納期・仕入IP',d:'発注IP→納期IP(PI)→仕入IP・RMA・品目登録',href:'admin-trade.html',ic:'M2 12h20M12 2v20'},
+      ];
+      document.getElementById('menu').innerHTML = MENU.map(function(m){
+        return '<a href="'+m.href+'" class="adm-card p-4 hover:border-[color:var(--brand)] flex items-start gap-3 group">'
+          + '<span class="w-10 h-10 flex items-center justify-center shrink-0 text-white" style="background:#393b56">'
+          + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">'+m.ic.split('M').filter(Boolean).map(function(p){return '<path d=\"M'+p+'\"/>';}).join('')+'</svg></span>'
+          + '<span class="flex-1"><span class="block text-[15px] font-bold text-ink group-hover:text-[color:var(--brand)]">'+m.t+'</span>'
+          + '<span class="block text-[12px] text-neutral-500 mt-0.5 leading-relaxed">'+m.d+'</span></span>'
+          + '<span class="font-bold shrink-0" style="color:#e60012">›</span></a>';
+      }).join('');
+
+      // 直近受注（受注マスタから。各行はその受注の詳細へ）
+      var IBM={ 'WO-24076':'auto', 'WO-24075':'auto', 'WO-24072':'check', 'WO-24070':'err' };
+      function stB(s){ return s==='auto'?'<span class="badge bg-emerald-100 text-emerald-700">連携済</span>':(s==='check'?'<span class="badge bg-amber-100 text-amber-700">要確認</span>':'<span class="badge text-white" style="background:#e60012">エラー</span>'); }
+      document.getElementById('recent').innerHTML = Object.keys(IBM).map(function(no){
+        var o=ADMIN_ORDERS.filter(function(x){return x.no===no;})[0];
+        if(!o) return '';
+        var c=getCustomer(o.cust)||{company:o.cust};
+        return '<a href="admin-order-detail.html?no='+o.no+'" class="flex items-center gap-2 px-4 py-3 hover:bg-[#fafafe]">'
+          + '<span class="font-display font-bold text-ink text-[13px] w-24 shrink-0">'+o.no+'</span>'
+          + '<span class="flex-1 text-[13px] text-neutral-600 truncate">'+c.company+'</span>'
+          + '<span class="text-[13px] font-display text-neutral-700 shrink-0">'+yen(o.amount)+'</span>'
+          + '<span class="shrink-0">'+stB(IBM[no])+'</span></a>';
+      }).join('');
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 説明 -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-center gap-4" style="border-left:3px solid #393b56">
+    <div class="text-[15px] leading-relaxed flex-1 min-w-[280px]">
+      <b class="text-ink">操作履歴（監査ログ）</b>：<b>誰が・いつ・どのデータを</b>操作したかを記録します。アカウント・操作種別・対象で絞り込み、不正・誤操作の追跡に利用します。
+    </div>
+    <button id="csv" class="text-[14px] text-white px-3 py-2 font-bold" style="background:#393b56">CSVエクスポート</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+
+  <!-- 絞り込み -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-[200px]">
+      <label class="text-[13px] font-bold text-neutral-600">キーワード</label>
+      <input id="kw" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="ユーザー・対象・内容・番号">
+    </div>
+    <div><label class="text-[13px] font-bold text-neutral-600">ユーザー</label>
+      <select id="fUser" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+    <div><label class="text-[13px] font-bold text-neutral-600">操作</label>
+      <select id="fAct" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+    <div><label class="text-[13px] font-bold text-neutral-600">対象</label>
+      <select id="fTarget" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+  </div>
+
+  <!-- ログ一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+      <div class="text-[15px] font-bold text-ink">操作ログ</div>
+      <span class="text-[13px] text-neutral-400"><b id="cnt" class="text-ink">0</b> 件</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[950px]">
+        <thead><tr>
+          <th class="text-left px-4 py-2.5">日時</th><th class="text-left py-2.5">ユーザー</th>
+          <th class="text-left py-2.5">操作</th><th class="text-left py-2.5">対象</th>
+          <th class="text-left py-2.5">対象データ</th><th class="text-left py-2.5">内容</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、ログはダミーです。実システムでは全操作を自動記録します。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-audit',
+    title:'操作履歴（監査ログ）',
+    sub:'誰が・いつ・どのデータを操作したかを記録・追跡',
+    onReady:function(){
+      var LOG=AUDIT_LOG;
+      // KPI
+      var users=LOG.map(function(l){return l.user;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      var today=LOG.filter(function(l){return l.at.indexOf('2026/07/17')===0;}).length;
+      var edits=LOG.filter(function(l){return l.act==='update'||l.act==='delete';}).length;
+      document.getElementById('kpi').innerHTML=
+        '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">記録件数</div><div class="font-display text-2xl font-black text-ink mt-1">'+LOG.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">本日の操作</div><div class="font-display text-2xl font-black text-ink mt-1">'+today+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">操作ユーザー</div><div class="font-display text-2xl font-black text-ink mt-1">'+users.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">名</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">更新・削除</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+edits+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>';
+
+      // フィルタ選択肢
+      document.getElementById('fUser').innerHTML='<option value="">全ユーザー</option>'+users.map(function(u){return '<option>'+u+'</option>';}).join('');
+      document.getElementById('fAct').innerHTML='<option value="">全操作</option>'+Object.keys(ACT_LABEL).map(function(k){return '<option value="'+k+'">'+ACT_LABEL[k].ja+'</option>';}).join('');
+      var targets=LOG.map(function(l){return l.target;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fTarget').innerHTML='<option value="">全対象</option>'+targets.map(function(t){return '<option>'+t+'</option>';}).join('');
+
+      function actBadge(k){ var a=ACT_LABEL[k]; return '<span class="badge" style="background:'+a.bg+';color:'+a.tx+'">'+a.ja+'</span>'; }
+      function avatar(u){ return '<span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-[12px] font-bold shrink-0" style="background:#393b56">'+u.charAt(0)+'</span>'; }
+
+      function render(){
+        var kw=document.getElementById('kw').value.trim(), fu=document.getElementById('fUser').value, fa=document.getElementById('fAct').value, ft=document.getElementById('fTarget').value;
+        var list=LOG.filter(function(l){
+          if(fu && l.user!==fu) return false;
+          if(fa && l.act!==fa) return false;
+          if(ft && l.target!==ft) return false;
+          if(kw && (l.user+l.target+l.ref+l.detail).indexOf(kw)<0) return false;
+          return true;
+        });
+        document.getElementById('cnt').textContent=list.length;
+        document.getElementById('rows').innerHTML=list.map(function(l){
+          return '<tr class="hover:bg-[#fafafe]">'
+            + '<td class="px-4 py-3 font-display text-[13px] text-neutral-500 whitespace-nowrap">'+l.at+'</td>'
+            + '<td class="py-3"><div class="flex items-center gap-2">'+avatar(l.user)+'<div><div class="text-[14px] font-bold text-ink">'+l.user+'</div><div class="text-[11px] text-neutral-400">'+l.role+'</div></div></div></td>'
+            + '<td class="py-3">'+actBadge(l.act)+'</td>'
+            + '<td class="py-3 text-[14px] text-neutral-600">'+l.target+'</td>'
+            + '<td class="py-3 font-display text-[13px] text-neutral-700">'+l.ref+'</td>'
+            + '<td class="py-3 text-[14px] text-neutral-600">'+l.detail+'</td></tr>';
+        }).join('');
+      }
+
+      document.getElementById('csv').addEventListener('click', function(){ alert('操作履歴をCSVでエクスポートしました。（モック）'); });
+      ['kw','fUser','fAct','fTarget'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); document.getElementById(id).addEventListener('change', render); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

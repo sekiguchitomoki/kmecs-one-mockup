@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- フロー -->
+  <div class="adm-card p-5 mb-4">
+    <div class="text-[16px] font-bold text-ink mb-3">貿易フロー</div>
+    <div class="flex flex-wrap items-center gap-2 text-[14px]">
+      <div class="px-3 py-2" style="background:var(--lav)"><b class="text-ink">①見積（仕入）</b><div class="text-neutral-500">メーカー見積取得・価格表更新</div></div>
+      <span class="text-neutral-300">›</span>
+      <div class="px-3 py-2 text-white" style="background:#e60012"><b>②受発注・③納期/仕入IP</b><div class="opacity-80">発注IP → 納期IP（PI） → 仕入IP</div></div>
+      <span class="text-neutral-300">›</span>
+      <div class="px-3 py-2" style="background:var(--lav)"><b class="text-ink">④検品</b><div class="text-neutral-500">物流で実施（本社引きは本社）</div></div>
+      <span class="text-neutral-300">›</span>
+      <div class="px-3 py-2" style="background:var(--lav)"><b class="text-ink">⑤PCN/EOL</b><div class="text-neutral-500">納品実績確認・仕様変更資料</div></div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">発注IP 未処理</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">3<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">PI 待ち（納期IP）</div><div class="font-display text-2xl font-black text-amber-600 mt-1">2<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">入荷済（仕入IP待ち）</div><div class="font-display text-2xl font-black text-ink mt-1">1<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">RMA 申請中</div><div class="font-display text-2xl font-black text-ink mt-1">1<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+  </div>
+
+  <!-- 発注・納期・仕入 -->
+  <div class="adm-card overflow-hidden mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[16px] font-bold text-ink">発注 / 納期 / 仕入 インプット状況</div>
+      <div class="flex gap-2">
+        <button id="tMatch" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-1.5">インボイス突合</button>
+        <button id="bulk" class="text-[14px] text-white px-3 py-1.5 font-bold" style="background:#e60012">発注IPから仮仕入IPを一括作成</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1050px]">
+        <thead><tr>
+          <th class="px-4 py-2.5 text-left"><input type="checkbox" id="all" class="accent-[#e60012]"></th>
+          <th class="text-left py-2.5">発注番号</th><th class="text-left py-2.5">メーカー</th>
+          <th class="text-left py-2.5">品目 / 数量</th><th class="text-left py-2.5">紐づく受注</th>
+          <th class="text-left py-2.5 pl-3">発注IP</th><th class="text-left py-2.5">納期IP（PI）</th>
+          <th class="text-left py-2.5">仕入IP</th><th class="text-right px-4 py-2.5">操作</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[14px] text-neutral-400 mb-4">※ IPCは業務のメールを元に発注IP、電子はIBMの受注IPを元に発注IP。ODU等の品数が多い場合は発注IPから仮仕入IPを一括作成します。</p>
+
+  <div class="grid lg:grid-cols-2 gap-4">
+    <!-- その他業務 -->
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6]"><div class="text-[16px] font-bold text-ink">その他業務</div></div>
+      <div class="divide-y divide-[#eceef5]">
+        <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">納期短縮リクエスト</div><div class="text-[14px] text-neutral-400">ODU AMC-2P-08 ×20（WO-24073）</div></div><button id="tLead" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5">メーカーへ依頼</button></div>
+        <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">代品リクエスト（検品時 数量不足）</div><div class="text-[14px] text-neutral-400">ODU MS-K1P-06 ×2 不足</div></div><button id="tOdu" class="text-[14px] text-white px-2.5 py-1.5" style="background:#e60012">ODUへ申請</button></div>
+        <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">RMA申請</div><div class="text-[14px] text-neutral-400">MOXA EDS-408A ×1（初期不良）・申請中</div></div><span class="badge bg-amber-100 text-amber-700">物の移動待ち</span></div>
+        <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">フォワダーとのやりとり</div><div class="text-[14px] text-neutral-400">発送先指定 / 通関で保留中の貨物 1件</div></div><button id="tFwd" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5">確認</button></div>
+      </div>
+    </div>
+
+    <!-- 品目登録 -->
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6]"><div class="text-[16px] font-bold text-ink">品目登録（得値分け / 20文字制限）</div></div>
+      <div class="p-4">
+        <div class="grid grid-cols-2 gap-3 text-[15px] mb-3">
+          <div><label class="text-[14px] font-bold text-neutral-600">品目コード</label><input value="AMC-2P-08" class="w-full mt-1 border border-[#dcdce6] px-2 py-1.5 font-display"></div>
+          <div><label class="text-[14px] font-bold text-neutral-600">得値グループ</label><select class="w-full mt-1 border border-[#dcdce6] px-2 py-1.5 bg-white"><option>ODU-STD（掛率グループA/B）</option><option>ODU-CUSTOM</option></select></div>
+        </div>
+        <label class="text-[14px] font-bold text-neutral-600">IBM品名（20文字以内）</label>
+        <input id="nm" value="ODU AMC コネクタ 8極" maxlength="20" class="w-full mt-1 border border-[#dcdce6] px-2 py-1.5 text-[16px]">
+        <div class="flex justify-between text-[14px] mt-1"><span class="text-neutral-400">IBM登録名は20文字制限。超過分は自動で省略候補を提示します。</span><span id="cnt" class="font-display text-neutral-500"></span></div>
+        <div class="mt-3 p-2.5 text-[14px]" style="background:var(--lav)">
+          <b class="text-ink">自動省略候補：</b><span class="font-display text-neutral-600">ODU AMC コネクタ8極</span>（18文字）
+        </div>
+        <button id="tReg" class="text-[14px] text-white px-3 py-2 mt-3 font-bold w-full" style="background:#e60012">IBMへ品目登録</button>
+      </div>
+    </div>
+  </div>
+  <p class="text-[14px] text-neutral-400 mt-3">※ モックのため、実際のIBM連携・メーカー申請は行われません。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var PO = [
+    { no:'PO-7701', maker:'odu',   item:'AMC-2P-08 ×100',   wo:'WO-24073 / WO-24075', po:'done', pi:'done', sr:'done', src:'電子：IBM受注IPを元に発注IP' },
+    { no:'PO-7702', maker:'ipc',   item:'IPC-3050-i5 ×4',   wo:'WO-24055',            po:'done', pi:'wait', sr:'',     src:'IPC：業務のメールを元に発注IP' },
+    { no:'PO-7703', maker:'moxa',  item:'EDS-518A ×6',      wo:'WO-24072',            po:'done', pi:'done', sr:'wait', src:'電子：IBM受注IPを元に発注IP' },
+    { no:'PO-7704', maker:'fraba', item:'TILT-2D ×10',      wo:'—（在庫補充）',        po:'wait', pi:'',     sr:'',     src:'電子：IBM受注IPを元に発注IP' },
+    { no:'PO-7705', maker:'odu',   item:'MS-K1P-06 ×20',    wo:'WO-24071',            po:'wait', pi:'',     sr:'',     src:'電子：IBM受注IPを元に発注IP' },
+  ];
+  function ip(s, label){
+    if(s==='done') return '<span class="badge bg-emerald-100 text-emerald-700">● IP済</span>';
+    if(s==='wait') return '<span class="badge bg-amber-100 text-amber-700">'+label+'</span>';
+    return '<span class="text-neutral-300 text-[15px]">—</span>';
+  }
+
+  KMECS.renderAdminShell({
+    active:'admin-trade',
+    title:'貿易 — 発注 / 納期 / 仕入 インプット',
+    sub:'②受発注・③納期/仕入IP — 発注IP → PI受領で納期IP → 入荷で仕入IP（IBM基幹へ）',
+    onReady:function(){
+      document.getElementById('rows').innerHTML = PO.map(function(r,i){
+        var m = MAKERS[r.maker];
+        return '<tr class="'+(r.po==='wait'?'bg-[#fff5f5]':'')+'">'
+          + '<td class="px-4 py-3"><input type="checkbox" class="chk accent-[#e60012]" data-i="'+i+'"></td>'
+          + '<td class="py-3 font-display font-bold text-ink">'+r.no+'</td>'
+          + '<td class="py-3 text-neutral-600 text-[16px]">'+m.name+'<div class="text-[14px] text-neutral-400">'+m.country+'</div></td>'
+          + '<td class="py-3 text-neutral-600 text-[15px] font-display">'+r.item+'<div class="text-[13px] text-neutral-400">'+r.src+'</div></td>'
+          + '<td class="py-3 text-neutral-500 text-[14px] font-display">'+r.wo+'</td>'
+          + '<td class="py-3 pl-3">'+ip(r.po,'未IP')+'</td>'
+          + '<td class="py-3">'+ip(r.pi,'PI待ち')+'</td>'
+          + '<td class="py-3">'+ip(r.sr,'入荷済')+'</td>'
+          + '<td class="px-4 py-3 text-right whitespace-nowrap">'
+          + (r.po==='wait' ? '<button class="go text-[14px] text-white px-2.5 py-1.5" data-i="'+i+'" data-k="po" style="background:#e60012">発注IP</button>' : '')
+          + (r.pi==='wait' ? '<button class="go text-[14px] text-white px-2.5 py-1.5" data-i="'+i+'" data-k="pi" style="background:#14887b">PI入力→納期IP</button>' : '')
+          + (r.sr==='wait' ? '<button class="go text-[14px] text-white px-2.5 py-1.5" data-i="'+i+'" data-k="sr" style="background:#393b56">仕入IP</button>' : '')
+          + (r.po==='done'&&r.pi==='done'&&r.sr==='done' ? '<button class="text-[14px] border border-[#dcdce6] text-neutral-400 px-2.5 py-1.5" disabled>完了</button>' : '')
+          + '</td></tr>';
+      }).join('');
+
+      document.querySelectorAll('.go').forEach(function(b){
+        b.addEventListener('click', function(){
+          var i = +b.getAttribute('data-i'), k = b.getAttribute('data-k');
+          var names = { po:'発注インプット', pi:'納期インプット（PI反映）', sr:'仕入インプット' };
+          PO[i][k] = 'done';
+          if(k==='po') PO[i].pi = 'wait';
+          if(k==='pi') PO[i].sr = 'wait';
+          alert(PO[i].no+' の'+names[k]+'をIBMへ実行しました。'+(k==='pi'?'（IPCは業務へメール通知も送信）':'')+'（モック）');
+          location.reload();
+        });
+      });
+
+      document.getElementById('all').addEventListener('change', function(e){
+        document.querySelectorAll('.chk').forEach(function(c){ c.checked = e.target.checked; });
+      });
+      document.getElementById('bulk').addEventListener('click', function(){
+        var n = document.querySelectorAll('.chk:checked').length;
+        alert(n>0 ? n+' 件の発注IPから仮仕入IPを一括作成しました。（モック）' : '対象の発注を選択してください。');
+      });
+
+      var nm = document.getElementById('nm'), cnt = document.getElementById('cnt');
+      function upd(){ cnt.textContent = nm.value.length + ' / 20'; cnt.style.color = nm.value.length>=20 ? '#e60012' : ''; }
+      nm.addEventListener('input', upd); upd();
+      // 操作ボタン（モック動作）
+      var acts={
+        tMatch:'メーカーインボイスと発注データを突合しました。差異 0 件。（モック）',
+        tLead :'ODUへ納期短縮リクエストを送信しました。回答予定：2営業日以内。（モック）',
+        tOdu  :'ODUへ代品申請（MS-K1P-06 ×2 不足）を送信しました。（モック）',
+        tFwd  :'フォワダーへ通関保留貨物の状況を確認するメールを送信しました。（モック）',
+        tReg  :'新規品目をIBM商品マスタへ登録しました。（モック）'
+      };
+      Object.keys(acts).forEach(function(id){
+        var b=document.getElementById(id);
+        if(b) b.addEventListener('click', function(){ alert(acts[id]); });
+      });
+    }
+  });
+</script>
+</body>
+</html>

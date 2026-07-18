@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+    <div class="sec-label">CONTACT</div>
+    <h1 class="text-3xl font-bold text-ink mt-2 mb-1">営業へのお問い合わせ</h1>
+    <p class="text-[16px] text-neutral-500 mb-8">納期のご相談・型番のお問い合わせ・カスタムAssy・海外調達など、担当営業がご対応します。</p>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- フォーム -->
+      <div class="lg:col-span-2">
+        <div class="card p-6">
+          <div id="repBox" class="flex items-center gap-3 p-3 mb-5" style="background:var(--lav)"></div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="text-[15px] font-bold text-ink">お問い合わせ種別</label>
+              <select id="cType" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px] bg-white">
+                <option>納期のご相談・前倒し依頼</option>
+                <option>型番・仕様のお問い合わせ</option>
+                <option>お見積り依頼</option>
+                <option>カスタムAssy・特注のご相談</option>
+                <option>数量不足・不良・返品（RMA）</option>
+                <option>請求・お支払いについて</option>
+                <option>その他</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-ink">関連する注文番号 <span class="text-[13px] font-normal text-neutral-400">（任意）</span></label>
+              <input id="cOrder" list="orderList" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px] font-display" placeholder="例：WO-24075">
+              <datalist id="orderList"></datalist>
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-ink">件名</label>
+              <input id="cSubject" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]" placeholder="例：納期を1週間前倒しできますか">
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-ink">お問い合わせ内容</label>
+              <textarea id="cBody" rows="6" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]" placeholder="ご要望・背景・希望納期などをご記入ください。"></textarea>
+            </div>
+            <div id="guestFields" class="hidden grid sm:grid-cols-2 gap-4">
+              <div><label class="text-[15px] font-bold text-ink">御社名</label>
+                <input id="cComp" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]"></div>
+              <div><label class="text-[15px] font-bold text-ink">メールアドレス</label>
+                <input id="cMail" type="email" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]"></div>
+            </div>
+            <button id="send" class="btn-red w-full !py-3.5">この内容で送信する</button>
+            <p class="text-[13px] text-neutral-400 text-center">※ モックのため、実際には送信されません。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- サイド -->
+      <div class="space-y-4">
+        <div class="card p-5">
+          <div class="text-[16px] font-bold text-ink mb-2">お電話でのお問い合わせ</div>
+          <div class="font-display text-2xl font-black text-ink">03-5825-5333</div>
+          <div class="text-[14px] text-neutral-500 mt-1 leading-relaxed">受付：平日 9:00〜17:30<br>（土日祝・年末年始を除く）</div>
+          <div class="text-[14px] text-neutral-500 mt-3 pt-3 border-t border-[color:var(--line)] leading-relaxed">
+            株式会社ケーメックスONE<br>〒101-0032<br>東京都千代田区岩本町2丁目3番3号<br>ザイマックス岩本町ビル3F
+          </div>
+        </div>
+        <div class="card p-5" style="background:var(--lav)">
+          <div class="text-[15px] font-bold text-ink mb-1.5">お急ぎの場合</div>
+          <p class="text-[14px] text-neutral-600 leading-relaxed">ご注文済みの案件については、注文詳細ページからも担当営業へ直接メッセージを送れます。</p>
+          <a href="orders.html" class="text-[14px] mt-2 inline-block" style="color:#e60012">注文履歴を見る ›</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'contact',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'お問い合わせ'}],
+    onReady:function(){
+      var a = KMECS.account();
+      var pre = qs('order');
+      if(pre) document.getElementById('cOrder').value = pre;
+      // 商品ページから来た場合は型番を件名に反映
+      var pcode = qs('product');
+      if(pcode){
+        var p = getProduct(pcode);
+        document.getElementById('cType').value = '型番・仕様のお問い合わせ';
+        document.getElementById('cSubject').value = p.code+'（'+p.name+'）について';
+      }
+
+      // ログイン時は担当営業を出し、未ログインなら会社名・メール欄を出す
+      if(a){
+        var c = getCustomer(a.custCode) || CUSTOMERS[0];
+        document.getElementById('repBox').innerHTML =
+          '<span class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold shrink-0" style="background:#393b56">'+c.rep.slice(0,1)+'</span>'
+          + '<span class="text-[14px] leading-relaxed"><b class="text-ink">'+c.company+'</b> 様の担当営業は <b class="text-ink">'+c.rep+'</b> です。<br>'
+          + '<span class="text-neutral-500">お問い合わせはそのまま担当営業へ届きます。</span></span>';
+        document.getElementById('orderList').innerHTML = ADMIN_ORDERS.filter(function(o){return o.cust===c.code;})
+          .map(function(o){ return '<option value="'+o.no+'">'+o.items+'</option>'; }).join('');
+      } else {
+        document.getElementById('repBox').innerHTML =
+          '<span class="text-[14px] text-neutral-600 leading-relaxed">ログインいただくと、担当営業・注文履歴と紐づけてお問い合わせできます。'
+          + '<a href="login.html" class="ml-1 font-bold" style="color:#e60012">ログイン ›</a></span>';
+        document.getElementById('guestFields').className='grid sm:grid-cols-2 gap-4';
+      }
+
+      document.getElementById('send').addEventListener('click', function(){
+        var sub=document.getElementById('cSubject').value.trim();
+        var body=document.getElementById('cBody').value.trim();
+        if(!sub){ alert('件名をご入力ください。'); return; }
+        if(!body){ alert('お問い合わせ内容をご入力ください。'); return; }
+        if(!a){
+          if(!document.getElementById('cComp').value.trim()){ alert('御社名をご入力ください。'); return; }
+          if(!document.getElementById('cMail').value.trim()){ alert('メールアドレスをご入力ください。'); return; }
+        }
+        alert('お問い合わせを送信しました。\n担当営業より1営業日以内にご連絡いたします。（モック）');
+        location.href = a ? 'mypage.html' : 'index.html';
+      });
+    }
+  });
+</script>
+</body>
+</html>

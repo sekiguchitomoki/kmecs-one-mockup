@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <div class="no-print flex flex-wrap items-center justify-between gap-3 mb-3">
+    <a href="admin-shipping.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)]">‹ 出荷一覧に戻る</a>
+    <div class="flex flex-wrap gap-2" id="actions"></div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2">
+      <div class="adm-card overflow-hidden"><div id="printArea"><div class="p-6" id="slipBody"></div></div></div>
+    </div>
+    <div class="space-y-4">
+      <div class="adm-card p-5" id="meta"></div>
+      <div class="adm-card p-5 no-print">
+        <div class="text-[14px] font-bold text-ink mb-2">連携ステータス</div>
+        <div class="text-[13px] text-neutral-500 leading-relaxed">出荷入力 → ヤマトB2クラウドで送り状番号を採番 → 顧客ポータルの注文詳細に追跡番号を自動反映 → 進捗メールで通知。</div>
+      </div>
+    </div>
+  </div>
+  <p class="no-print text-[13px] text-neutral-400 mt-3">※ モックのため、実際のヤマトB2連携・番号採番・ラベル印刷は行われません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var s = getShipment(qs('order'));
+
+  KMECS.renderAdminShell({
+    active:'admin-shipping',
+    title:'送り状 — '+s.order,
+    sub:'④出荷 — ヤマト運輸 宅急便 送り状のプレビュー・発行',
+    onReady:function(){
+      var seq = 2402;
+      function newSlip(){ seq += 7; return '4567-8901-'+seq; }
+
+      function renderSlip(){
+        var a = shipCust(s), issued = !!s.slip;
+        var bars = '';
+        for(var k=0;k<44;k++){ var w=(k%3===0)?3:(k%2===0?2:1), h=24+((k*7)%16); bars+='<span style="display:inline-block;width:'+w+'px;height:'+h+'px;background:'+(issued?'#000':'#cbd0da')+'"></span>'; }
+        document.getElementById('slipBody').innerHTML =
+          '<div class="border-2 border-black p-4">'
+          + '<div class="flex items-center justify-between border-b-2 border-black pb-2 mb-3">'
+          + '<div class="font-bold text-black text-[17px]">ヤマト運輸　宅急便</div>'
+          + '<div class="text-[14px] text-neutral-500">'+s.type+'</div></div>'
+          + '<div class="text-center mb-3">'
+          + '<div class="text-[14px] text-neutral-500">お問い合わせ送り状番号</div>'
+          + '<div class="font-display text-2xl font-black text-black tracking-widest">'+(issued?s.slip:'（未発行）')+'</div>'
+          + '<div class="flex justify-center gap-[2px] mt-2 h-10 items-end">'+bars+'</div></div>'
+          + '<div class="grid grid-cols-2 gap-3 text-[14px] border-t border-neutral-200 pt-3">'
+          + '<div><div class="text-neutral-400 mb-0.5">お届け先</div>'
+          + '<div class="font-bold text-black text-[16px]">'+a.company+' 御中</div>'
+          + '<div class="text-neutral-600 leading-relaxed mt-1">'+a.addr+'<br>ご担当：'+a.contact+' 様</div></div>'
+          + '<div><div class="text-neutral-400 mb-0.5">ご依頼主</div>'
+          + '<div class="font-bold text-black text-[16px]">株式会社ケーメックスONE</div>'
+          + '<div class="text-neutral-600 leading-relaxed mt-1">〒101-0032<br>東京都千代田区岩本町2-3-3<br>ザイマックス岩本町ビル3F<br>TEL 03-5825-5333</div></div></div>'
+          + '<div class="grid grid-cols-3 gap-2 text-[14px] border-t border-neutral-200 mt-3 pt-3">'
+          + '<div><div class="text-neutral-400">品名</div><div class="text-black">'+s.items+'</div></div>'
+          + '<div><div class="text-neutral-400">個数</div><div class="text-black font-display">'+s.pkgs+' 個口</div></div>'
+          + '<div><div class="text-neutral-400">出荷日</div><div class="text-black font-display">'+(s.date||'—')+'</div></div></div>'
+          + '<div class="border-t border-neutral-200 mt-3 pt-2 text-[14px] text-neutral-400 flex justify-between">'
+          + '<span>注文番号：'+s.order+'</span><span>K.MECS ONE 受発注ポータル</span></div></div>'
+          + '<p class="text-[14px] text-neutral-400 mt-3 text-center">※ 送り状番号は顧客ポータルの注文詳細に自動反映され、進捗メールでも通知されます。</p>';
+
+        // メタ / アクション
+        document.getElementById('meta').innerHTML =
+          '<div class="text-[14px] font-bold text-ink mb-2">出荷情報</div>'
+          + '<div class="text-[14px] leading-relaxed text-neutral-600">'
+          + '<div class="flex justify-between py-1"><span class="text-neutral-400">注文番号</span><b class="font-display text-ink">'+s.order+'</b></div>'
+          + '<div class="flex justify-between py-1"><span class="text-neutral-400">お届け先</span><span class="text-ink">'+a.company+'</span></div>'
+          + '<div class="flex justify-between py-1"><span class="text-neutral-400">メーカー</span><span>'+(MAKERS[s.maker]?MAKERS[s.maker].name:s.maker)+'</span></div>'
+          + '<div class="flex justify-between py-1"><span class="text-neutral-400">配送区分</span><span>'+s.type+'</span></div>'
+          + '<div class="flex justify-between py-1 border-t border-[#eee] mt-1 pt-2"><span class="text-neutral-400">送り状</span>'
+          + (issued?'<span class="badge bg-emerald-100 text-emerald-700">発行済 '+s.date+'</span>':'<span class="badge text-white" style="background:#e60012">未発行</span>')+'</div>'
+          + '<a href="admin-order-detail.html?no='+s.order+'" class="inline-block mt-3 text-[13px]" style="color:#e60012">受注詳細を開く ›</a></div>';
+
+        document.getElementById('actions').innerHTML = issued
+          ? '<button id="printSlip" class="text-[14px] text-white px-4 py-2 font-bold" style="background:#e60012">ラベル印刷</button>'
+          : '<button id="issue" class="text-[14px] text-white px-4 py-2 font-bold" style="background:#e60012">送り状を発行</button>';
+        var pb=document.getElementById('printSlip'); if(pb) pb.addEventListener('click', function(){ window.print(); });
+        var ib=document.getElementById('issue'); if(ib) ib.addEventListener('click', function(){
+          s.slip=newSlip(); s.date='2026/07/15';
+          alert('送り状 '+s.slip+' を発行し、顧客ポータルに追跡番号を反映しました。（モック）');
+          renderSlip();
+        });
+      }
+      renderSlip();
+    }
+  });
+</script>
+</body>
+</html>

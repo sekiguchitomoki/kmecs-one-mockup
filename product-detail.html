@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+
+    <div class="grid lg:grid-cols-2 gap-10">
+      <div>
+        <div class="h-80 border border-[color:var(--line)] overflow-hidden bg-white flex items-center justify-center p-8"><img id="mainImg" src="" alt="" class="max-w-full max-h-full object-contain"></div>
+        <div class="grid grid-cols-4 gap-2 mt-2" id="thumbs"></div>
+      </div>
+      <div id="info"></div>
+    </div>
+
+    <!-- タブ -->
+    <div id="spec" class="mt-12">
+      <div class="grid sm:grid-cols-3 gap-6">
+        <button class="tab-head on text-left" data-tab="t1"><div class="sec-label" style="color:#e60012">SPECIFICATION</div><div class="text-sm font-bold text-ink mt-1">仕様</div></button>
+        <button class="tab-head text-left" data-tab="t2"><div class="sec-label">DOCUMENTS &amp; QA</div><div class="text-sm font-bold text-ink mt-1">商品情報 / QA</div></button>
+        <button class="tab-head text-left" data-tab="t3"><div class="sec-label">PCN / EOL</div><div class="text-sm font-bold text-ink mt-1">製品変更履歴</div></button>
+      </div>
+      <div class="card p-6 mt-6 text-sm">
+        <div class="tab t1"><table class="w-full text-neutral-700"><tbody class="divide-y divide-[color:var(--line)]" id="specTable"></tbody></table></div>
+        <div class="tab t2 hidden">
+          <div class="grid sm:grid-cols-2 gap-3">
+            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
+              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">データシート（PDF）</div><div class="text-[14px] text-neutral-400">仕様・寸法図</div></div></a>
+            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
+              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">取扱説明書（PDF）</div><div class="text-[14px] text-neutral-400">設置・配線</div></div></a>
+            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3 2.4V13M12 17h.01"/></svg>
+              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">よくあるご質問（QA）</div><div class="text-[14px] text-neutral-400">選定・トラブル</div></div></a>
+            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M5 21V4h9l1 2h5v9h-6l-1-2H5"/></svg>
+              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">環境調査 / RoHS</div><div class="text-[14px] text-neutral-400">調査票の請求</div></div></a>
+          </div>
+        </div>
+        <div class="tab t3 hidden"><ul class="space-y-2.5 text-neutral-700 text-[16px]" id="pcnList"></ul></div>
+      </div>
+    </div>
+
+    <!-- おすすめ -->
+    <div class="mt-12">
+      <div class="border-t-2 border-ink pt-3 mb-5">
+        <div class="sec-label">RECOMMENDED</div>
+        <h2 class="text-lg font-bold text-ink mt-0.5">上位・関連製品のおすすめ</h2>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="reco"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var P = getProduct(qs('code') || 'AMC-2P-08');
+  var M = MAKERS[P.maker];
+  function tagBadge(t){
+    if(t==='EOL予定') return '<span class="badge text-white" style="background:#e60012">EOL予定</span>';
+    if(t==='長納期')  return '<span class="badge bg-amber-100 text-amber-700">長納期</span>';
+    if(t==='定番')    return '<span class="badge bg-ink text-white">定番</span>';
+    if(t==='上位')    return '<span class="badge bg-neutral-200 text-neutral-700">上位機種</span>';
+    return '';
+  }
+
+  KMECS.renderUserShell({
+    active:'products',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'製品を探す',href:'products.html'},{label:M.name,href:'maker.html?m='+P.maker},{label:P.code}],
+    onReady:function(){
+      var a = KMECS.account();
+      var net = netPrice(P.price);
+
+      // 実画像を適用
+      document.getElementById('mainImg').src = prodImg(P);
+      document.getElementById('thumbs').innerHTML = [prodImg(P), catImg('ipc'), catImg('wired'), catImg('sensor')]
+        .map(function(src){ return '<div class="h-20 border border-[color:var(--line)] overflow-hidden bg-white flex items-center justify-center p-1.5"><img src="'+src+'" alt="" class="max-w-full max-h-full object-contain"></div>'; }).join('');
+
+      var priceBlock;
+      if(a){
+        priceBlock =
+          '<div class="border-t-2 border-ink pt-4 mt-6">'
+          + '<div class="flex items-end justify-between gap-4">'
+          + '<div><div class="text-[14px] text-neutral-500 flex items-center gap-1.5">'+a.company+' 様のお取引価格（得値）</div>'
+          + '<div class="font-display text-4xl font-black text-ink mt-1">'+yen(net)+'<span class="text-sm font-normal text-neutral-400"> / 個（税別）</span></div>'
+          + '<div class="text-[14px] text-neutral-400 mt-1">標準価格 <s>'+yen(P.price)+'</s> よりお客様専用価格でご案内中</div></div>'
+          + '<div class="text-right text-[15px] text-neutral-500 shrink-0">'
+          + '<div>在庫：<b class="'+(P.stock>0?'text-emerald-600':'text-amber-600')+'">'+(P.stock>0?(P.stock+' 個'):'取寄')+'</b></div>'
+          + '<div>標準納期：<b class="text-neutral-700">'+P.lead+'</b></div></div></div>'
+          + '<div class="flex items-center gap-2 mt-5">'
+          + '<input id="qty" type="number" value="10" min="1" class="w-24 border border-[color:var(--line)] px-3 py-3 text-sm text-center outline-none focus:border-[color:var(--brand)] font-display">'
+          + '<span class="text-[15px] text-neutral-400">個</span>'
+          + '<button id="addCart" class="btn-red flex-1 !py-3.5">カートに追加</button></div>'
+          + '<div id="added" class="hidden mt-2 text-[15px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2">カートに追加しました。<a href="cart.html" class="underline font-bold">カートを見る →</a></div>'
+          + '</div>';
+      } else {
+        priceBlock =
+          '<div class="mt-6 p-8 text-center text-white" style="background:#22243a">'
+          + '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" class="mx-auto mb-3"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+          + '<div class="font-display text-2xl font-black">価格は非表示です</div>'
+          + '<p class="text-neutral-400 text-[15px] mt-3 leading-relaxed max-w-sm mx-auto">K.MECS ONE は既存お取引先様向けのB2B専用サイトです。<br>'
+          + '<b class="text-white">ログインすると、お客様ごとの得値（お取引条件を反映したお客様価格）</b>と在庫・納期が表示され、そのまま発注できます。</p>'
+          + '<a href="login.html?next='+encodeURIComponent('product-detail.html?code='+P.code)+'" class="btn-red mt-5 !px-8">ログインして価格を見る</a>'
+          + '<div class="mt-5 pt-4 border-t border-white/10 text-[14px] text-neutral-500">'
+          + '標準納期 <b class="text-neutral-300">'+P.lead+'</b>　／　在庫 <b class="text-neutral-300">'+(P.stock>0?(P.stock+' 個'):'取寄')+'</b>　（価格以外の情報はご覧いただけます）</div></div>';
+      }
+
+      document.getElementById('info').innerHTML =
+        '<div class="text-[14px] text-neutral-400 font-display">'+M.name+'　｜　'+P.catJa+'</div>'
+        + '<div class="flex items-center gap-2 mt-2 mb-2">'+tagBadge(P.tag)
+        + (P.stock>0?'<span class="badge bg-emerald-100 text-emerald-700">在庫あり</span>':'<span class="badge bg-amber-100 text-amber-700">取寄</span>')+'</div>'
+        + '<h1 class="text-2xl font-bold text-ink leading-snug">'+P.name+'</h1>'
+        + '<div class="text-[15px] text-neutral-500 mt-2">商品コード：<span class="font-display">'+P.code+'</span></div>'
+        + '<p class="text-[16px] text-neutral-600 mt-3 leading-relaxed">'+P.desc+'</p>'
+        + priceBlock
+        + '<div class="grid grid-cols-3 gap-2 mt-3 text-[15px]">'
+        + '<a href="#spec" class="border border-[color:var(--line)] py-3 text-center hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] text-neutral-700">商品情報 / QA</a>'
+        + '<button id="tmp" class="border border-[color:var(--line)] py-3 text-center hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] text-neutral-700 inline-flex items-center justify-center gap-1.5"></button>'
+        + '<a href="contact.html?product='+P.code+'" class="border py-3 text-center font-bold" style="border-color:#e60012;color:#e60012">営業に連絡</a></div>'
+        + (P.tag==='EOL予定'
+            ? '<div class="mt-3 border-l-4 bg-white card px-4 py-3 text-[15px]" style="border-left-color:#e60012"><b style="color:#e60012">EOL情報：</b>本製品は 2026/09 を最終受注として生産終了予定です。<a href="notifications.html" class="underline" style="color:#e60012">後継品のご案内 →</a></div>'
+            : '<div class="mt-3 border-l-4 bg-white card px-4 py-3 text-[15px]" style="border-left-color:#f0a500"><b class="text-amber-700">PCN情報：</b>仕様変更のご案内があります。<a href="notifications.html" class="underline text-amber-700">詳細 →</a></div>');
+
+      document.getElementById('specTable').innerHTML =
+        '<tr><td class="py-2.5 text-neutral-500 w-44 text-[16px]">メーカー</td><td class="text-[16px]">'+M.name+'（'+M.country+'）</td></tr>'
+        + '<tr><td class="py-2.5 text-neutral-500 text-[16px]">型番</td><td class="font-display text-[16px]">'+P.code+'</td></tr>'
+        + P.spec.map(function(s){ return '<tr><td class="py-2.5 text-neutral-500 text-[16px]">'+s[0]+'</td><td class="text-[16px]">'+s[1]+'</td></tr>'; }).join('');
+
+      document.getElementById('pcnList').innerHTML = P.tag==='EOL予定'
+        ? '<li class="flex gap-2"><span class="badge text-white h-fit" style="background:#e60012">EOL</span><span>2026/07 生産終了のご案内（最終受注 2026/09・後継 IPC-3050-i5）</span></li>'
+        : '<li class="flex gap-2"><span class="badge bg-amber-100 text-amber-700 h-fit">PCN</span><span>2026/04 仕様変更のご案内（互換性への影響なし・RoHS対応継続）</span></li>'
+          + '<li class="flex gap-2"><span class="badge bg-neutral-100 text-neutral-600 h-fit">履歴</span><span>2025/11 梱包仕様変更</span></li>';
+
+      var reco = PRODUCTS.filter(function(x){ return x.code!==P.code && x.maker===P.maker; }).slice(0,4);
+      PRODUCTS.forEach(function(x){ if(reco.length<4 && x.code!==P.code && reco.indexOf(x)<0) reco.push(x); });
+      document.getElementById('reco').innerHTML = reco.map(function(p){
+        return '<a href="product-detail.html?code='+p.code+'" class="card card-h overflow-hidden flex flex-col">'
+          + '<div class="h-28 overflow-hidden bg-white border-b border-[color:var(--line)] flex items-center justify-center p-3"><img src="'+prodImg(p)+'" alt="" class="max-w-full max-h-full object-contain"></div>'
+          + '<div class="p-3"><div class="text-[14px] text-neutral-400 font-display">'+MAKERS[p.maker].name+' ・ '+p.code+'</div>'
+          + '<div class="text-[15px] font-bold text-ink leading-snug mt-1">'+p.name+'</div>'
+          + '<div class="text-[16px] mt-1.5">'+priceOrMask(p.price)+'</div></div></a>';
+      }).join('');
+
+      var add = document.getElementById('addCart');
+      if(add) add.addEventListener('click', function(){ KMECS.addToCart(1); document.getElementById('added').classList.remove('hidden'); });
+      var tmp = document.getElementById('tmp');
+      function starSvg(fill){ return '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(fill?'#e60012':'none')+'" stroke="'+(fill?'#e60012':'currentColor')+'" stroke-width="1.8"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>'; }
+      function paintTmp(){ var on=KMECS.isSaved(P.code); tmp.innerHTML=starSvg(on)+(on?'保存済み':'保存する'); tmp.style.color=on?'#e60012':''; tmp.style.borderColor=on?'#e60012':''; }
+      if(tmp){ paintTmp(); tmp.addEventListener('click', function(){ KMECS.toggleSaved(P.code); paintTmp(); }); }
+
+      document.querySelectorAll('.tab-head').forEach(function(b){
+        b.addEventListener('click', function(){
+          document.querySelectorAll('.tab-head').forEach(function(x){ x.classList.remove('on'); x.querySelector('.sec-label').style.color=''; });
+          b.classList.add('on'); b.querySelector('.sec-label').style.color='#e60012';
+          document.querySelectorAll('.tab').forEach(function(t){ t.classList.add('hidden'); });
+          document.querySelector('.tab.'+b.getAttribute('data-tab')).classList.remove('hidden');
+        });
+      });
+    }
+  });
+</script>
+</body>
+</html>

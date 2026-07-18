@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <a href="admin-orders.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 受注管理に戻る</a>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <!-- 入力 -->
+    <div class="lg:col-span-2 space-y-4">
+      <!-- 受注元 -->
+      <div class="adm-card p-5">
+        <div class="text-[14px] font-bold text-ink mb-3">受注情報</div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="text-[13px] font-bold text-neutral-600">顧客 <span style="color:#e60012">*</span></label>
+            <select id="cust" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">受注経路 <span style="color:#e60012">*</span></label>
+            <select id="route" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white">
+              <option>店頭・営業持ち帰り</option><option>電話</option><option>メール</option><option>FAX</option><option>郵便</option><option>EDI</option><option>Web（顧客入力）</option>
+            </select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">受注日</label>
+            <input id="date" type="date" value="2026-07-17" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px]"></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">担当営業</label>
+            <input id="rep" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px]" placeholder="自動反映" readonly></div>
+        </div>
+        <div id="custInfo" class="mt-3 text-[13px] text-neutral-500"></div>
+      </div>
+
+      <!-- 明細 -->
+      <div class="adm-card overflow-hidden">
+        <div class="px-5 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+          <div class="text-[14px] font-bold text-ink">受注明細</div>
+          <div class="flex gap-1">
+            <input id="pcode" list="prodList" class="border border-[#dcdce6] px-2 py-1.5 text-[13px] font-display" placeholder="型番で追加" style="width:150px">
+            <input id="pqty" type="number" value="1" min="1" class="border border-[#dcdce6] px-2 py-1.5 text-[13px] w-16 text-center">
+            <button id="addLine" class="text-[13px] text-white px-3 py-1.5" style="background:#393b56">＋ 追加</button>
+          </div>
+        </div>
+        <datalist id="prodList"></datalist>
+        <div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>
+          <th class="text-left px-4 py-2.5">型番</th><th class="text-left py-2.5">商品名</th>
+          <th class="text-right py-2.5">得値単価</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">小計</th><th class="px-3"></th>
+        </tr></thead><tbody id="lines"></tbody></table></div>
+        <div id="noline" class="px-4 py-6 text-center text-[14px] text-neutral-400">型番を入力して明細を追加してください。</div>
+      </div>
+
+      <!-- メモ -->
+      <div class="adm-card p-5">
+        <label class="text-[14px] font-bold text-ink">メモ（出荷FW・特殊要件など）</label>
+        <textarea id="memo" rows="3" class="w-full mt-2 border border-[#dcdce6] px-3 py-2 text-[14px]" placeholder="例：EDSはFW v3.9で出荷希望。"></textarea>
+      </div>
+    </div>
+
+    <!-- 金額・確定 -->
+    <div class="space-y-4">
+      <div class="adm-card p-5 sticky top-16">
+        <div class="text-[14px] font-bold text-ink mb-3">金額</div>
+        <div class="space-y-2 text-[14px]" id="totals">
+          <div class="text-neutral-400 text-center py-4">明細を追加してください</div>
+        </div>
+        <button id="submit" class="w-full mt-4 text-white py-3 font-bold" style="background:#e60012">受注を登録</button>
+        <div class="text-[12px] text-neutral-400 mt-2 leading-relaxed">登録すると受注番号が採番され、受注一覧・IBM連携キューに追加されます（モック）。得値は顧客の掛率・個別価格を自動適用します。</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-[13px] text-neutral-400 mt-4">※ モックのため、実際のDB保存・IBM連携は行われません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-orders',
+    title:'受注を手動で追加',
+    sub:'店頭・電話・FAX・メール等で受けた注文、営業が持ち帰った注文を手入力',
+    onReady:function(){
+      var LINES=[]; // {code, qty}
+      // 顧客選択
+      document.getElementById('cust').innerHTML=CUSTOMERS.map(function(c){return '<option value="'+c.code+'">'+c.company+'（'+c.code+'）</option>';}).join('');
+      // 商品candidate
+      document.getElementById('prodList').innerHTML=PRODUCTS.slice(0,120).map(function(p){return '<option value="'+p.code+'">'+p.name+'</option>';}).join('');
+
+      function curCust(){ return getCustomer(document.getElementById('cust').value); }
+      function unit(code){ var c=curCust(); return Math.round(getProduct(code).price*(c?c.rate:0.8)/10)*10; }
+
+      function syncCust(){
+        var c=curCust();
+        document.getElementById('rep').value=c?c.rep:'';
+        document.getElementById('custInfo').innerHTML = c
+          ? '得値ランク'+c.rank+' ・ 掛率'+Math.round(c.rate*100)+'% ・ '+c.terms+' ・ 担当営業 '+c.rep
+          : '';
+        renderLines();
+      }
+      function renderLines(){
+        var tb=document.getElementById('lines');
+        document.getElementById('noline').style.display=LINES.length?'none':'';
+        tb.innerHTML=LINES.map(function(l,i){
+          var p=getProduct(l.code), u=unit(l.code);
+          return '<tr class="border-b border-[#eee]"><td class="px-4 py-2 font-display font-bold text-ink">'+p.code+'</td>'
+            + '<td class="py-2 text-[13px] text-neutral-600">'+p.name+'</td>'
+            + '<td class="py-2 text-right font-display">'+yen(u)+'</td>'
+            + '<td class="py-2 text-right"><input type="number" min="1" value="'+l.qty+'" data-i="'+i+'" class="qin border border-[#dcdce6] px-2 py-1 text-[13px] w-16 text-center"></td>'
+            + '<td class="py-2 text-right font-display font-bold text-ink">'+yen(u*l.qty)+'</td>'
+            + '<td class="px-3 py-2 text-right"><button class="del text-neutral-400 hover:text-[color:var(--brand)]" data-i="'+i+'">×</button></td></tr>';
+        }).join('');
+        tb.querySelectorAll('.qin').forEach(function(inp){ inp.addEventListener('input', function(){ LINES[+inp.getAttribute('data-i')].qty=Math.max(1,+inp.value||1); renderTotals(); }); });
+        tb.querySelectorAll('.del').forEach(function(b){ b.addEventListener('click', function(){ LINES.splice(+b.getAttribute('data-i'),1); renderLines(); renderTotals(); }); });
+        renderTotals();
+      }
+      function renderTotals(){
+        if(!LINES.length){ document.getElementById('totals').innerHTML='<div class="text-neutral-400 text-center py-4">明細を追加してください</div>'; return; }
+        var sub=LINES.reduce(function(s,l){return s+unit(l.code)*l.qty;},0), tax=Math.round(sub*0.1);
+        document.getElementById('totals').innerHTML=
+          '<div class="flex justify-between"><span class="text-neutral-500">小計（得値）</span><span class="font-display">'+yen(sub)+'</span></div>'
+          + '<div class="flex justify-between"><span class="text-neutral-500">消費税(10%)</span><span class="font-display">'+yen(tax)+'</span></div>'
+          + '<div class="flex justify-between items-center pt-2 mt-1 border-t-2 border-ink"><span class="font-bold text-ink">合計</span><span class="font-display text-xl font-black text-ink">'+yen(sub+tax)+'</span></div>'
+          + '<div class="text-[12px] text-neutral-400 pt-1">'+LINES.length+' 品目 ・ '+LINES.reduce(function(s,l){return s+l.qty;},0)+' 点</div>';
+      }
+      function addLine(){
+        var code=document.getElementById('pcode').value.trim().toUpperCase();
+        var qty=Math.max(1,+document.getElementById('pqty').value||1);
+        var p=PRODUCTS.filter(function(x){return x.code.toUpperCase()===code;})[0];
+        if(!p){ alert('型番が見つかりません。'); return; }
+        var ex=LINES.filter(function(l){return l.code===p.code;})[0];
+        if(ex) ex.qty+=qty; else LINES.push({code:p.code, qty:qty});
+        document.getElementById('pcode').value=''; document.getElementById('pqty').value=1;
+        renderLines();
+      }
+      document.getElementById('addLine').addEventListener('click', addLine);
+      document.getElementById('pcode').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addLine(); } });
+      document.getElementById('cust').addEventListener('change', syncCust);
+
+      document.getElementById('submit').addEventListener('click', function(){
+        var c=curCust();
+        if(!c){ alert('顧客を選択してください。'); return; }
+        if(!LINES.length){ alert('明細を1件以上追加してください。'); return; }
+        var no='WO-'+(24080+Math.floor(LINES.length));
+        alert('受注 '+no+' を登録しました。\n顧客：'+c.company+'\n経路：'+document.getElementById('route').value+'\n受注一覧・IBM連携キューに追加されました。（モック）');
+        location.href='admin-orders.html';
+      });
+
+      syncCust();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+
+  <!-- 検索・絞り込み -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-[220px]">
+      <label class="text-[13px] font-bold text-neutral-600">顧客検索</label>
+      <input id="kw" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="会社名・顧客コード・担当者">
+    </div>
+    <div>
+      <label class="text-[13px] font-bold text-neutral-600">得値ランク</label>
+      <select id="fRank" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"><option value="">すべて</option><option>A</option><option>B</option><option>C</option></select>
+    </div>
+    <div>
+      <label class="text-[13px] font-bold text-neutral-600">エリア</label>
+      <select id="fArea" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white" id="fArea"></select>
+    </div>
+    <label class="flex items-center gap-2 text-[14px] text-neutral-700 pb-2"><input type="checkbox" id="fUnpaid" class="accent-[#e60012]"> 未入金ありのみ</label>
+  </div>
+
+  <!-- 顧客一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+      <div class="text-[15px] font-bold text-ink">顧客一覧</div>
+      <span class="text-[13px] text-neutral-400"><b id="cnt" class="text-ink">0</b> 社</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1000px]">
+        <thead><tr>
+          <th class="text-left px-4 py-2.5">顧客コード</th><th class="text-left py-2.5">会社名 / 担当</th>
+          <th class="text-left py-2.5">得値ランク</th><th class="text-left py-2.5">エリア</th>
+          <th class="text-right py-2.5">年間売上</th><th class="text-right py-2.5">前年比</th>
+          <th class="text-right py-2.5">未入金</th><th class="text-right py-2.5">受注</th>
+          <th class="text-right px-4 py-2.5">操作</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際の顧客DBとは連携していません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  function rankBadge(r){
+    var c = r==='A'?'#e60012':(r==='B'?'#393b56':'#8b8ea8');
+    return '<span class="badge text-white" style="background:'+c+'">得値'+r+'</span>';
+  }
+
+  KMECS.renderAdminShell({
+    active:'admin-customers',
+    title:'顧客管理',
+    sub:'顧客ごとの取引条件・売上・未入金・注文履歴を確認',
+    onReady:function(){
+      // KPI
+      var totalSales = CUSTOMERS.reduce(function(s,c){return s+c.salesYear;},0);
+      var totalUnpaid = CUSTOMERS.reduce(function(s,c){return s+c.unpaid;},0);
+      var unpaidCust = CUSTOMERS.filter(function(c){return c.unpaid>0;}).length;
+      document.getElementById('kpi').innerHTML =
+        '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">取引顧客数</div><div class="font-display text-2xl font-black text-ink mt-1">'+CUSTOMERS.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">年間売上（全顧客）</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(totalSales)+'</div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">未入金 合計</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+yen(totalUnpaid)+'</div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">未入金あり顧客</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+unpaidCust+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>';
+
+      // エリア選択肢
+      var areas = CUSTOMERS.map(function(c){return c.area;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fArea').innerHTML = '<option value="">全国</option>'+areas.map(function(a){return '<option>'+a+'</option>';}).join('');
+
+      function render(){
+        var kw=document.getElementById('kw').value.trim(), rk=document.getElementById('fRank').value, ar=document.getElementById('fArea').value, up=document.getElementById('fUnpaid').checked;
+        var list=CUSTOMERS.filter(function(c){
+          if(rk && c.rank!==rk) return false;
+          if(ar && c.area!==ar) return false;
+          if(up && c.unpaid<=0) return false;
+          if(kw && (c.company+c.code+c.contact).indexOf(kw)<0) return false;
+          return true;
+        });
+        document.getElementById('cnt').textContent=list.length;
+        document.getElementById('rows').innerHTML=list.map(function(c){
+          var yoy=Math.round((c.salesYear/c.salesPrev-1)*100);
+          return '<tr class="hover:bg-[#fafafe]">'
+            + '<td class="px-4 py-3 font-display text-neutral-600">'+c.code+'</td>'
+            + '<td class="py-3"><div class="text-[15px] font-bold text-ink">'+c.company+'</div><div class="text-[13px] text-neutral-400">'+c.contact+' 様 ・ 担当営業: <b class="text-neutral-600">'+c.rep+'</b></div></td>'
+            + '<td class="py-3">'+rankBadge(c.rank)+'<span class="text-[12px] text-neutral-400 ml-1">'+Math.round(c.rate*100)+'%</span></td>'
+            + '<td class="py-3 text-[14px] text-neutral-600">'+c.area+'</td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-3 text-right font-display '+(yoy>=0?'text-emerald-600':'text-[color:var(--brand)]')+'">'+(yoy>=0?'+':'')+yoy+'%</td>'
+            + '<td class="py-3 text-right font-display '+(c.unpaid>0?'font-bold':'text-neutral-300')+'" '+(c.unpaid>0?'style="color:#e60012"':'')+'>'+(c.unpaid>0?yen(c.unpaid):'—')+'</td>'
+            + '<td class="py-3 text-right font-display text-neutral-600">'+c.ordersCount+'</td>'
+            + '<td class="px-4 py-3 text-right"><a href="admin-customer-detail.html?code='+c.code+'" class="inline-block text-[13px] text-white px-3 py-1.5" style="background:#393b56">詳細 ›</a></td></tr>';
+        }).join('');
+      }
+
+      ['kw','fRank','fArea','fUnpaid'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); document.getElementById(id).addEventListener('change', render); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

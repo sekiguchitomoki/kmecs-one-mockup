@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- KPI（クリックで下の受注一覧を絞り込み） -->
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+    <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="all"><div class="text-[14px] text-neutral-500">受注（一覧）</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="kAll">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">すべて表示 ›</div></div>
+    <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="auto"><div class="text-[14px] text-neutral-500">IBM自動IP済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1"><span id="kAuto">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="check"><div class="text-[14px] text-neutral-500">要チェック</div><div class="font-display text-2xl font-black text-amber-600 mt-1"><span id="kCheck">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="error"><div class="text-[14px] text-neutral-500">連携エラー</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012"><span id="kError">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="nolead"><div class="text-[14px] text-neutral-500">納期未入力</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="kNolead">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-4 mb-4">
+    <!-- 受注経路 -->
+    <div class="adm-card p-5">
+      <div class="text-[16px] font-bold text-ink mb-1">受注経路の内訳</div>
+      <p class="text-[14px] text-neutral-400 mb-3">Web経路を増やし、CSの手入力を削減するのが本システムの狙い</p>
+      <div class="space-y-2.5" id="routeChart"></div>
+      <div class="mt-3 pt-3 border-t border-[color:var(--line)] text-[14px] text-neutral-500 leading-relaxed">
+        メール／FAX／郵便は<b class="text-ink">顧客がポータルで直接入力</b>へ移行（CS作業ゼロ）。<br>
+        EDIは<b class="text-ink">見積番号からCSが入力</b>（社内トレース可）。
+      </div>
+    </div>
+
+    <!-- IBM連携図 -->
+    <div class="adm-card p-5 lg:col-span-2">
+      <div class="text-[16px] font-bold text-ink mb-3">クラウド ⇄ IBM基幹 連携</div>
+      <div class="flex items-center justify-center gap-3 sm:gap-6 flex-wrap text-center text-[14px] py-3">
+        <div class="flex flex-col items-center gap-1.5">
+          <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl" style="background:var(--lav)">🌐</div>
+          <div class="font-bold text-ink">Webポータル</div><div class="text-neutral-400">受注入力</div>
+        </div>
+        <div class="flex flex-col items-center" style="color:#e60012">
+          <span class="text-[13px] text-neutral-400">VPN 暗号化</span>
+          <svg width="70" height="16" viewBox="0 0 70 16"><line x1="0" y1="8" x2="60" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/><path d="M60 3l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <span class="text-[13px] text-emerald-600">● 接続中</span>
+        </div>
+        <div class="flex flex-col items-center gap-1.5">
+          <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl" style="background:var(--lav)">☁️</div>
+          <div class="font-bold text-ink">クラウド受発注</div><div class="text-neutral-400">キュー / 変換</div>
+        </div>
+        <div class="flex flex-col items-center" style="color:#e60012">
+          <span class="text-[13px] text-neutral-400">自動インプット</span>
+          <svg width="70" height="16" viewBox="0 0 70 16"><line x1="0" y1="8" x2="60" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/><path d="M60 3l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <span class="text-[13px] text-emerald-600">● 稼働中</span>
+        </div>
+        <div class="flex flex-col items-center gap-1.5">
+          <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl text-white" style="background:#393b56">🖥️</div>
+          <div class="font-bold text-ink">IBM 基幹</div><div class="text-neutral-400">受注IP / 発注IP</div>
+        </div>
+      </div>
+      <div class="text-center text-[14px] text-neutral-500 mt-2 pt-3 border-t border-[color:var(--line)]">
+        受注確定 → 自動でIBMへ<b class="text-ink">受注インプット／発注インプット</b>（人のチェックは要確認案件のみ）・在庫／顧客／価格／商品マスタを参照
+      </div>
+    </div>
+  </div>
+
+  <!-- 受注一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[16px] font-bold text-ink">受注一覧（全経路一本化）<span class="text-[13px] font-normal text-neutral-400 ml-2" id="filterLabel"></span></div>
+      <div class="flex flex-wrap gap-1 items-center text-[14px]">
+        <button class="fb px-3 py-1.5 text-white" data-f="all" style="background:#e60012">すべて</button>
+        <button class="fb px-3 py-1.5 border border-[#dcdce6] bg-white text-neutral-600" data-f="todo">要対応</button>
+        <a href="admin-order-new.html" class="ml-2 inline-flex items-center gap-1 text-white px-3 py-1.5 font-bold" style="background:#393b56"><span class="text-[16px] leading-none">＋</span> 手動で受注を追加</a>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1050px]">
+        <thead>
+          <tr>
+            <th class="text-left px-4 py-2.5">受注番号</th>
+            <th class="text-left py-2.5">顧客</th>
+            <th class="text-left py-2.5">経路</th>
+            <th class="text-right py-2.5">金額</th>
+            <th class="text-left py-2.5 pl-4">IBMインプット状況</th>
+            <th class="text-left py-2.5">納期</th>
+            <th class="text-left py-2.5">出荷</th>
+            <th class="text-right px-4 py-2.5">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[14px] text-neutral-400 mt-3">※ モックのため、実際のIBM連携・承認処理は行われません（ボタンは状態変化のみ再現）。</p>
+
+
+
+<!-- 入力モーダル -->
+<div id="modal" class="hidden fixed inset-0 z-50 bg-black/50 p-4 overflow-y-auto">
+  <div class="max-w-md mx-auto my-10">
+    <div class="bg-white">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-[#dcdce6]">
+        <h3 class="font-bold text-ink text-[17px]" id="mTitle"></h3>
+        <button id="close" class="text-neutral-400 hover:text-ink text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-5" id="mBody"></div>
+      <div class="flex gap-2 justify-end px-5 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
+        <button id="close2" class="text-[15px] border border-[#dcdce6] bg-white text-neutral-600 px-4 py-2">キャンセル</button>
+        <button id="mSave" class="text-[15px] text-white px-4 py-2 font-bold" style="background:#e60012">IBMへインプット</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  // 会社・金額・経路は data.js の ADMIN_ORDERS を正とし、ここは IBM連携状態のオーバーレイのみ
+  var ROWS = [
+    { no:'WO-24076', ibm:'auto',  lead:'',           ship:'' },
+    { no:'WO-24075', ibm:'auto',  lead:'',           ship:'' },
+    { no:'WO-24074', ibm:'auto',  lead:'2026/07/20', ship:'' },
+    { no:'WO-24073', ibm:'auto',  lead:'2026/07/17', ship:'出荷準備中' },
+    { no:'WO-24072', ibm:'check', lead:'',           ship:'' },
+    { no:'WO-24071', ibm:'check', lead:'2026/07/18', ship:'' },
+    { no:'WO-24070', ibm:'error', lead:'',           ship:'' },
+    { no:'WO-24069', ibm:'auto',  lead:'2026/07/16', ship:'出荷済' },
+    { no:'WO-24068', ibm:'check', lead:'',           ship:'' },
+  ];
+  function routeBadge(r){
+    var m = { 'Web検索':'#e60012', '見積Web':'#ff6b6b', 'EDI':'#14887b', 'メール':'#393b56', 'FAX':'#5b5e80', '郵便':'#8b8ea8' };
+    return '<span class="badge text-white" style="background:'+(m[r]||'#999')+'">'+r+'</span>';
+  }
+  function ibmStatus(s){
+    if(s==='auto')  return '<span class="badge bg-emerald-100 text-emerald-700">● 自動IP済</span><div class="text-[14px] text-neutral-400 mt-0.5">受注IP / 発注IP 完了</div>';
+    if(s==='check') return '<span class="badge bg-amber-100 text-amber-700">要チェック</span><div class="text-[14px] text-neutral-400 mt-0.5">CS確認待ち</div>';
+    return '<span class="badge text-white" style="background:#e60012">連携エラー</span><div class="text-[14px] text-neutral-400 mt-0.5">在庫マスタ不整合</div>';
+  }
+
+  KMECS.renderAdminShell({
+    active:'admin-orders',
+    title:'受注管理・IBM連携ステータス',
+    sub:'全受注処理を一本化 ・ クラウド受発注 ⇄ IBM基幹（在庫/顧客/価格/商品マスタ）',
+    onReady:function(){
+      var f='all';
+
+      // 受注経路チャート
+      document.getElementById('routeChart').innerHTML = ROUTES.filter(function(r){ return r.pct>0; }).map(function(r){
+        return '<div><div class="flex justify-between text-[14px] mb-1"><span class="text-neutral-600">'+r.label+'</span>'
+          + '<span class="font-display font-bold text-ink">'+r.pct+'%</span></div>'
+          + '<div class="h-2" style="background:#e8e8ee"><div class="h-2" style="width:'+r.pct+'%;background:'+r.color+'"></div></div>'
+          + '<div class="text-[13px] text-neutral-400 mt-0.5">'+r.note+'</div></div>';
+      }).join('');
+
+      function matchFilter(r){
+        switch(f){
+          case 'auto':   return r.ibm==='auto';
+          case 'check':  return r.ibm==='check';
+          case 'error':  return r.ibm==='error';
+          case 'nolead': return !r.lead;
+          case 'todo':   return r.ibm!=='auto' || !r.lead;   // 旧「要対応」
+          default:       return true;                         // all
+        }
+      }
+      var FILTER_LABEL = { all:'全件', auto:'IBM自動IP済', check:'要チェック', error:'連携エラー', nolead:'納期未入力', todo:'要対応' };
+      // KPI件数は実際の一覧（ROWS）から算出（表示件数と一致させる）
+      document.getElementById('kAll').textContent    = ROWS.length;
+      document.getElementById('kAuto').textContent   = ROWS.filter(function(r){return r.ibm==='auto';}).length;
+      document.getElementById('kCheck').textContent  = ROWS.filter(function(r){return r.ibm==='check';}).length;
+      document.getElementById('kError').textContent  = ROWS.filter(function(r){return r.ibm==='error';}).length;
+      document.getElementById('kNolead').textContent = ROWS.filter(function(r){return !r.lead;}).length;
+      function render(){
+        var list = ROWS.filter(matchFilter);
+        // 絞り込みラベル＋件数
+        document.getElementById('filterLabel').innerHTML = f==='all'
+          ? '（全 '+list.length+' 件）'
+          : '｜ 絞り込み中：<b class="text-ink">'+FILTER_LABEL[f]+'</b> '+list.length+' 件　<button id="clearF" class="text-[color:var(--brand)] hover:underline ml-1">解除 ×</button>';
+        var cf=document.getElementById('clearF'); if(cf) cf.addEventListener('click', function(){ setFilter('all'); });
+        // KPIカードの選択ハイライト
+        document.querySelectorAll('.kpi').forEach(function(card){
+          var on = card.getAttribute('data-k')===f;
+          card.style.outline = on ? '2px solid #e60012' : '';
+          card.style.outlineOffset = on ? '-1px' : '';
+        });
+        // フィルタボタンのハイライト
+        document.querySelectorAll('.fb').forEach(function(x){
+          var on = x.getAttribute('data-f')===f || (x.getAttribute('data-f')==='all' && f!=='todo' && !FILTER_LABEL[f]);
+          if(x.getAttribute('data-f')===f){ x.className='fb px-3 py-1.5 text-white'; x.style.background='#e60012'; }
+          else { x.className='fb px-3 py-1.5 border border-[#dcdce6] bg-white text-neutral-600'; x.style.background=''; }
+        });
+        if(!list.length){
+          document.getElementById('rows').innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-neutral-400 text-[14px]">「'+FILTER_LABEL[f]+'」に該当する受注はありません。</td></tr>';
+          var cf0=document.getElementById('clearF'); if(cf0) cf0.addEventListener('click', function(){ setFilter('all'); });
+          return;
+        }
+        document.getElementById('rows').innerHTML = list.map(function(r,i){
+          var o = getAdminOrder(r.no);              // 会社/金額/経路の正データ
+          var c = getCustomer(o.cust) || {company:o.cust, rank:'-', code:o.cust};
+          var idx = ROWS.indexOf(r);
+          return '<tr class="'+(r.ibm==='error'?'bg-[#fff5f5]':'')+'">'
+            + '<td class="px-4 py-3 font-display font-bold text-ink">'+r.no+'</td>'
+            + '<td class="py-3 text-neutral-600 text-[16px]">'+c.company+'<div class="text-[14px] text-neutral-400">得値'+c.rank+' ・ '+c.code+'</div></td>'
+            + '<td class="py-3">'+routeBadge(o.route)+'</td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(o.amount)+'</td>'
+            + '<td class="py-3 pl-4">'+ibmStatus(r.ibm)+'</td>'
+            + '<td class="py-3">'+(r.lead
+                ? '<span class="text-[15px] font-display text-ink">'+r.lead+'</span>'
+                : '<button class="act text-[14px] border px-2 py-1" data-i="'+idx+'" data-t="lead" style="border-color:#e60012;color:#e60012">納期入力</button>')+'</td>'
+            + '<td class="py-3">'+(r.ship
+                ? '<span class="badge bg-emerald-100 text-emerald-700">'+r.ship+'</span>'
+                : '<button class="act text-[14px] border border-[#dcdce6] text-neutral-500 px-2 py-1" data-i="'+idx+'" data-t="ship">出荷入力</button>')+'</td>'
+            + '<td class="px-4 py-3 text-right whitespace-nowrap">'
+            + (r.ibm==='check' ? '<button class="ok text-[14px] text-white px-2.5 py-1.5 mr-1" data-i="'+idx+'" style="background:#14887b">承認してIBM連携</button>' : '')
+            + (r.ibm==='error' ? '<button class="ok text-[14px] text-white px-2.5 py-1.5 mr-1" data-i="'+idx+'" style="background:#e60012">エラー確認</button>' : '')
+            + '<a href="admin-order-detail.html?no='+r.no+'" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">開く ›</a>'
+            + '</td></tr>';
+        }).join('');
+        bind();
+      }
+
+      function bind(){
+        document.querySelectorAll('.act').forEach(function(b){
+          b.addEventListener('click', function(){
+            var i = +b.getAttribute('data-i'), t = b.getAttribute('data-t');
+            var r = ROWS[i];
+            document.getElementById('mTitle').textContent = (t==='lead'?'納期入力':'出荷入力')+' — '+r.no;
+            document.getElementById('mBody').innerHTML = t==='lead'
+              ? '<div class="text-[15px] text-neutral-500 mb-3">メーカー回答納期を入力すると、IBMへ納期インプットされ、顧客ポータルと進捗メールに自動反映されます。</div>'
+                + '<label class="text-[14px] font-bold text-neutral-600">回答納期</label>'
+                + '<input id="mIn" type="date" value="2026-07-22" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-sm">'
+                + '<label class="text-[14px] font-bold text-neutral-600 mt-3 block">備考</label>'
+                + '<textarea class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[16px]" rows="2" placeholder="分納・一部先行出荷など"></textarea>'
+              : '<div class="text-[15px] text-neutral-500 mb-3">出荷を入力するとIBMへ出荷インプットされ、送り状発行へ引き渡されます。</div>'
+                + '<label class="text-[14px] font-bold text-neutral-600">出荷日</label>'
+                + '<input id="mIn" type="date" value="2026-07-16" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-sm">'
+                + '<label class="text-[14px] font-bold text-neutral-600 mt-3 block">個口数</label>'
+                + '<input type="number" value="1" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-sm">';
+            document.getElementById('mSave').setAttribute('data-i', i);
+            document.getElementById('mSave').setAttribute('data-t', t);
+            document.getElementById('modal').classList.remove('hidden');
+          });
+        });
+        document.querySelectorAll('.ok').forEach(function(b){
+          b.addEventListener('click', function(){
+            var i = +b.getAttribute('data-i');
+            ROWS[i].ibm = 'auto';
+            render();
+            alert(ROWS[i].no+' をIBMへインプットしました（受注IP / 発注IP）。（モック）');
+          });
+        });
+      }
+
+      document.getElementById('close').addEventListener('click', function(){ document.getElementById('modal').classList.add('hidden'); });
+      document.getElementById('close2').addEventListener('click', function(){ document.getElementById('modal').classList.add('hidden'); });
+      document.getElementById('mSave').addEventListener('click', function(){
+        var i = +this.getAttribute('data-i'), t = this.getAttribute('data-t');
+        var v = document.getElementById('mIn').value;
+        if(t==='lead') ROWS[i].lead = v.replace(/-/g,'/');
+        else ROWS[i].ship = '出荷済';
+        document.getElementById('modal').classList.add('hidden');
+        render();
+        alert(ROWS[i].no+' の'+(t==='lead'?'納期':'出荷')+'をIBMへインプットし、顧客ポータル・進捗メールへ反映しました。（モック）');
+      });
+
+      function setFilter(key){
+        f = key;
+        render();
+        // 一覧へスクロール（カードから押した時に結果が見えるように）
+        var tbl=document.getElementById('rows'); if(tbl && tbl.scrollIntoView) tbl.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+      // フィルタボタン
+      document.querySelectorAll('.fb').forEach(function(b){
+        b.addEventListener('click', function(){ setFilter(b.getAttribute('data-f')); });
+      });
+      // KPIカードのクリック
+      document.querySelectorAll('.kpi').forEach(function(card){
+        card.addEventListener('click', function(){ setFilter(card.getAttribute('data-k')); });
+      });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

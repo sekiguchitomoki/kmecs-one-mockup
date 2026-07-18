@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 期間・エクスポート -->
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+    <div class="flex gap-1 text-[13px] items-center">
+      <span class="text-neutral-500 mr-1">集計期間：</span>
+      <button class="rb px-3 py-1.5" data-p="30d">直近30日</button>
+      <button class="rb px-3 py-1.5" data-p="q">今四半期</button>
+      <button class="rb px-3 py-1.5" data-p="year">年間</button>
+    </div>
+    <button id="csv" class="text-[14px] text-white px-3 py-2 font-bold" style="background:#393b56">CSVエクスポート</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5" id="kpi"></div>
+
+  <!-- 上段：商品ランキング 3種 -->
+  <div class="grid lg:grid-cols-3 gap-4 mb-4">
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2"><span class="w-6 h-6 flex items-center justify-center text-white text-[13px]" style="background:#e60012">👁</span><span class="text-[15px] font-bold text-ink">閲覧数の多い商品</span></div>
+      <div id="rankViews"></div>
+    </div>
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2"><span class="w-6 h-6 flex items-center justify-center text-white text-[13px]" style="background:#393b56">🛒</span><span class="text-[15px] font-bold text-ink">売れ筋（注文数）商品</span></div>
+      <div id="rankOrders"></div>
+    </div>
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2"><span class="w-6 h-6 flex items-center justify-center text-white text-[13px]" style="background:#14887b">¥</span><span class="text-[15px] font-bold text-ink">売上金額 商品</span></div>
+      <div id="rankSales"></div>
+    </div>
+  </div>
+
+  <!-- 中段：営業売上ランキング＋メーカー別＋カテゴリ別 -->
+  <div class="grid lg:grid-cols-3 gap-4 mb-4">
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] text-[15px] font-bold text-ink">営業担当 売上ランキング</div>
+      <div id="rankReps"></div>
+    </div>
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] text-[15px] font-bold text-ink">顧客 売上ランキング</div>
+      <div id="rankCust"></div>
+    </div>
+    <div class="adm-card p-5">
+      <div class="text-[15px] font-bold text-ink mb-4">メーカー別 売上構成</div>
+      <div class="space-y-3" id="rankMaker"></div>
+    </div>
+  </div>
+
+  <!-- 下段：CVRの高い商品＋伸びている商品＋カート離脱 -->
+  <div class="grid lg:grid-cols-3 gap-4 mb-4">
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between"><span class="text-[15px] font-bold text-ink">CVRの高い商品</span><span class="text-[12px] text-neutral-400">注文 / 閲覧</span></div>
+      <div id="rankCvr"></div>
+    </div>
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2"><span class="text-[15px] font-bold text-ink">急上昇 商品（前月比）</span></div>
+      <div id="rankTrend"></div>
+    </div>
+    <div class="adm-card overflow-hidden">
+      <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between"><span class="text-[15px] font-bold text-ink">カート離脱の多い商品</span><span class="text-[12px] text-neutral-400">要フォロー</span></div>
+      <div id="rankAband"></div>
+    </div>
+  </div>
+
+  <!-- 検索キーワード -->
+  <div class="adm-card p-5">
+    <div class="text-[15px] font-bold text-ink mb-4">サイト内 検索キーワード ランキング</div>
+    <div class="flex flex-wrap gap-2" id="keywords"></div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、閲覧数・CVR等はダミー生成値です（実運用ではGA/アクセスログ・受注データから集計）。</p>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var MK_COLOR={ moxa:'#e60012', odu:'#393b56', fraba:'#14887b', ipc:'#8b8ea8' };
+  var MK_NAME={ moxa:'MOXA', odu:'ODU', fraba:'POSITAL', ipc:'AXIOMTEK/IPC' };
+
+  KMECS.renderAdminShell({
+    active:'admin-ranking',
+    title:'ランキング / マーケティング',
+    sub:'閲覧数・売れ筋・売上・CVR・急上昇・検索キーワード・営業/顧客ランキング',
+    onReady:function(){
+      var ST=buildProductStats();
+      // 疑似「前月比」トレンド
+      ST.forEach(function(p,i){ p.trend = ((p.code.length*13+i*7)%60)-15; }); // -15%〜+44%
+      // カート離脱率 = (carts-orders)/carts
+      ST.forEach(function(p){ p.aband = p.carts? Math.round((p.carts-p.orders)/p.carts*100) : 0; });
+
+      // 集計期間（30日ぶんの実測を基準に、四半期＝×3 / 年間＝×12 で換算）
+      var PERIODS={ '30d':{label:'直近30日', f:1,  custF:1/12},
+                    'q'  :{label:'今四半期', f:3,  custF:1/4 },
+                    'year':{label:'年間',    f:12, custF:1   } };
+      var period='30d';
+      function medal(i){ return i===0?'#e60012':i===1?'#c0a02c':i===2?'#b0703a':'#9aa0ad'; }
+
+      function render(){
+      var P=PERIODS[period], F=P.f;
+      // 期間ボタンの見た目
+      document.querySelectorAll('.rb').forEach(function(b){
+        var on=b.getAttribute('data-p')===period;
+        b.className='rb px-3 py-1.5 '+(on?'text-white':'border border-[#dcdce6] bg-white text-neutral-600');
+        b.style.background=on?'#e60012':'';
+      });
+      // 期間換算した商品統計（CVR・トレンドは率なので不変）
+      var S=ST.map(function(p){ return { code:p.code, name:p.name, maker:p.maker, cvr:p.cvr, trend:p.trend,
+        views:Math.round(p.views*F), orders:Math.round(p.orders*F), sales:Math.round(p.sales*F),
+        carts:Math.round(p.carts*F), aband:p.aband }; });
+
+      var totalViews=S.reduce(function(s,p){return s+p.views;},0);
+      var totalOrders=S.reduce(function(s,p){return s+p.orders;},0);
+      var totalSales=S.reduce(function(s,p){return s+p.sales;},0);
+      var avgCvr=(totalOrders/totalViews*100).toFixed(1);
+
+      document.getElementById('kpi').innerHTML=
+        '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">総閲覧数（'+P.label+'）</div><div class="font-display text-2xl font-black text-ink mt-1">'+totalViews.toLocaleString()+'</div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">総注文数（'+P.label+'）</div><div class="font-display text-2xl font-black text-ink mt-1">'+totalOrders.toLocaleString()+'</div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均CVR</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+avgCvr+'%</div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">商品売上（'+P.label+'）</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(totalSales)+'</div></div>';
+      // 汎用：商品ランキングリスト（val表示＋バー）
+      function prodList(el, arr, valFn, barMax, unit){
+        document.getElementById(el).innerHTML=arr.slice(0,8).map(function(p,i){
+          var v=valFn(p), pct=Math.round(v/barMax*100);
+          return '<a href="product-detail.html?code='+p.code+'" target="_blank" class="flex items-center gap-3 px-4 py-2.5 border-b border-[#f0f0f4] hover:bg-[#fafafe]">'
+            + '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white font-display font-black text-[12px] shrink-0" style="background:'+medal(i)+'">'+(i+1)+'</span>'
+            + '<span class="w-9 h-9 bg-white border border-[#eee] flex items-center justify-center overflow-hidden shrink-0"><img src="'+prodImgByCode(p.code)+'" class="max-h-full max-w-full object-contain"></span>'
+            + '<span class="flex-1 min-w-0"><span class="block text-[13px] font-bold text-ink truncate">'+p.name+'</span>'
+            + '<span class="block h-1.5 mt-1" style="background:#eee"><span class="block h-1.5" style="width:'+pct+'%;background:'+(MK_COLOR[p.maker]||'#999')+'"></span></span></span>'
+            + '<span class="font-display font-bold text-ink text-[14px] shrink-0">'+(typeof v==="number"&&unit==="¥"?yen(v):v.toLocaleString()+(unit||''))+'</span></a>';
+        }).join('');
+      }
+      function prodImgByCode(code){ return prodImg(getProduct(code)); }
+
+      // 閲覧数
+      var byViews=S.slice().sort(function(a,b){return b.views-a.views;});
+      prodList('rankViews', byViews, function(p){return p.views;}, byViews[0].views, '');
+      // 注文数
+      var byOrders=S.slice().sort(function(a,b){return b.orders-a.orders;});
+      prodList('rankOrders', byOrders, function(p){return p.orders;}, byOrders[0].orders, '件');
+      // 売上
+      var bySales=S.slice().sort(function(a,b){return b.sales-a.sales;});
+      prodList('rankSales', bySales, function(p){return p.sales;}, bySales[0].sales, '¥');
+
+      // 営業ランキング（年間売上を期間換算。達成率は年間目標ベースのため年間時のみ表示）
+      var reps=REPS.map(function(r){ var cs=CUSTOMERS.filter(function(c){return c.rep===r.name;}); var sales=Math.round(cs.reduce(function(s,c){return s+c.salesYear;},0)*P.custF); return {name:r.name,dept:r.dept,sales:sales,cnt:cs.length,rate:Math.round(sales/(r.target*P.custF)*100)}; }).sort(function(a,b){return b.sales-a.sales;});
+      document.getElementById('rankReps').innerHTML=reps.map(function(r,i){
+        var pct=Math.round(r.sales/reps[0].sales*100);
+        return '<div class="flex items-center gap-3 px-4 py-3 border-b border-[#f0f0f4]">'
+          + '<span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-display font-black text-[13px]" style="background:'+medal(i)+'">'+(i+1)+'</span>'
+          + '<span class="flex-1 min-w-0"><span class="block text-[14px] font-bold text-ink">'+r.name+'</span>'
+          + '<span class="block text-[11px] text-neutral-400">'+r.dept+' ・ 達成'+r.rate+'%</span>'
+          + '<span class="block h-1.5 mt-1" style="background:#eee"><span class="block h-1.5" style="width:'+pct+'%;background:#e60012"></span></span></span>'
+          + '<span class="font-display font-bold text-ink text-[14px] shrink-0">'+yen(r.sales)+'</span></div>';
+      }).join('');
+
+      // 顧客ランキング
+      var cust=CUSTOMERS.slice().sort(function(a,b){return b.salesYear-a.salesYear;});
+      document.getElementById('rankCust').innerHTML=cust.slice(0,8).map(function(c,i){
+        var v=Math.round(c.salesYear*P.custF), top=Math.round(cust[0].salesYear*P.custF);
+        var pct=Math.round(v/top*100);
+        return '<a href="admin-customer-detail.html?code='+c.code+'" class="flex items-center gap-3 px-4 py-2.5 border-b border-[#f0f0f4] hover:bg-[#fafafe]">'
+          + '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white font-display font-black text-[12px]" style="background:'+medal(i)+'">'+(i+1)+'</span>'
+          + '<span class="flex-1 min-w-0"><span class="block text-[13px] font-bold text-ink truncate">'+c.company+'</span>'
+          + '<span class="block text-[11px] text-neutral-400">担当: '+c.rep+'</span></span>'
+          + '<span class="font-display font-bold text-ink text-[14px] shrink-0">'+yen(v)+'</span></a>';
+      }).join('');
+
+      // メーカー別
+      var mk={}; S.forEach(function(p){ mk[p.maker]=(mk[p.maker]||0)+p.sales; });
+      var mkTotal=Object.keys(mk).reduce(function(s,k){return s+mk[k];},0);
+      document.getElementById('rankMaker').innerHTML=Object.keys(mk).sort(function(a,b){return mk[b]-mk[a];}).map(function(k){
+        var pct=Math.round(mk[k]/mkTotal*100);
+        return '<div><div class="flex justify-between text-[13px] mb-1"><b class="text-ink">'+MK_NAME[k]+'</b><span class="font-display text-neutral-500">'+pct+'%</span></div>'
+          + '<div class="h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+pct+'%;background:'+MK_COLOR[k]+'"></div></div></div>';
+      }).join('');
+
+      // CVR
+      var byCvr=S.filter(function(p){return p.views>300*F;}).sort(function(a,b){return b.cvr-a.cvr;});
+      document.getElementById('rankCvr').innerHTML=byCvr.slice(0,7).map(function(p,i){
+        return '<div class="flex items-center gap-3 px-4 py-2.5 border-b border-[#f0f0f4]">'
+          + '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white font-display font-black text-[12px]" style="background:'+medal(i)+'">'+(i+1)+'</span>'
+          + '<span class="flex-1 min-w-0 text-[13px] font-bold text-ink truncate">'+p.name+'</span>'
+          + '<span class="text-[11px] text-neutral-400 shrink-0 mr-2">'+p.orders+'/'+p.views+'</span>'
+          + '<span class="font-display font-bold shrink-0" style="color:#e60012">'+p.cvr+'%</span></div>';
+      }).join('');
+
+      // 急上昇
+      var byTrend=S.slice().sort(function(a,b){return b.trend-a.trend;});
+      document.getElementById('rankTrend').innerHTML=byTrend.slice(0,7).map(function(p,i){
+        var up=p.trend>=0;
+        return '<div class="flex items-center gap-3 px-4 py-2.5 border-b border-[#f0f0f4]">'
+          + '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white font-display font-black text-[12px]" style="background:'+medal(i)+'">'+(i+1)+'</span>'
+          + '<span class="flex-1 min-w-0 text-[13px] font-bold text-ink truncate">'+p.name+'</span>'
+          + '<span class="font-display font-bold shrink-0 '+(up?'text-emerald-600':'text-neutral-400')+'">'+(up?'▲+':'▼')+p.trend+'%</span></div>';
+      }).join('');
+
+      // カート離脱
+      var byAband=S.filter(function(p){return p.carts>5*F;}).sort(function(a,b){return b.aband-a.aband;});
+      document.getElementById('rankAband').innerHTML=byAband.slice(0,7).map(function(p,i){
+        return '<div class="flex items-center gap-3 px-4 py-2.5 border-b border-[#f0f0f4]">'
+          + '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white font-display font-black text-[12px]" style="background:'+medal(i)+'">'+(i+1)+'</span>'
+          + '<span class="flex-1 min-w-0 text-[13px] font-bold text-ink truncate">'+p.name+'</span>'
+          + '<span class="text-[11px] text-neutral-400 shrink-0 mr-2">投入'+p.carts+'</span>'
+          + '<span class="font-display font-bold shrink-0" style="color:#e60012">'+p.aband+'%</span></div>';
+      }).join('');
+
+      // 検索キーワード
+      var KW=[['EDS-408A',312],['エンコーダ',268],['MOXA スイッチ',241],['AMC コネクタ',205],['無線AP',188],['NPort',164],['セキュアルータ',150],['IPC',142],['ゲートウェイ',118],['POSITAL',96],['メディアコンバータ',84],['傾斜センサ',71]];
+      var kwMax=KW[0][1];
+      document.getElementById('keywords').innerHTML=KW.map(function(k,i){
+        var sz=12+Math.round(k[1]/kwMax*10);
+        var op=0.55+k[1]/kwMax*0.45;
+        return '<a href="products.html?q='+encodeURIComponent(k[0])+'" target="_blank" class="inline-flex items-baseline gap-1 border border-[#dcdce6] px-3 py-1.5 hover:border-[color:var(--brand)]" style="font-size:'+sz+'px">'
+          + '<span class="font-bold" style="color:rgba(230,0,18,'+op+')">'+k[0]+'</span>'
+          + '<span class="text-[11px] text-neutral-400">'+Math.round(k[1]*F).toLocaleString()+'</span></a>';
+      }).join('');
+      } // end render
+
+      document.querySelectorAll('.rb').forEach(function(b){
+        b.addEventListener('click', function(){ period=b.getAttribute('data-p'); render(); });
+      });
+      document.getElementById('csv').addEventListener('click', function(){ alert(PERIODS[period].label+'のランキングデータをCSVでエクスポートしました。（モック）'); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

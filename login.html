@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+  <div class="bg-black text-white text-[14px] text-center py-1.5 px-3 flex items-center justify-center gap-2">
+    <span class="inline-block w-1.5 h-1.5 rounded-full" style="background:#e60012"></span>
+    <span class="font-display font-bold tracking-widest">MOCK-UP</span><span class="text-neutral-400">画面イメージ共有用 — ダミーデータです。</span>
+  </div>
+
+  <div class="min-h-[calc(100vh-26px)] grid lg:grid-cols-2">
+    <!-- 左：ブランド -->
+    <div class="hidden lg:flex flex-col justify-between p-12 text-white relative" style="background:url(assets/img/mvimg.jpg) center center/cover no-repeat">
+      <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(5,6,15,.88) 0%,rgba(5,6,15,.7) 60%,rgba(5,6,15,.85) 100%)"></div>
+      <a href="index.html" class="relative"><img src="assets/img/logo.png" alt="K.MECS ONE" style="height:36px;width:auto;filter:invert(1) hue-rotate(180deg) saturate(2.4) brightness(1.1)"></a>
+      <div class="relative">
+        <div class="sec-label" style="color:#ff6b6b">MEMBERS ONLY</div>
+        <h1 class="text-3xl font-bold leading-snug mt-3 mb-4">ログインすると、<br>お客様の価格が表示されます。</h1>
+        <p class="text-neutral-400 leading-relaxed text-[16px] max-w-md">K.MECS ONE は既存お取引先様向けのB2B専用サイトです。製品情報・在庫・納期は誰でもご覧いただけますが、<b class="text-white">価格（得値）はログイン後のみ表示</b>されます。</p>
+        <ul class="mt-6 space-y-2 text-[16px] text-neutral-300">
+          <li class="flex items-center gap-2"><span style="color:#e60012">✓</span> お取引条件を反映した<b class="text-white">顧客別価格（得値）</b></li>
+          <li class="flex items-center gap-2"><span style="color:#e60012">✓</span> 見積番号からそのまま発注（部分注文可）</li>
+          <li class="flex items-center gap-2"><span style="color:#e60012">✓</span> 納期・進捗・ヤマト送り状番号の確認</li>
+          <li class="flex items-center gap-2"><span style="color:#e60012">✓</span> PCN / EOL 通知、未入金・入金済の把握</li>
+        </ul>
+      </div>
+      <div class="relative text-[14px] text-neutral-500">Copyright© K.MECS ONE Corp. — モックアップ制作: 株式会社ティーツーシー</div>
+    </div>
+
+    <!-- 右：ログイン -->
+    <div class="flex items-center justify-center p-6" style="background:var(--paper)">
+      <div class="w-full max-w-md">
+        <a href="index.html" class="lg:hidden flex justify-center mb-6"><img src="assets/img/logo.png" alt="K.MECS ONE" style="height:34px;width:auto"></a>
+
+        <!-- 仮アカウント -->
+        <div class="card p-5 mb-4 border-t-4" style="border-top-color:#e60012">
+          <div class="sec-label">DEMO ACCOUNTS</div>
+          <h2 class="text-[17px] font-bold text-ink mt-1 mb-1">仮アカウントでログイン（デモ）</h2>
+          <p class="text-[14px] text-neutral-500 mb-3 leading-relaxed">同じ製品でも、<b class="text-ink">アカウントごとのお取引条件・取引条件によって表示価格（得値）が変わります。</b>クリックでログインします。</p>
+          <div class="space-y-2" id="demoAccounts"></div>
+        </div>
+
+        <!-- 通常フォーム -->
+        <div class="card p-6">
+          <h2 class="text-[17px] font-bold text-ink mb-1">販売店IDでログイン</h2>
+          <p class="text-[14px] text-neutral-500 mb-4">上記のID／パスワードをそのままお使いいただけます。</p>
+          <form id="loginForm" class="space-y-3">
+            <div>
+              <label class="sec-label">販売店ID</label>
+              <input id="uid" type="text" value="KM-10428" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-sm outline-none focus:border-[color:var(--brand)] font-display">
+            </div>
+            <div>
+              <label class="sec-label">パスワード</label>
+              <input id="pw" type="password" value="demo1234" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-sm outline-none focus:border-[color:var(--brand)]">
+            </div>
+            <div id="err" class="hidden text-[14px]" style="color:#e60012">IDまたはパスワードが違います。（デモ：KM-10428 / KM-20551、pw: demo1234）</div>
+            <div class="flex items-center justify-between text-[14px]">
+              <label class="flex items-center gap-1.5 text-neutral-600"><input type="checkbox" class="accent-[#e60012]"> ログイン状態を保持</label>
+              <a href="contact.html" class="hover:underline" style="color:#e60012">パスワードをお忘れの方</a>
+            </div>
+            <button type="submit" class="btn-ink w-full !py-3.5">ログイン</button>
+          </form>
+        </div>
+
+        <p class="text-center text-[14px] text-neutral-500 mt-4">アカウント発行のご希望は担当営業まで　｜　<a href="index.html" class="hover:underline" style="color:#e60012">ログインせずにトップを見る ›</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    var sample = PRODUCTS[0]; // ODU AMC 8極（標準 6,000円）
+    document.getElementById('demoAccounts').innerHTML = Object.keys(ACCOUNTS).map(function(k){
+      var a = ACCOUNTS[k];
+      var net = Math.round(sample.price * a.rate / 10) * 10;
+      return '<button class="demo w-full text-left card p-3 hover:shadow-md transition flex items-center gap-3" data-key="'+k+'" onmouseover="this.style.borderColor=\'#e60012\'" onmouseout="this.style.borderColor=\'\'">'
+        + '<span class="inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-display font-black text-sm shrink-0" style="background:#22243a">'+a.rank+'</span>'
+        + '<span class="flex-1 min-w-0">'
+        + '<span class="block text-[16px] font-bold text-ink">'+a.company+'</span>'
+        + '<span class="block text-[14px] text-neutral-400 font-display">'+a.id+' / '+a.pw+'</span>'
+        + '</span>'
+        + '<span class="text-right shrink-0">'
+        + '<span class="block text-[13px] text-neutral-400">'+sample.code+' の得値</span>'
+        + '<span class="block font-display font-black text-base" style="color:#e60012">¥'+net.toLocaleString('ja-JP')+'</span>'
+        + '</span></button>';
+    }).join('');
+
+    // ログイン後の戻り先：?next= を最優先、無ければ元のページ（同一サイト）、それも無ければトップ
+    function afterLoginTarget(){
+      var next = qs('next');
+      if(next){ try{ return decodeURIComponent(next); }catch(e){ return next; } }
+      var ref = document.referrer;
+      if(ref){
+        try{
+          var u = new URL(ref);
+          if(u.origin===location.origin && !/login\.html/.test(u.pathname)){ return u.pathname.split('/').pop()+u.search; }
+        }catch(e){}
+      }
+      return 'index.html';
+    }
+    function doLogin(key){ KMECS.login(key); location.href = afterLoginTarget(); }
+
+    document.querySelectorAll('.demo').forEach(function(b){
+      b.addEventListener('click', function(){ doLogin(b.getAttribute('data-key')); });
+    });
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var id=document.getElementById('uid').value.trim(), pw=document.getElementById('pw').value.trim();
+      var hit = Object.keys(ACCOUNTS).filter(function(k){ return ACCOUNTS[k].id===id && ACCOUNTS[k].pw===pw; })[0];
+      if(hit){ doLogin(hit); }
+      else document.getElementById('err').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

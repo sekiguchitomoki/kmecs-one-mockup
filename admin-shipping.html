@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 連携ステータス -->
+  <div class="adm-card p-4 mb-4">
+    <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-[14px] py-2">
+      <div class="flex items-center gap-2"><span class="text-xl">📦</span><div><div class="font-bold text-ink">出荷入力</div><div class="text-neutral-400">受注管理 / IBM</div></div></div>
+      <div class="flex flex-col items-center" style="color:#e60012">
+        <svg width="60" height="14" viewBox="0 0 60 14"><line x1="0" y1="7" x2="50" y2="7" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"/><path d="M50 3l6 4-6 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <span class="text-[13px] text-emerald-600 mt-0.5">● API接続中</span>
+      </div>
+      <div class="flex items-center gap-2"><span class="text-xl">🚚</span><div><div class="font-bold text-ink">ヤマトB2クラウド</div><div class="text-neutral-400">送り状番号 採番</div></div></div>
+      <div class="flex flex-col items-center" style="color:#e60012">
+        <svg width="60" height="14" viewBox="0 0 60 14"><line x1="0" y1="7" x2="50" y2="7" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"/><path d="M50 3l6 4-6 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <span class="text-[13px] text-emerald-600 mt-0.5">● 自動反映</span>
+      </div>
+      <div class="flex items-center gap-2"><span class="text-xl">🌐</span><div><div class="font-bold text-ink">顧客ポータル</div><div class="text-neutral-400">追跡番号を表示・自動メール</div></div></div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">本日の出荷予定</div><div class="font-display text-2xl font-black text-ink mt-1">5<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">送り状 発行済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">2<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未発行</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">3<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">集荷締切</div><div class="font-display text-2xl font-black text-ink mt-1">17:00</div></div>
+  </div>
+
+  <!-- 絞り込み -->
+  <div class="adm-card p-4 mb-4 flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-[180px]">
+      <label class="text-[13px] font-bold text-neutral-600">キーワード</label>
+      <input id="fKw" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="注文番号・品目・送り状番号">
+    </div>
+    <div><label class="text-[13px] font-bold text-neutral-600">発行状況</label>
+      <select id="fStatus" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"><option value="">すべて</option><option value="pending">未発行</option><option value="issued">発行済</option></select></div>
+    <div><label class="text-[13px] font-bold text-neutral-600">顧客</label>
+      <select id="fCust" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+    <div><label class="text-[13px] font-bold text-neutral-600">メーカー</label>
+      <select id="fMaker" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
+    <button id="fClear" class="text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-2">クリア</button>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="adm-card overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
+      <div class="text-[16px] font-bold text-ink">出荷待ち一覧 <span class="text-[13px] font-normal text-neutral-400 ml-1"><b id="cnt" class="text-ink">0</b> 件</span></div>
+      <div class="flex gap-2">
+        <button id="csvOut" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-1.5">B2クラウドへCSV出力</button>
+        <button id="printAll" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-1.5">納品書/伝票を印刷</button>
+        <button id="bulk" class="text-[14px] text-white px-3 py-1.5 font-bold" style="background:#e60012">選択分を一括発行</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[1000px]">
+        <thead><tr>
+          <th class="px-4 py-2.5 text-left"><input type="checkbox" id="all" class="accent-[#e60012]"></th>
+          <th class="text-left py-2.5">注文番号</th><th class="text-left py-2.5">お届け先</th>
+          <th class="text-left py-2.5">品目 / 個口</th><th class="text-left py-2.5">配送区分</th>
+          <th class="text-left py-2.5 pl-3">送り状番号</th><th class="text-right px-4 py-2.5">操作</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[14px] text-neutral-400 mt-3">※ モックのため、実際のヤマトB2連携・番号採番・ラベル印刷は行われません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var SHIP = SHIPMENTS; // data.js の共有マスタ
+  var seq = 2402;
+  function newSlip(){ seq += 7; return '4567-8901-'+seq; }
+
+  KMECS.renderAdminShell({
+    active:'admin-shipping',
+    title:'出荷・ヤマト送り状発行',
+    sub:'④出荷 — 出荷処理 → 送り状/伝票印刷 → 送り状番号を顧客ポータルへ自動反映',
+    onReady:function(){
+      // 絞り込み選択肢
+      var custCodes = SHIP.map(function(s){return s.cust;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fCust').innerHTML='<option value="">全顧客</option>'+custCodes.map(function(code){var c=getCustomer(code);return '<option value="'+code+'">'+(c?c.company:code)+'</option>';}).join('');
+      var makers = SHIP.map(function(s){return s.maker;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+      document.getElementById('fMaker').innerHTML='<option value="">全メーカー</option>'+makers.map(function(m){return '<option value="'+m+'">'+(MAKERS[m]?MAKERS[m].name:m)+'</option>';}).join('');
+
+      function filtered(){
+        var kw=document.getElementById('fKw').value.trim(), st=document.getElementById('fStatus').value, cu=document.getElementById('fCust').value, mk=document.getElementById('fMaker').value;
+        return SHIP.map(function(s,i){return {s:s,i:i};}).filter(function(o){
+          var s=o.s, issued=!!s.slip;
+          if(st==='pending' && issued) return false;
+          if(st==='issued' && !issued) return false;
+          if(cu && s.cust!==cu) return false;
+          if(mk && s.maker!==mk) return false;
+          if(kw && (s.order+s.items+s.slip).indexOf(kw)<0) return false;
+          return true;
+        });
+      }
+
+      function render(){
+        var list=filtered();
+        document.getElementById('cnt').textContent=list.length;
+        document.getElementById('rows').innerHTML = list.map(function(o){
+          var s=o.s, i=o.i, a=shipCust(s), issued=!!s.slip;
+          return '<tr class="'+(issued?'':'bg-[#fff5f5]')+'">'
+            + '<td class="px-4 py-3"><input type="checkbox" class="chk accent-[#e60012]" data-i="'+i+'"></td>'
+            + '<td class="py-3 font-display font-bold text-ink">'+s.order+'</td>'
+            + '<td class="py-3"><div class="text-neutral-600 text-[16px]">'+a.company+'</div><div class="text-[14px] text-neutral-400">'+(a.addr||'').slice(0,22)+'…</div></td>'
+            + '<td class="py-3"><div class="text-neutral-600 text-[15px]">'+s.items+'</div><div class="text-[14px] text-neutral-400 font-display">'+(MAKERS[s.maker]?MAKERS[s.maker].name:'')+' ・ '+s.pkgs+' 個口</div></td>'
+            + '<td class="py-3 text-[15px] text-neutral-500">'+s.type+'</td>'
+            + '<td class="py-3 pl-3">'+(issued
+                ? '<div class="font-display font-bold text-ink">'+s.slip+'</div><div class="text-[14px] text-emerald-600">● 発行済 '+s.date+'</div>'
+                : '<span class="badge text-white" style="background:#e60012">未発行</span>')+'</td>'
+            + '<td class="px-4 py-3 text-right whitespace-nowrap"><a href="admin-shipping-detail.html?order='+s.order+'" class="inline-block '+(issued
+                ? 'border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5">送り状を表示 ›'
+                : 'text-white px-2.5 py-1.5" style="background:#e60012">送り状を発行 ›')+'</a></td></tr>';
+        }).join('') || '<tr><td colspan="7" class="px-4 py-6 text-center text-neutral-400 text-[14px]">条件に一致する出荷がありません。</td></tr>';
+      }
+      ['fKw','fStatus','fCust','fMaker'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); document.getElementById(id).addEventListener('change', render); });
+      document.getElementById('fClear').addEventListener('click', function(){ document.getElementById('fKw').value=''; document.getElementById('fStatus').value=''; document.getElementById('fCust').value=''; document.getElementById('fMaker').value=''; render(); });
+
+      document.getElementById('all').addEventListener('change', function(e){
+        document.querySelectorAll('.chk').forEach(function(c){ c.checked = e.target.checked; });
+      });
+      document.getElementById('bulk').addEventListener('click', function(){
+        var n=0;
+        document.querySelectorAll('.chk:checked').forEach(function(c){
+          var i=+c.getAttribute('data-i');
+          if(!SHIP[i].slip){ SHIP[i].slip=newSlip(); SHIP[i].date='2026/07/15'; n++; }
+        });
+        render();
+        alert(n>0 ? n+' 件の送り状を一括発行し、顧客ポータルに追跡番号を反映しました。（モック）' : '未発行の出荷を選択してください。');
+      });
+      document.getElementById('csvOut').addEventListener('click', function(){
+        var n=filtered().filter(function(o){return !o.s.slip;}).length;
+        alert('未発行 '+n+' 件をヤマトB2クラウド取込用CSVとして出力しました。（モック）');
+      });
+      document.getElementById('printAll').addEventListener('click', function(){ window.print(); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

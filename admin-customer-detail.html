@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <a href="admin-customers.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 顧客管理に戻る</a>
+  <div id="detail"></div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  function rankBadge(r){
+    var c = r==='A'?'#e60012':(r==='B'?'#393b56':'#8b8ea8');
+    return '<span class="badge text-white" style="background:'+c+'">得値'+r+'</span>';
+  }
+
+  var code = qs('code');
+  var c = getCustomer(code) || CUSTOMERS[0];
+
+  KMECS.renderAdminShell({
+    active:'admin-customers',
+    title:c.company+'（'+c.code+'）',
+    sub:'顧客の取引条件・売上・得値ルール・注文履歴',
+    onReady:function(){
+      var orders=ADMIN_ORDERS.filter(function(o){return o.cust===c.code;});
+      var yoy=Math.round((c.salesYear/c.salesPrev-1)*100);
+      var creditUse=Math.min(100, Math.round((c.unpaid/c.credit)*100));
+
+      document.getElementById('detail').innerHTML =
+        '<div class="flex flex-wrap items-center gap-2 mb-4">'+rankBadge(c.rank)
+        + '<span class="badge bg-neutral-100 text-neutral-600">掛率 '+Math.round(c.rate*100)+'%</span>'
+        + '<span class="badge bg-neutral-100 text-neutral-600">'+c.area+'</span>'
+        + (c.acc?'<span class="badge bg-emerald-100 text-emerald-700">ポータル利用中</span>':'<span class="badge bg-neutral-100 text-neutral-500">EDI/FAX中心</span>')
+        + '<a href="admin-order-new.html" class="ml-auto text-[13px] text-white px-3 py-1.5" style="background:#393b56">＋ この顧客の受注を追加</a>'
+        + '<a href="admin-quote-new.html" class="text-[13px] text-white px-3 py-1.5" style="background:#e60012">＋ 見積を作成</a></div>'
+        // 基本情報＋与信
+        + '<div class="grid sm:grid-cols-2 gap-4 mb-5">'
+        + '<div class="adm-card p-4 text-[14px] leading-relaxed">'
+        + '<div class="text-[13px] font-bold text-neutral-500 mb-2">基本情報</div>'
+        + '<div>ご担当：'+c.contact+' 様</div><div><b class="text-ink">担当営業：'+c.rep+'</b></div><div>TEL：'+c.tel+'</div><div class="text-neutral-500">'+c.addr+'</div>'
+        + '<div class="mt-2 pt-2 border-t border-[#eee]">支払条件：'+c.terms+'</div><div>請求書：'+c.invoiceBy+'</div></div>'
+        + '<div class="adm-card p-4 text-[14px]">'
+        + '<div class="text-[13px] font-bold text-neutral-500 mb-2">与信・入金</div>'
+        + '<div class="flex justify-between"><span>与信枠</span><b class="font-display">'+yen(c.credit)+'</b></div>'
+        + '<div class="flex justify-between"><span>未入金</span><b class="font-display" style="color:'+(c.unpaid>0?'#e60012':'#333')+'">'+yen(c.unpaid)+'</b></div>'
+        + '<div class="mt-2"><div class="h-2 bg-neutral-100"><div class="h-2" style="width:'+creditUse+'%;background:'+(creditUse>70?'#e60012':'#393b56')+'"></div></div>'
+        + '<div class="text-[12px] text-neutral-400 mt-1">与信使用率 '+creditUse+'%</div></div></div></div>'
+        // 売上
+        + '<div class="adm-card p-4 mb-5">'
+        + '<div class="flex items-center justify-between mb-1"><div class="text-[13px] font-bold text-neutral-500">年間売上</div>'
+        + '<span class="text-[13px] '+(yoy>=0?'text-emerald-600':'text-[color:var(--brand)]')+'">前年比 '+(yoy>=0?'+':'')+yoy+'%</span></div>'
+        + '<div class="font-display text-3xl font-black text-ink">'+yen(c.salesYear)+'</div>'
+        + '<div class="text-[13px] text-neutral-400 mt-0.5">前年 '+yen(c.salesPrev)+' ・ 累計受注 '+c.ordersCount+'件 ・ 最終受注 '+c.lastOrder+'</div></div>'
+        // 価格設定
+        + '<div class="adm-card overflow-hidden mb-5" style="border-color:#e60012">'
+        + '<div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2" style="background:#fff5f5">'
+        + '<span class="w-6 h-6 flex items-center justify-center text-white text-[12px]" style="background:#e60012">¥</span>'
+        + '<span class="text-[14px] font-bold text-ink">この顧客の価格設定（得値ルール）</span></div>'
+        + '<div class="p-4">'
+        + '<div class="flex flex-wrap items-center gap-3 mb-3">'
+        + '<span class="text-[14px] font-bold text-neutral-600">基本掛率</span>'
+        + '<div class="flex items-center gap-2"><input id="baseRate" type="range" min="50" max="100" value="'+Math.round(c.rate*100)+'" class="w-40">'
+        + '<span class="font-display font-black text-xl text-ink" id="baseRateV">'+Math.round(c.rate*100)+'%</span></div>'
+        + '<span class="text-[12px] text-neutral-400">（標準価格 × 掛率 ＝ 得値。全商品に適用）</span>'
+        + '<button id="saveRate" class="ml-auto text-[12px] text-white px-3 py-1.5" style="background:#e60012">掛率を保存</button></div>'
+        + '<div class="flex items-center justify-between mb-2 pt-2 border-t border-[#eee] flex-wrap gap-2">'
+        + '<span class="text-[13px] font-bold text-neutral-600">個別商品の特別価格（掛率より優先）</span>'
+        + '<div class="flex gap-1"><input id="ovCode" list="prodList" class="border border-[#dcdce6] px-2 py-1 text-[13px] font-display" placeholder="型番" style="width:120px">'
+        + '<input id="ovType" class="border border-[#dcdce6] px-2 py-1 text-[13px]" style="width:70px" placeholder="掛率% or ¥">'
+        + '<select id="ovMode" class="border border-[#dcdce6] px-1 py-1 text-[13px] bg-white"><option value="rate">掛率%</option><option value="fixed">固定¥</option></select>'
+        + '<button id="ovAdd" class="text-[13px] text-white px-2.5 py-1" style="background:#393b56">追加</button></div></div>'
+        + '<datalist id="prodList">'+PRODUCTS.slice(0,80).map(function(p){return '<option value="'+p.code+'">'+p.name+'</option>';}).join('')+'</datalist>'
+        + '<div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>'
+        + '<th class="text-left px-3 py-2">型番</th><th class="text-left py-2">商品名</th><th class="text-right py-2">標準価格</th>'
+        + '<th class="text-left py-2 pl-3">個別設定</th><th class="text-right py-2">適用単価</th><th class="text-right px-3 py-2"></th></tr></thead>'
+        + '<tbody id="ovRows"></tbody></table></div>'
+        + '<div class="text-[12px] text-neutral-400 mt-2">※ 個別設定がある商品はその価格を優先。無ければ基本掛率を適用します。</div>'
+        + '</div></div>'
+        // 注文履歴
+        + '<div class="adm-card overflow-hidden">'
+        + '<div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">注文履歴</div>'
+        + '<div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>'
+        + '<th class="text-left px-4 py-2">注文番号</th><th class="text-left py-2">日付</th><th class="text-left py-2">品目</th><th class="text-right py-2">金額</th><th class="text-left py-2 pl-3">状況</th><th class="text-right px-4 py-2">操作</th></tr></thead><tbody class="divide-y divide-[#eceef5]">'
+        + (orders.length?orders.map(function(o){var st=ORDER_STATUS[o.status];
+            return '<tr><td class="px-4 py-2 font-display font-bold text-ink">'+o.no+'</td><td class="py-2 text-neutral-500 font-display">'+o.date+'</td>'
+              + '<td class="py-2 text-neutral-600">'+o.items+'</td><td class="py-2 text-right font-display">'+yen(o.amount)+'</td>'
+              + '<td class="py-2 pl-3"><span class="badge '+st.cls+'" style="background:'+st.bg+'">'+st.ja+'</span></td>'
+              + '<td class="px-4 py-2 text-right"><a href="admin-order-detail.html?no='+o.no+'" class="text-[13px] text-[color:var(--brand)] hover:underline">開く ›</a></td></tr>';
+          }).join('')
+          :'<tr><td colspan="6" class="px-4 py-4 text-center text-neutral-400">この期間の注文はありません。</td></tr>')
+        + '</tbody></table></div></div>';
+
+      // ---- 価格設定ロジック ----
+      c._ov = c._ov || {};
+      var curRate = Math.round(c.rate*100);
+      function applied(code){
+        var std=getProduct(code).price, o=c._ov[code];
+        if(o){ return o.mode==='fixed'? o.val : Math.round(std*o.val/100/10)*10; }
+        return Math.round(std*curRate/100/10)*10;
+      }
+      function renderOv(){
+        var codes=Object.keys(c._ov);
+        document.getElementById('ovRows').innerHTML = codes.length? codes.map(function(code){
+          var p=getProduct(code), o=c._ov[code];
+          return '<tr class="border-b border-[#eee]"><td class="px-3 py-2 font-display font-bold text-ink">'+code+'</td>'
+            + '<td class="py-2 text-[13px] text-neutral-600">'+p.name+'</td>'
+            + '<td class="py-2 text-right font-display text-neutral-500">'+yen(p.price)+'</td>'
+            + '<td class="py-2 pl-3">'+(o.mode==='fixed'?'<span class="badge text-white" style="background:#e60012">固定 '+yen(o.val)+'</span>':'<span class="badge bg-neutral-200 text-neutral-700">掛率 '+o.val+'%</span>')+'</td>'
+            + '<td class="py-2 text-right font-display font-bold text-ink">'+yen(applied(code))+'</td>'
+            + '<td class="px-3 py-2 text-right"><button class="ovDel text-neutral-400 hover:text-[color:var(--brand)]" data-c="'+code+'">×</button></td></tr>';
+        }).join('') : '<tr><td colspan="6" class="px-3 py-3 text-center text-[13px] text-neutral-400">個別設定はありません（基本掛率 '+curRate+'% を全商品に適用中）</td></tr>';
+        document.querySelectorAll('.ovDel').forEach(function(b){ b.addEventListener('click', function(){ delete c._ov[b.getAttribute('data-c')]; renderOv(); }); });
+      }
+      var slider=document.getElementById('baseRate');
+      slider.addEventListener('input', function(){ curRate=+slider.value; document.getElementById('baseRateV').textContent=curRate+'%'; renderOv(); });
+      document.getElementById('saveRate').addEventListener('click', function(){ c.rate=curRate/100; alert(c.company+' の基本掛率を '+curRate+'% に設定しました。以降の見積・受注・請求に反映されます。（モック）'); });
+      document.getElementById('ovAdd').addEventListener('click', function(){
+        var code=document.getElementById('ovCode').value.trim().toUpperCase();
+        var val=parseFloat(document.getElementById('ovType').value);
+        var mode=document.getElementById('ovMode').value;
+        var p=PRODUCTS.filter(function(x){return x.code.toUpperCase()===code;})[0];
+        if(!p){ alert('型番が見つかりません。'); return; }
+        if(!(val>0)){ alert('掛率または金額を入力してください。'); return; }
+        c._ov[p.code]={ mode:mode, val:val };
+        document.getElementById('ovCode').value=''; document.getElementById('ovType').value='';
+        renderOv();
+      });
+      renderOv();
+    }
+  });
+</script>
+</body>
+</html>

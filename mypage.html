@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+
+    <div id="guest" class="hidden card p-16 text-center">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" class="mx-auto mb-3"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="font-bold text-ink">マイページはログイン後にご利用いただけます</div>
+      <a href="login.html" class="btn-red mt-5">ログイン</a>
+    </div>
+
+    <div id="main">
+      <div class="sec-label">MYPAGE</div>
+      <h1 class="sec-title text-3xl mt-1" id="greet"></h1>
+      <p class="text-[15px] text-neutral-500 mt-2" id="accMeta"></p>
+
+      <!-- サマリー -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-8">
+        <a href="orders.html" class="card card-h p-5"><div class="text-[14px] text-neutral-500">進行中の注文</div><div class="font-display text-3xl font-black text-ink mt-1"><span id="sumActive">0</span><span class="text-sm font-normal text-neutral-400 ml-1">件</span></div><div class="text-[14px] mt-1" style="color:#e60012">うち出荷待ち <span id="sumShipWait">0</span>件</div></a>
+        <a href="orders.html" class="card card-h p-5"><div class="text-[14px] text-neutral-500">納期回答待ち</div><div class="font-display text-3xl font-black text-ink mt-1"><span id="sumLead">0</span><span class="text-sm font-normal text-neutral-400 ml-1">件</span></div><div class="text-[14px] text-amber-600 mt-1">確認中</div></a>
+        <a href="orders.html" class="card card-h p-5"><div class="text-[14px] text-neutral-500">未入金</div><div class="font-display text-3xl font-black mt-1" style="color:#e60012" id="sumUnpaid">¥0</div><div class="text-[14px] text-neutral-400 mt-1">請求 <span id="sumUnpaidCnt">0</span>件</div></a>
+        <a href="notifications.html" class="card card-h p-5"><div class="text-[14px] text-neutral-500">PCN / EOL 通知</div><div class="font-display text-3xl font-black text-ink mt-1">3<span class="text-sm font-normal text-neutral-400 ml-1">件</span></div><div class="text-[14px] mt-1" style="color:#e60012">要確認 1件</div></a>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <!-- 進行中 -->
+          <div class="card overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-[color:var(--line)]">
+              <div class="text-[17px] font-bold text-ink">進行中の注文</div>
+              <a href="orders.html" class="text-[14px] hover:underline" style="color:#e60012">すべて見る ›</a>
+            </div>
+            <table class="w-full text-sm dt">
+              <thead class="text-[14px] text-neutral-500" style="background:var(--paper)"><tr><th class="text-left px-5 py-2.5">注文番号</th><th class="text-left py-2.5">品目</th><th class="text-left py-2.5">状況</th><th class="px-5"></th></tr></thead>
+              <tbody class="divide-y divide-[color:var(--line)]" id="progRows"></tbody>
+            </table>
+          </div>
+
+          <!-- 保存した商品（お気に入り） -->
+          <div class="card overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-[color:var(--line)]">
+              <div class="text-[17px] font-bold text-ink">保存した商品</div>
+              <a href="products.html" class="text-[14px] hover:underline" style="color:#e60012">製品を探す ›</a>
+            </div>
+            <div id="saved"></div>
+          </div>
+
+          <!-- 最近買ったもの -->
+          <div class="card overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-[color:var(--line)]">
+              <div class="text-[17px] font-bold text-ink">最近買ったものリスト</div>
+              <a href="products.html" class="text-[14px] hover:underline" style="color:#e60012">製品を探す ›</a>
+            </div>
+            <div class="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[color:var(--line)]" id="recent"></div>
+          </div>
+
+          <!-- 保存した見積 -->
+          <div class="card overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-[color:var(--line)]">
+              <div class="text-[17px] font-bold text-ink">一時保存した見積・カート</div>
+              <a href="quotes.html" class="text-[14px] hover:underline" style="color:#e60012">見積一覧 ›</a>
+            </div>
+            <div class="divide-y divide-[color:var(--line)]" id="savedList"></div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <!-- お取引条件 -->
+          <div class="card p-5">
+            <div class="sec-label">ACCOUNT</div>
+            <div class="text-[17px] font-bold text-ink mt-1 mb-3">お取引条件</div>
+            <div class="space-y-2.5 text-[16px]" id="accBox"></div>
+          </div>
+
+          <!-- PCN/EOL -->
+          <div class="card p-5">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-[17px] font-bold text-ink">PCN / EOL のお知らせ</div>
+              <a href="notifications.html" class="text-[14px] hover:underline" style="color:#e60012">一覧 ›</a>
+            </div>
+            <ul class="space-y-3 text-[16px]">
+              <li class="flex gap-2"><span class="badge text-white h-fit" style="background:#e60012">EOL</span><div><a href="notifications.html" class="font-bold text-ink hover:text-[color:var(--brand)]">IPC-3000 シリーズ 生産終了予定</a><div class="text-[14px] text-neutral-400">最終受注 2026/09 ・ 後継品あり</div></div></li>
+              <li class="flex gap-2"><span class="badge bg-amber-100 text-amber-700 h-fit">PCN</span><div><a href="notifications.html" class="font-bold text-ink hover:text-[color:var(--brand)]">MOXA EDS FW 更新</a><div class="text-[14px] text-neutral-400">影響軽微</div></div></li>
+            </ul>
+          </div>
+
+          <!-- 営業からのお知らせ -->
+          <div class="card p-5" style="background:var(--paper)">
+            <div class="sec-label">FROM SALES</div>
+            <div class="text-[17px] font-bold text-ink mt-1 mb-2">営業からのお知らせ</div>
+            <p class="text-[15px] text-neutral-600 leading-relaxed">MOXA 産業用スイッチの新シリーズ在庫が入荷しました。長納期化しているIPC部材は代替提案をご用意しています。</p>
+            <div class="mt-3 pt-3 border-t border-[color:var(--line)] text-[14px] text-neutral-500">担当：鈴木 慶博</div>
+            <a href="contact.html" class="btn-red-o w-full mt-3">営業に連絡する</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'mypage',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'マイページ'}],
+    onReady:function(){
+      var a = KMECS.account();
+      if(!a){ document.getElementById('guest').classList.remove('hidden'); document.getElementById('main').classList.add('hidden'); return; }
+
+      document.getElementById('greet').textContent = 'こんにちは、'+a.user+' 様';
+      document.getElementById('accMeta').innerHTML = a.company+'　｜　販売店ID <span class="font-display">'+a.id+'</span>　｜　お客様専用のお取引価格（得値）を表示中';
+
+      // ※ 掛率・粗利率・与信枠は社内情報のため顧客画面には表示しない
+      document.getElementById('accBox').innerHTML =
+        '<div class="flex justify-between"><span class="text-neutral-500 text-[15px]">販売店ID</span><span class="font-display text-ink">'+a.id+'</span></div>'
+        + '<div class="flex justify-between"><span class="text-neutral-500 text-[15px]">ご登録会社</span><span class="text-ink text-[15px]">'+a.company+'</span></div>'
+        + '<div class="flex justify-between"><span class="text-neutral-500 text-[15px]">価格表示</span><span class="text-ink text-[15px]">お客様専用価格（得値）</span></div>'
+        + '<div class="flex justify-between"><span class="text-neutral-500 text-[15px]">支払条件</span><span class="text-ink text-[15px]">'+a.terms+'</span></div>'
+        + '<div class="flex justify-between"><span class="text-neutral-500 text-[15px]">請求書送付</span><span class="text-ink text-[15px]">'+a.invoiceBy+'</span></div>'
+        + '<div class="pt-2.5 mt-1 border-t border-[color:var(--line)] text-[14px] text-neutral-400 leading-relaxed">'+a.addr+'</div>'
+        + '<div class="pt-2.5 mt-1 border-t border-[color:var(--line)] text-[13px] text-neutral-400">お取引条件の変更は担当営業までご連絡ください。</div>';
+
+      // 進行中の注文（ログイン会社の注文のみ・data.js共通マスタから）
+      var myOrders = CUST_ORDERS.filter(function(o){ return o.acc===a.key; });
+      var active = myOrders.filter(function(o){ return o.step<6; });
+      var shipWait = myOrders.filter(function(o){ return !o.slip && o.step<4; }).length;
+      var leadWait = myOrders.filter(function(o){ return o.step<=2 && o.pay==='未請求'; }).length;
+      var unpaidList = myOrders.filter(function(o){ return o.pay==='未入金'; });
+      var unpaidSum = unpaidList.reduce(function(s,o){ return s+o.amount; },0);
+      document.getElementById('sumActive').textContent = active.length;
+      document.getElementById('sumShipWait').textContent = shipWait;
+      document.getElementById('sumLead').textContent = leadWait;
+      document.getElementById('sumUnpaid').textContent = yen(unpaidSum);
+      document.getElementById('sumUnpaidCnt').textContent = unpaidList.length;
+
+      function statusBadge(o){
+        if(o.pay==='未入金') return '<span class="badge bg-neutral-200 text-neutral-600">請求済・未入金</span>';
+        if(o.pay==='入金済') return '<span class="badge bg-emerald-100 text-emerald-700">完了（入金済）</span>';
+        if(o.slip)          return '<span class="badge bg-emerald-100 text-emerald-700">出荷済</span>';
+        if(o.step<=2 && o.pay==='未請求') return '<span class="badge bg-blue-100 text-blue-700">納期回答待ち</span>';
+        return '<span class="badge text-white" style="background:#e60012">出荷準備中</span>';
+      }
+      var progList = (active.length?active:myOrders).slice(0,5);
+      document.getElementById('progRows').innerHTML = progList.map(function(o){
+        var first=getProduct(o.lines[0].code);
+        var it=first.name+(o.lines.length>1?' 他'+(o.lines.length-1)+'点':'');
+        return '<tr><td class="px-5 py-3 font-display font-bold text-ink text-[16px]">'+o.no+'</td>'
+          + '<td class="text-[16px] text-neutral-600">'+it+'</td>'
+          + '<td>'+statusBadge(o)+'</td>'
+          + '<td class="px-5 text-right"><a href="order-detail.html?no='+o.no+'" class="text-[14px] hover:underline" style="color:#e60012">詳細</a></td></tr>';
+      }).join('') || '<tr><td colspan="4" class="px-5 py-8 text-center text-[15px] text-neutral-400">進行中の注文はありません。</td></tr>';
+
+      // 保存した商品（お気に入り）
+      var savedCodes = KMECS.savedProducts().filter(function(code){ return getProduct(code); });
+      document.getElementById('saved').innerHTML = savedCodes.length
+        ? '<div class="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[color:var(--line)]">'
+          + savedCodes.slice(0,6).map(function(code){
+              var p=getProduct(code);
+              return '<a href="product-detail.html?code='+p.code+'" class="p-4 hover:bg-neutral-50 flex flex-col">'
+                + '<div class="h-24 mb-2 overflow-hidden bg-white border border-[color:var(--line)] flex items-center justify-center p-2"><img src="'+prodImg(p)+'" alt="" class="max-w-full max-h-full object-contain"></div>'
+                + '<div class="text-[13px] text-neutral-400 font-display">'+MAKERS[p.maker].name+' ・ '+p.code+'</div>'
+                + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+p.name+'</div>'
+                + '<div class="text-[16px] mt-1">'+priceOrMask(p.price)+'</div></a>';
+            }).join('')
+          + '</div>'
+        : '<div class="px-5 py-8 text-center text-[15px] text-neutral-400">保存した商品はありません。商品詳細ページの「保存する」から追加できます。</div>';
+
+      var recent = [ {code:'AMC-2P-08',last:'6/28',qty:20},{code:'EDS-408A',last:'6/15',qty:4},{code:'OCD-DPB1B',last:'5/30',qty:6} ];
+      document.getElementById('recent').innerHTML = recent.map(function(r){
+        var p = getProduct(r.code);
+        return '<a href="product-detail.html?code='+p.code+'" class="p-4 hover:bg-neutral-50">'
+          + '<div class="h-24 mb-2 overflow-hidden bg-white border border-[color:var(--line)] flex items-center justify-center p-2"><img src="'+prodImg(p)+'" alt="" class="max-w-full max-h-full object-contain"></div>'
+          + '<div class="text-[15px] font-bold text-ink leading-snug">'+p.name+'</div>'
+          + '<div class="text-[14px] text-neutral-400 mt-1">前回: '+r.last+' ・ '+r.qty+'個</div>'
+          + '<div class="text-[16px] mt-1">'+priceOrMask(p.price)+'</div>'
+          + '<span class="btn-red !py-1.5 !px-3 !text-[14px] mt-2 w-full">再注文</span></a>';
+      }).join('');
+
+      var saved = QUOTES.filter(function(q){ return q.acc===a.key && q.status==='有効'; }).slice(0,2);
+      document.getElementById('savedList').innerHTML = saved.map(function(q){
+        return '<a href="quote-order.html?no='+q.no+'" class="flex flex-wrap items-center justify-between gap-2 px-5 py-3.5 hover:bg-neutral-50">'
+          + '<div><span class="font-display font-bold text-[16px]" style="color:#e60012">'+q.no+'</span>'
+          + '<span class="text-[16px] text-neutral-600 ml-2">'+q.title+'</span>'
+          + '<div class="text-[14px] text-neutral-400 mt-0.5">一時保存 ・ 有効期限 '+q.due+'（あと'+q.left+'日）</div></div>'
+          + '<span class="text-[14px] border border-[color:var(--line)] px-3 py-1.5">続きから発注 ›</span></a>';
+      }).join('') || '<div class="px-5 py-8 text-center text-[15px] text-neutral-400">一時保存された見積はありません。</div>';
+    }
+  });
+</script>
+</body>
+</html>

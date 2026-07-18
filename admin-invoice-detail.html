@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <div class="no-print flex flex-wrap items-center justify-between gap-3 mb-3">
+    <a href="admin-invoice.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)]">‹ 請求一覧に戻る</a>
+    <div class="flex flex-wrap gap-2">
+      <button id="printInv" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-700 px-4 py-2 inline-flex items-center gap-1.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4v-6h16v6h-2M8 14h8v7H8z"/></svg>印刷 / PDF</button>
+      <button id="issue" class="text-[14px] text-white px-4 py-2 font-bold" style="background:#e60012">発行して送付</button>
+    </div>
+  </div>
+
+  <div class="adm-card overflow-hidden">
+    <div id="printArea"><div class="p-8" id="invoiceBody"></div></div>
+  </div>
+  <p class="no-print text-[13px] text-neutral-400 mt-3">※ モックのため、実際のPDF生成・メール送信・IBM連携は行われません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var v = getInvoice(qs('no'));
+
+  KMECS.renderAdminShell({
+    active:'admin-invoice',
+    title:'請求書 '+v.no,
+    sub:'注文書単位に自動集約した請求書のプレビュー・発行',
+    onReady:function(){
+      var a = invC(v);
+      var sub = invSubtotal(v), tax = Math.round(sub*0.1), total = sub+tax;
+      var subject = v.orders.join(' / ')+'　'+getProduct(v.lines[0][0]).catJa+' ほか';
+      var seal = '<span style="display:inline-block;width:62px;height:62px;border:2px solid #e60012;color:#e60012;'
+        + 'writing-mode:vertical-rl;text-orientation:upright;font-size:9px;line-height:1.15;letter-spacing:1px;'
+        + 'padding:5px 3px;text-align:center;font-weight:700;transform:rotate(0deg)">株式会社ケーメックスONE</span>';
+
+      document.getElementById('invoiceBody').innerHTML =
+        '<div id="invoiceSheet">'
+        + '<div class="inv-title" style="margin-bottom:26px">請求書</div>'
+        + '<div style="display:flex;justify-content:space-between;gap:24px;margin-bottom:22px">'
+        + '<div style="flex:1">'
+        + '<div style="font-size:17px;font-weight:700;border-bottom:1px solid #333;padding-bottom:4px;display:inline-block">'+a.company+' 御中</div>'
+        + '<div style="margin-top:8px;line-height:1.7;color:#333">'+a.addr.replace(/ /,'<br>')+'<br>ご担当：'+a.user+' 様</div>'
+        + '</div>'
+        + '<div style="width:300px;position:relative">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+        + '<div><img src="assets/img/logo.png" alt="K.MECS ONE" style="height:30px;width:auto"></div>'
+        + '<div style="margin-top:-2px">'+seal+'</div></div>'
+        + '<div style="margin-top:10px;line-height:1.7;color:#333">'
+        + '株式会社ケーメックスONE<br>K.MECS ONE Corporation<br><br>'
+        + '〒101-0032<br>東京都千代田区岩本町2丁目3番3号<br>ザイマックス岩本町ビル3F<br>'
+        + 'TEL：03-5825-5333</div>'
+        + '<div style="margin-top:14px;line-height:1.8">'
+        + '請求書番号：<b>'+v.no+'</b><br>請求日　　：2026/07/15<br>お支払期限：'+v.due+'</div>'
+        + '</div></div>'
+        + '<div style="margin-bottom:16px"><b>件名：</b>　'+subject+'</div>'
+        + '<div class="bar" style="display:flex;align-items:center;gap:18px;padding:12px 16px;margin-bottom:22px">'
+        + '<b style="font-size:16px">ご請求金額</b><span style="font-size:20px;font-weight:700">'+total.toLocaleString('ja-JP')+' 円</span>'
+        + '<span style="margin-left:auto;font-size:11px;color:#666">（消費税込）</span></div>'
+        + '<div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:8px">'
+        + '<table style="flex:1"><thead><tr style="border-bottom:1px solid #333;color:#555;font-size:12px">'
+        + '<th style="text-align:left;padding:6px 4px">納品日</th><th style="text-align:left">品目・納品書番号</th>'
+        + '<th style="text-align:right">単価</th><th style="text-align:right">数量</th><th style="text-align:right;padding-right:4px">価格</th></tr></thead><tbody>'
+        + v.lines.map(function(l){
+            var p=getProduct(l[0]),u=invNet(v.cust,l[0]);
+            return '<tr style="border-bottom:1px solid #eee"><td style="padding:8px 4px">'+v.close+'</td>'
+              + '<td>'+p.name+'<br><span style="color:#888;font-size:11px">'+p.code+' ・ '+v.orders[0]+'</span></td>'
+              + '<td style="text-align:right">'+u.toLocaleString('ja-JP')+'</td>'
+              + '<td style="text-align:right">'+l[1]+'</td>'
+              + '<td style="text-align:right;padding-right:4px">'+(u*l[1]).toLocaleString('ja-JP')+'</td></tr>';
+          }).join('')
+        + '</tbody></table></div>'
+        + '<div style="display:flex;justify-content:space-between;gap:24px;margin-top:14px">'
+        + '<div style="flex:1"><div style="color:#555;font-size:12px;margin-bottom:4px">税率別内訳</div>'
+        + '<table style="max-width:340px"><thead><tr style="background:#f4f4f4;color:#555;font-size:11px">'
+        + '<th style="text-align:left;padding:5px 8px;border:1px solid #ddd"></th><th style="text-align:right;padding:5px 8px;border:1px solid #ddd">税抜金額</th>'
+        + '<th style="text-align:right;padding:5px 8px;border:1px solid #ddd">消費税額</th><th style="text-align:right;padding:5px 8px;border:1px solid #ddd">税込金額</th></tr></thead>'
+        + '<tbody><tr style="font-size:12px"><td style="padding:5px 8px;border:1px solid #ddd">10%</td>'
+        + '<td style="text-align:right;padding:5px 8px;border:1px solid #ddd">'+sub.toLocaleString('ja-JP')+'</td>'
+        + '<td style="text-align:right;padding:5px 8px;border:1px solid #ddd">'+tax.toLocaleString('ja-JP')+'</td>'
+        + '<td style="text-align:right;padding:5px 8px;border:1px solid #ddd">'+total.toLocaleString('ja-JP')+'</td></tr></tbody></table></div>'
+        + '<div style="width:280px">'
+        + '<div style="display:flex;justify-content:space-between;padding:7px 4px;border-bottom:1px solid #e5e5e5"><span>小計</span><span>'+sub.toLocaleString('ja-JP')+'</span></div>'
+        + '<div style="display:flex;justify-content:space-between;padding:7px 4px;border-bottom:1px solid #e5e5e5"><span>消費税額合計</span><span>'+tax.toLocaleString('ja-JP')+'</span></div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:2px solid #333"><b style="font-size:15px">合計</b><b style="font-size:18px">'+total.toLocaleString('ja-JP')+'</b></div>'
+        + '</div></div>'
+        + '<div style="margin-top:26px"><div style="color:#555;font-size:12px;margin-bottom:6px">振込先</div>'
+        + '<div style="border:1px solid #ddd;padding:12px 14px;line-height:1.9;color:#333">'
+        + '三菱UFJ銀行　浅草橋支店　（普）0453419<br>みずほ銀行　浅草橋支店　（普）1445431<br>'
+        + '株式会社ケーメックスONE</div></div>'
+        + '<div style="margin-top:16px"><div style="color:#555;font-size:12px;margin-bottom:6px">備考</div>'
+        + '<div style="border:1px solid #ddd;padding:12px 14px;line-height:1.7;color:#333">'
+        + '誠に恐れ入りますが、振込手数料はご負担いただきますようお願い申し上げます。<br>'
+        + 'お支払条件：'+a.terms+' ／ 対象注文書：'+v.orders.join(' / ')+'</div></div>'
+        + '</div>';
+
+      var issueBtn=document.getElementById('issue');
+      issueBtn.textContent = v.status==='draft' ? '発行して送付（'+a.invoiceBy+'）' : '再送信する';
+      document.getElementById('printInv').addEventListener('click', function(){ window.print(); });
+      issueBtn.addEventListener('click', function(){
+        if(v.status==='draft') v.status='unpaid';
+        alert('請求書 '+v.no+' を発行し、顧客ポータル掲載＋'+a.invoiceBy+'送付しました。（モック）');
+        location.href='admin-invoice.html';
+      });
+    }
+  });
+</script>
+</body>
+</html>
