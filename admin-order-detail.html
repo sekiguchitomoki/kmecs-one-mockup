@@ -62,7 +62,7 @@
         + '<span class="badge '+st.cls+'" style="background:'+st.bg+'">'+st.ja+'</span>'
         + '<span class="badge bg-neutral-100 text-neutral-600">'+o.route+'</span></div>'
         + '<div class="text-[13px] text-neutral-500">受注日 '+o.date+' ・ 担当営業 '+c.rep+'</div></div>'
-        + '<div class="text-right"><div class="text-[12px] text-neutral-400">受注金額（税別）</div>'
+        + '<div class="text-right"><div class="text-[12px] text-neutral-400">受注金額（税込）</div>'
         + '<div class="font-display text-2xl font-black text-ink">'+yen(o.amount)+'</div></div></div>'
 
         // 工程
@@ -75,9 +75,9 @@
         + '<div class="adm-card overflow-hidden"><div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">受注明細</div>'
         + '<div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr><th class="text-left px-4 py-2.5">品目</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">単価</th><th class="text-right px-4 py-2.5">金額</th></tr></thead>'
         + '<tbody><tr><td class="px-4 py-3 text-neutral-700">'+o.items+'</td><td class="py-3 text-right font-display">一式</td>'
-        + '<td class="py-3 text-right font-display">'+yen(o.amount)+'</td><td class="px-4 py-3 text-right font-display font-bold text-ink">'+yen(o.amount)+'</td></tr>'
-        + '<tr><td class="px-4 py-2 text-right text-neutral-500" colspan="3">消費税(10%)</td><td class="px-4 py-2 text-right font-display">'+yen(Math.round(o.amount*0.1))+'</td></tr>'
-        + '<tr style="border-top:2px solid #333"><td class="px-4 py-2 text-right font-bold text-ink" colspan="3">合計（税込）</td><td class="px-4 py-2 text-right font-display font-black text-ink">'+yen(Math.round(o.amount*1.1))+'</td></tr>'
+        + '<td class="py-3 text-right font-display">'+yen(Math.round(o.amount/1.1))+'</td><td class="px-4 py-3 text-right font-display font-bold text-ink">'+yen(Math.round(o.amount/1.1))+'</td></tr>'
+        + '<tr><td class="px-4 py-2 text-right text-neutral-500" colspan="3">消費税(10%)</td><td class="px-4 py-2 text-right font-display">'+yen(o.amount-Math.round(o.amount/1.1))+'</td></tr>'
+        + '<tr style="border-top:2px solid #333"><td class="px-4 py-2 text-right font-bold text-ink" colspan="3">合計（税込）</td><td class="px-4 py-2 text-right font-display font-black text-ink">'+yen(o.amount)+'</td></tr>'
         + '</tbody></table></div></div>'
         // IBM連携
         + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">IBM基幹 連携状況</div>'
