@@ -83,11 +83,19 @@
         var open=INQUIRIES.filter(function(q){return q.status==='open';}).length;
         var working=INQUIRIES.filter(function(q){return q.status==='working';}).length;
         var done=INQUIRIES.filter(function(q){return q.status==='done';}).length;
+        var qc='adm-card p-4 qkpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm';
         document.getElementById('kpi').innerHTML=
-          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">未対応</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+open+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">対応中</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+working+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">完了</div><div class="font-display text-2xl font-black text-ink mt-1">'+done+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均初動</div><div class="font-display text-2xl font-black text-ink mt-1">1.8<span class="text-[13px] font-normal text-neutral-400 ml-1">時間</span></div></div>';
+          '<div class="'+qc+'" data-k="open"><div class="text-[13px] text-neutral-500">未対応</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+open+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>'
+          + '<div class="'+qc+'" data-k="working"><div class="text-[13px] text-neutral-500">対応中</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+working+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>'
+          + '<div class="'+qc+'" data-k="done"><div class="text-[13px] text-neutral-500">完了</div><div class="font-display text-2xl font-black text-ink mt-1">'+done+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>'
+          + '<div class="p-4"><div class="text-[13px] text-neutral-500">平均初動</div><div class="font-display text-2xl font-black text-ink mt-1">1.8<span class="text-[13px] font-normal text-neutral-400 ml-1">時間</span></div><div class="text-[11px] text-neutral-400 mt-0.5">未対応→初回返信の平均</div></div>';
+        document.querySelectorAll('.qkpi').forEach(function(card){
+          card.addEventListener('click', function(){
+            var k=card.getAttribute('data-k');
+            document.getElementById('fSt').value = (document.getElementById('fSt').value===k?'':k);
+            render();
+          });
+        });
 
         var list=filtered();
         document.getElementById('cnt').textContent=list.length;

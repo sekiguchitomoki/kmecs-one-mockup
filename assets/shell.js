@@ -148,7 +148,7 @@
       return `<div class="grid grid-cols-12 gap-8">
         <div class="col-span-4">${megaFeature('orders.html', 'assets/img/support2.jpg', '注文・進捗一覧')}</div>
         <div class="col-span-4">${megaCol('ORDERS ／ 注文', megaLink('orders.html', '注文履歴・進捗', '見積→受発注→出荷→請求→入金を追跡') + megaLink('orders.html', '出荷・送り状番号', 'ヤマト追跡番号を確認'))}</div>
-        <div class="col-span-4">${megaCol('SUPPORT ／ サポート', megaLink('mypage.html', 'マイページ', '与信・支払条件・未入金') + megaLink('contact.html', '注文について相談', '担当営業へ直接連絡'))}</div>
+        <div class="col-span-4">${megaCol('SUPPORT ／ サポート', megaLink('mypage.html', 'マイページ', 'お取引条件・支払条件・未入金') + megaLink('contact.html', '注文について相談', '担当営業へ直接連絡'))}</div>
       </div>`;
     }
     if (key === 'notifications') {

@@ -64,7 +64,7 @@
         <select id="fCust" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select></div>
       <div><label class="text-[13px] font-bold text-neutral-600">状態</label>
         <select id="fStatus" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white">
-          <option value="">すべて</option><option value="draft">未発行</option><option value="unpaid">発行済・未入金</option><option value="paid">入金済</option>
+          <option value="">すべて</option><option value="draft">未発行</option><option value="issued">発行済（未入金＋入金済）</option><option value="unpaid">発行済・未入金</option><option value="paid">入金済</option>
         </select></div>
       <div><label class="text-[13px] font-bold text-neutral-600">支払期日</label>
         <select id="fDue" class="mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white">
@@ -133,11 +133,20 @@
         var issued=INV.filter(function(v){return v.status!=='draft';}).length;
         var unpaid=INV.filter(function(v){return v.status==='unpaid';}).reduce(function(s,v){return s+tot(v);},0);
         var paid=INV.filter(function(v){return v.status==='paid';}).reduce(function(s,v){return s+tot(v);},0);
+        var kc='adm-card p-4 ikpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm';
+        var hint='<div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div>';
         document.getElementById('kpi').innerHTML=
-          '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">今月の請求対象</div><div class="font-display text-2xl font-black text-ink mt-1">'+target+'<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-          + '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">発行済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">'+issued+'<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-          + '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未入金</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+yen(unpaid)+'</div></div>'
-          + '<div class="adm-card p-4"><div class="text-[14px] text-neutral-500">入金済</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(paid)+'</div></div>';
+          '<div class="'+kc+'" data-k=""><div class="text-[14px] text-neutral-500">今月の請求対象</div><div class="font-display text-2xl font-black text-ink mt-1">'+target+'<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">すべて表示 ›</div></div>'
+          + '<div class="'+kc+'" data-k="issued"><div class="text-[14px] text-neutral-500">発行済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">'+issued+'<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div>'+hint+'</div>'
+          + '<div class="'+kc+'" data-k="unpaid"><div class="text-[14px] text-neutral-500">未入金</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+yen(unpaid)+'</div>'+hint+'</div>'
+          + '<div class="'+kc+'" data-k="paid"><div class="text-[14px] text-neutral-500">入金済</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(paid)+'</div>'+hint+'</div>';
+        document.querySelectorAll('.ikpi').forEach(function(card){
+          card.addEventListener('click', function(){
+            document.getElementById('fStatus').value = card.getAttribute('data-k');
+            render();
+            var t=document.getElementById('rows'); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'center'});
+          });
+        });
       }
       var TODAY = new Date(2026,6,18); // 2026/07/18
       function pDate(s){ var p=(s||'').split('/'); return p.length===3? new Date(+p[0],+p[1]-1,+p[2]) : null; }
@@ -150,7 +159,8 @@
             du=document.getElementById('fDue').value;
         return INV.map(function(v,i){return {v:v,i:i};}).filter(function(o){
           var v=o.v, a=invC(v), cd=pDate(v.close), dd=pDate(v.due);
-          if(st && v.status!==st) return false;
+          if(st==='issued'){ if(v.status==='draft') return false; }
+          else if(st && v.status!==st) return false;
           if(cu && v.cust!==cu) return false;
           if(from && cd && cd<from) return false;
           if(to && cd && cd>to) return false;

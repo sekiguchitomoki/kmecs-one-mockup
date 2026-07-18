@@ -26,20 +26,20 @@
       <span class="text-neutral-500">手数料相殺・一部入金は自動検知して差額を提示。未入金は締め日を元に理由を自動判定します。</span>
     </div>
     <div class="flex items-center gap-2 text-[14px]">
-      <span class="px-2.5 py-1.5" style="background:var(--lav)">銀行入金データ 12件</span>
+      <span class="px-2.5 py-1.5" style="background:var(--lav)">銀行入金データ <b id="bnData">0</b>件</span>
       <span class="text-neutral-300">›</span>
-      <span class="px-2.5 py-1.5 text-white" style="background:#14887b">自動照合 10件</span>
+      <span class="px-2.5 py-1.5 text-white" style="background:#14887b">自動照合 <b id="bnAuto">0</b>件</span>
       <span class="text-neutral-300">›</span>
-      <span class="px-2.5 py-1.5 text-white" style="background:#e60012">要確認 2件</span>
+      <span class="px-2.5 py-1.5 text-white" style="background:#e60012">要確認 <b id="bnChk">0</b>件</span>
     </div>
   </div>
 
   <!-- KPI -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">本日の入金</div><div class="font-display text-2xl font-black text-ink mt-1">¥1,240,000</div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">自動消込済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">10<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">要確認</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">2<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未入金（期日超過）</div><div class="font-display text-2xl font-black text-amber-600 mt-1">¥580,800</div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">入金（照合対象 計）</div><div class="font-display text-2xl font-black text-ink mt-1" id="kIn">¥0</div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">自動消込済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1"><span id="kAuto">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">要確認</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012"><span id="kChk">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未入金（期日超過）</div><div class="font-display text-2xl font-black text-amber-600 mt-1" id="kOver">¥0</div></div>
   </div>
 
   <!-- 銀行入金データ -->
@@ -99,7 +99,21 @@
     title:'入金消込',
     sub:'⑥入金 — 銀行入金確認 → 顧客コード突合 → 消込 → IBMへ入金インプット',
     onReady:function(){
+      function kpi(){
+        var auto=PAY.filter(function(p){return p.st==='auto';}).length;
+        var chk =PAY.filter(function(p){return p.st!=='auto';}).length;
+        var inSum=PAY.reduce(function(s,p){return s+p.paid;},0);
+        var over =UNPAID.filter(function(u){return u.days>0;}).reduce(function(s,u){return s+u.amount;},0);
+        document.getElementById('bnData').textContent=PAY.length;
+        document.getElementById('bnAuto').textContent=auto;
+        document.getElementById('bnChk').textContent=chk;
+        document.getElementById('kIn').textContent=yen(inSum);
+        document.getElementById('kAuto').textContent=auto;
+        document.getElementById('kChk').textContent=chk;
+        document.getElementById('kOver').textContent=yen(over);
+      }
       function render(){
+        kpi();
         document.getElementById('rows').innerHTML = PAY.map(function(p,i){
           var a = ACCOUNTS[p.acc];
           var diff = p.paid - p.billed;

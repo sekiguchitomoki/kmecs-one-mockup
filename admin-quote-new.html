@@ -65,6 +65,14 @@
             <button id="addCustom" class="text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-2.5 py-1.5">＋部材（取扱外/特注）</button>
           </div>
         </div>
+        <!-- 部材（取扱外/特注）インライン入力 -->
+        <div id="customPanel" class="hidden px-5 py-3 border-b border-[#dcdce6] flex flex-wrap items-end gap-2" style="background:#fffdf5">
+          <div><label class="block text-[12px] font-bold text-neutral-500 mb-1">部材名（取扱外・特注）</label><input id="cname" class="border border-[#dcdce6] px-2 py-1.5 text-[13px]" style="width:260px" placeholder="例：DINレール取付キット（他社品）"></div>
+          <div><label class="block text-[12px] font-bold text-neutral-500 mb-1">単価（税別）</label><input id="cprice" type="number" min="0" class="border border-[#dcdce6] px-2 py-1.5 text-[13px] w-28 text-right font-display" placeholder="3200"></div>
+          <div><label class="block text-[12px] font-bold text-neutral-500 mb-1">数量</label><input id="cqty" type="number" value="1" min="1" class="border border-[#dcdce6] px-2 py-1.5 text-[13px] w-16 text-center"></div>
+          <button id="cadd" class="text-[13px] text-white px-3 py-1.5 font-bold" style="background:#e60012">明細に追加</button>
+          <button id="ccancel" class="text-[13px] text-neutral-500 px-2 py-1.5">キャンセル</button>
+        </div>
         <datalist id="prodList"></datalist>
         <div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>
           <th class="text-left px-4 py-2.5">区分</th><th class="text-left py-2.5">品目 / 型番</th>
@@ -149,11 +157,20 @@
       }
       document.getElementById('addLine').addEventListener('click', addProduct);
       document.getElementById('pcode').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addProduct(); } });
+      var cpanel=document.getElementById('customPanel');
       document.getElementById('addCustom').addEventListener('click', function(){
-        var name=prompt('部材名（取扱製品以外・特注など）を入力','DINレール取付キット（他社品）');
-        if(!name) return;
-        var price=+prompt('単価（税別）を入力','3200')||0;
-        LINES.push({custom:name, price:price, qty:1}); renderLines();
+        cpanel.classList.toggle('hidden');
+        if(!cpanel.classList.contains('hidden')) document.getElementById('cname').focus();
+      });
+      document.getElementById('ccancel').addEventListener('click', function(){ cpanel.classList.add('hidden'); });
+      document.getElementById('cadd').addEventListener('click', function(){
+        var name=document.getElementById('cname').value.trim();
+        if(!name){ alert('部材名を入力してください。'); return; }
+        var price=+document.getElementById('cprice').value||0;
+        var qty=+document.getElementById('cqty').value||1;
+        LINES.push({custom:name, price:price, qty:qty}); renderLines();
+        document.getElementById('cname').value=''; document.getElementById('cprice').value=''; document.getElementById('cqty').value=1;
+        cpanel.classList.add('hidden');
       });
       document.getElementById('cust').addEventListener('change', syncCust);
 
