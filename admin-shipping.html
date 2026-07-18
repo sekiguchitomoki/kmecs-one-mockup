@@ -36,12 +36,12 @@
     </div>
   </div>
 
-  <!-- KPI -->
+  <!-- KPI（クリックで下の一覧を絞り込み） -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">本日の出荷予定</div><div class="font-display text-2xl font-black text-ink mt-1">5<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">送り状 発行済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">2<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">未発行</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">3<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">集荷締切</div><div class="font-display text-2xl font-black text-ink mt-1">17:00</div></div>
+    <div class="adm-card p-4 skpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k=""><div class="text-[14px] text-neutral-500">出荷対象（全件）</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="sAll">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">すべて表示 ›</div></div>
+    <div class="adm-card p-4 skpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="issued"><div class="text-[14px] text-neutral-500">送り状 発行済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1"><span id="sIssued">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>
+    <div class="adm-card p-4 skpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="pending"><div class="text-[14px] text-neutral-500">未発行（要対応）</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012"><span id="sPending">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>
+    <div class="p-4"><div class="text-[14px] text-neutral-500">集荷締切</div><div class="font-display text-2xl font-black text-ink mt-1">17:00</div><div class="text-[11px] text-neutral-400 mt-0.5">本日の集荷締切時刻</div></div>
   </div>
 
   <!-- 絞り込み -->
@@ -134,6 +134,17 @@
                 : 'text-white px-2.5 py-1.5" style="background:#e60012">送り状を発行 ›')+'</a></td></tr>';
         }).join('') || '<tr><td colspan="7" class="px-4 py-6 text-center text-neutral-400 text-[14px]">条件に一致する出荷がありません。</td></tr>';
       }
+      // KPI件数（SHIPMENTS実データ）＋カードクリックで発行状況を絞り込み
+      document.getElementById('sAll').textContent     = SHIP.length;
+      document.getElementById('sIssued').textContent  = SHIP.filter(function(s){return !!s.slip;}).length;
+      document.getElementById('sPending').textContent = SHIP.filter(function(s){return !s.slip;}).length;
+      document.querySelectorAll('.skpi').forEach(function(card){
+        card.addEventListener('click', function(){
+          document.getElementById('fStatus').value = card.getAttribute('data-k');
+          render();
+          var t=document.getElementById('rows'); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'center'});
+        });
+      });
       ['fKw','fStatus','fCust','fMaker'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); document.getElementById(id).addEventListener('change', render); });
       document.getElementById('fClear').addEventListener('click', function(){ document.getElementById('fKw').value=''; document.getElementById('fStatus').value=''; document.getElementById('fCust').value=''; document.getElementById('fMaker').value=''; render(); });
 

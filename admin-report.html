@@ -154,8 +154,8 @@
           var seg = arr.length? arr[0].seg : '';
           var bg = seg? SEG[seg].color : '#f4f4f8';
           var sz = arr.length? Math.min(46, 22+arr.length*8) : 0;
-          mx+='<div class="flex items-center justify-center" style="height:52px;background:'+(arr.length?'rgba(0,0,0,0.02)':'#fafafa')+';border:1px solid #eee">'
-            + (arr.length? '<span title="'+arr.map(function(x){return x.c.company;}).join(', ')+'" style="width:'+sz+'px;height:'+sz+'px;border-radius:9999px;background:'+bg+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">'+arr.length+'</span>' : '')
+          mx+='<div class="flex items-center justify-center'+(arr.length?' mcell cursor-pointer':'')+'" '+(arr.length?'data-s="'+seg+'" ':'')+'style="height:52px;background:'+(arr.length?'rgba(0,0,0,0.02)':'#fafafa')+';border:1px solid #eee">'
+            + (arr.length? '<span title="'+arr.map(function(x){return x.c.company;}).join(', ')+'（クリックで一覧に絞り込み）" style="width:'+sz+'px;height:'+sz+'px;border-radius:9999px;background:'+bg+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">'+arr.length+'</span>' : '')
             + '</div>';
         }
       }
@@ -166,8 +166,9 @@
       var segCount={}; data.forEach(function(d){ segCount[d.seg]=(segCount[d.seg]||0)+1; });
       document.getElementById('segSummary').innerHTML=Object.keys(SEG).filter(function(k){return segCount[k];}).map(function(k){
         var pct=Math.round(segCount[k]/data.length*100);
-        return '<div><div class="flex justify-between items-center text-[13px] mb-1"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:'+SEG[k].color+'"></span><b class="text-ink">'+SEG[k].name+'</b></span>'
-          + '<span class="font-display text-neutral-500">'+segCount[k]+'社 ('+pct+'%)</span></div>'
+        return '<div class="segbar cursor-pointer p-1.5 -m-1.5 rounded transition hover:bg-[#f4f4f8]" data-s="'+k+'" title="クリックで該当顧客を一覧に絞り込み">'
+          + '<div class="flex justify-between items-center text-[13px] mb-1"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:'+SEG[k].color+'"></span><b class="text-ink">'+SEG[k].name+'</b></span>'
+          + '<span class="font-display text-neutral-500">'+segCount[k]+'社 ('+pct+'%) ›</span></div>'
           + '<div class="h-2" style="background:#eee"><div class="h-2" style="width:'+pct+'%;background:'+SEG[k].color+'"></div></div></div>';
       }).join('');
 
@@ -203,6 +204,15 @@
       }
 
       renderFilter(); renderRows();
+
+      // セグメント分布サマリ／マトリクスのバブルをクリックで顧客一覧に絞り込み
+      function applySeg(k){
+        FILTER = (FILTER===k ? '' : k);
+        renderFilter(); renderRows();
+        var t=document.getElementById('rows'); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+      document.querySelectorAll('.segbar').forEach(function(b){ b.addEventListener('click', function(){ applySeg(b.getAttribute('data-s')); }); });
+      document.querySelectorAll('.mcell').forEach(function(b){ b.addEventListener('click', function(){ applySeg(b.getAttribute('data-s')); }); });
       } // end renderAll
 
       document.getElementById('win').addEventListener('change', renderAll);

@@ -224,6 +224,8 @@
         var n=INV.filter(function(v){return v.status==='draft';}).length;
         alert('締め処理を実行しました。\nIBMの製品単位データを注文書単位に集約し、未発行の請求 '+n+' 件を起案しました。（モック）');
       });
+      // URLパラメータ（ダッシュボード等からの遷移）で初期フィルタを反映
+      var qf=qs('f'); if(qf==='unpaid'){ document.getElementById('fStatus').value='unpaid'; }
       render();
     }
   });

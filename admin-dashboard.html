@@ -102,18 +102,19 @@
           + '</a>'+(i<STEPS.length-1?'<span class="self-center text-neutral-300">›</span>':'');
       }).join('');
 
-      // KPI
+      // KPI（各カードをクリックで該当の管理画面へ遷移）
       var KPI=[
-        {l:'本日の受注',v:'18',u:'件',c:'text-ink'},
-        {l:'IBM自動連携済',v:'14',u:'件',c:'text-emerald-600'},
-        {l:'要チェック受注',v:'3',u:'件',c:'text-amber-600'},
-        {l:'出荷待ち',v:'3',u:'件',c:'text-ink'},
-        {l:'未入金',v:'¥862,400',u:'',c:'text-[color:var(--brand)]'},
-        {l:'見積依頼(未処理)',v:'3',u:'件',c:'text-[color:var(--brand)]'},
+        {l:'本日の受注',v:'18',u:'件',c:'text-ink',h:'admin-orders.html'},
+        {l:'IBM自動連携済',v:'14',u:'件',c:'text-emerald-600',h:'admin-orders.html?f=auto'},
+        {l:'要チェック受注',v:'3',u:'件',c:'text-amber-600',h:'admin-orders.html?f=check'},
+        {l:'出荷待ち',v:'3',u:'件',c:'text-ink',h:'admin-shipping.html'},
+        {l:'未入金',v:'¥862,400',u:'',c:'text-[color:var(--brand)]',h:'admin-invoice.html?f=unpaid'},
+        {l:'見積依頼(未処理)',v:'3',u:'件',c:'text-[color:var(--brand)]',h:'admin-quotes.html'},
       ];
       document.getElementById('kpi').innerHTML = KPI.map(function(k){
-        return '<div class="adm-card p-4"><div class="text-[12px] text-neutral-500">'+k.l+'</div>'
-          + '<div class="font-display text-2xl font-black mt-1 '+k.c+'">'+k.v+(k.u?'<span class="text-[12px] font-normal text-neutral-400 ml-1">'+k.u+'</span>':'')+'</div></div>';
+        return '<a href="'+k.h+'" class="adm-card p-4 block transition cursor-pointer hover:border-[color:var(--brand)] hover:shadow-sm group">'
+          + '<div class="text-[12px] text-neutral-500 flex items-center justify-between">'+k.l+'<span class="text-neutral-300 group-hover:text-[color:var(--brand)]">›</span></div>'
+          + '<div class="font-display text-2xl font-black mt-1 '+k.c+'">'+k.v+(k.u?'<span class="text-[12px] font-normal text-neutral-400 ml-1">'+k.u+'</span>':'')+'</div></a>';
       }).join('');
 
       // アラート

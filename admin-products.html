@@ -165,15 +165,21 @@
         });
         document.getElementById('cnt').textContent=list.length;
         document.getElementById('rows').innerHTML=list.slice(0,80).map(function(p){
-          var s=statusOf(p);
-          return '<tr class="hover:bg-[#fafafe]">'
+          var s=statusOf(p), pub=(s==='publish');
+          // 公開＝緑の帯・行を薄緑／非公開（下書き）＝グレーの帯・行を薄グレーで一目で区別
+          var rowBg = pub ? 'background:#f2fbf6;box-shadow:inset 4px 0 0 #10b981;'
+                          : 'background:#f7f7f9;box-shadow:inset 4px 0 0 #c4c4cf;';
+          var stCell = pub
+            ? '<span class="badge text-white" style="background:#10b981">● 公開中</span>'
+            : '<span class="badge text-white" style="background:#9a9aa6">○ 非公開（下書き）</span>';
+          return '<tr class="hover:brightness-[.98]" style="'+rowBg+'">'
             + '<td class="px-4 py-2"><div class="w-12 h-12 bg-white border border-[#eee] flex items-center justify-center overflow-hidden"><img src="'+prodImg(p)+'" class="max-h-full max-w-full object-contain"></div></td>'
             + '<td class="py-2"><div class="text-[15px] font-bold text-ink">'+p.name+'</div><div class="text-[12px] text-neutral-400">'+p.code.toLowerCase()+'</div></td>'
             + '<td class="py-2 font-display text-neutral-600">'+p.code+'</td>'
             + '<td class="py-2 text-[14px] text-neutral-600">'+MAKERS[p.maker].name+'</td>'
             + '<td class="py-2 text-[13px] text-neutral-500">'+p.catJa+'</td>'
             + '<td class="py-2 text-right font-display">'+yen(p.price)+'</td>'
-            + '<td class="py-2 pl-3">'+(s==='publish'?'<span class="badge bg-emerald-100 text-emerald-700">公開</span>':'<span class="badge bg-neutral-200 text-neutral-600">下書き</span>')+' '+tagBadge(p.tag)+'</td>'
+            + '<td class="py-2 pl-3">'+stCell+' '+tagBadge(p.tag)+'</td>'
             + '<td class="px-4 py-2 text-right"><button class="edit text-[13px] text-white px-2.5 py-1" data-c="'+p.code+'" style="background:#393b56">編集</button></td></tr>';
         }).join('')+(list.length>80?'':'');
         document.querySelectorAll('.edit').forEach(function(b){ b.addEventListener('click', function(){ loadEditor(getProduct(b.getAttribute('data-c'))); showEdit(); }); });

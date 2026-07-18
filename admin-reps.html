@@ -35,8 +35,9 @@
       <div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr>
         <th class="text-left px-4 py-2.5">担当者</th><th class="text-left py-2.5">部署</th>
         <th class="text-right py-2.5">担当顧客</th><th class="text-right py-2.5">売上</th>
-        <th class="text-right py-2.5">未入金</th><th class="text-right px-4 py-2.5">達成率</th>
+        <th class="text-right py-2.5">粗利額</th><th class="text-right py-2.5">未入金</th><th class="text-right px-4 py-2.5">達成率</th>
       </tr></thead><tbody class="divide-y divide-[#eceef5]" id="repRows"></tbody></table></div>
+      <div class="px-4 py-2 text-[12px] text-neutral-400 border-t border-[#eceef5]">※ 粗利額は社内のみ表示（想定粗利率＝得値ランク別）。行クリックで担当者の月次推移を表示します。</div>
     </div>
   </div>
 
@@ -66,6 +67,19 @@
   </div>
   <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、数値はダミーです。</p>
 
+  <!-- 担当者 詳細モーダル -->
+  <div id="repModal" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,.45)">
+    <div class="absolute inset-0 flex items-start justify-center overflow-y-auto p-4">
+      <div class="bg-white w-full max-w-3xl mt-8 shadow-xl" style="border-radius:6px">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-[#eceef5]">
+          <div id="rmTitle" class="text-[17px] font-bold text-ink"></div>
+          <button id="rmClose" class="text-neutral-400 hover:text-ink text-[22px] leading-none">×</button>
+        </div>
+        <div id="rmBody" class="p-5"></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="assets/data.js"></script>
@@ -77,28 +91,39 @@
     sub:'担当営業ごとの売上・目標達成率・担当顧客、顧客ランキング',
     onReady:function(){
       var totalSales=CUSTOMERS.reduce(function(s,c){return s+c.salesYear;},0);
+      // 想定粗利率（社内のみ表示・得値ランク別）
+      function grossRate(rank){ return rank==='A'?0.16 : rank==='B'?0.19 : rank==='C'?0.22 : 0.20; }
+      function grossOf(c){ return Math.round(c.salesYear*grossRate(c.rank)); }
+      // 直近12ヶ月の季節ウェイト（合計≒1・決め打ち）
+      var MW=[0.072,0.078,0.090,0.082,0.086,0.092,0.088,0.080,0.085,0.093,0.079,0.075];
+      var MLAB=['25/8','25/9','25/10','25/11','25/12','26/1','26/2','26/3','26/4','26/5','26/6','26/7'];
       function repStat(r){
         var cs=CUSTOMERS.filter(function(c){return c.rep===r.name;});
         var sales=cs.reduce(function(s,c){return s+c.salesYear;},0);
         var unpaid=cs.reduce(function(s,c){return s+c.unpaid;},0);
-        return { cs:cs, sales:sales, unpaid:unpaid, rate:Math.round(sales/r.target*100) };
+        var gross=cs.reduce(function(s,c){return s+grossOf(c);},0);
+        return { cs:cs, sales:sales, unpaid:unpaid, gross:gross, gpr:sales?Math.round(gross/sales*100):0, rate:Math.round(sales/r.target*100) };
       }
       var reps=REPS.map(function(r){ return Object.assign({}, r, repStat(r)); }).sort(function(a,b){return b.sales-a.sales;});
       var repMax=reps[0].sales;
 
-      // 担当カード
+      // 担当カード（クリックで月次売上推移・粗利額の詳細を表示）
       document.getElementById('repCards').innerHTML=reps.map(function(r,i){
         var ok=r.rate>=100;
-        return '<div class="adm-card p-5">'
+        return '<div class="adm-card p-5 repcard cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-r="'+r.name+'">'
           + '<div class="flex items-center justify-between"><div class="flex items-center gap-2">'
           + '<span class="w-8 h-8 rounded-full flex items-center justify-center text-white font-display font-black" style="background:'+(i===0?'#e60012':'#393b56')+'">'+(i+1)+'</span>'
           + '<div><div class="text-[16px] font-bold text-ink">'+r.name+'</div><div class="text-[12px] text-neutral-400">'+r.dept+'</div></div></div>'
-          + '<span class="badge '+(ok?'':'')+'" style="background:'+(ok?'#dcfce7':'#fef3c7')+';color:'+(ok?'#166534':'#92400e')+'">達成 '+r.rate+'%</span></div>'
+          + '<span class="badge" style="background:'+(ok?'#dcfce7':'#fef3c7')+';color:'+(ok?'#166534':'#92400e')+'">達成 '+r.rate+'%</span></div>'
           + '<div class="mt-3"><div class="font-display text-2xl font-black text-ink">'+yen(r.sales)+'</div>'
           + '<div class="text-[12px] text-neutral-400">目標 '+yen(r.target)+' ・ 担当 '+r.cs.length+'社</div></div>'
           + '<div class="mt-2 h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+Math.min(100,r.rate)+'%;background:'+(ok?'#14887b':'#e60012')+'"></div></div>'
+          + '<div class="mt-3 pt-3 border-t border-[#eee] flex items-center justify-between text-[13px]"><span class="text-neutral-500">粗利額 <b class="text-ink font-display">'+yen(r.gross)+'</b> <span class="text-neutral-400">(粗利率'+r.gpr+'%)</span></span><span class="text-[color:var(--brand)] font-bold">詳細 ›</span></div>'
           + '</div>';
       }).join('');
+      document.querySelectorAll('.repcard').forEach(function(card){
+        card.addEventListener('click', function(){ openRep(card.getAttribute('data-r')); });
+      });
 
       // 担当別バー
       document.getElementById('repBars').innerHTML=reps.map(function(r){
@@ -109,13 +134,17 @@
 
       // 担当別テーブル
       document.getElementById('repRows').innerHTML=reps.map(function(r){
-        return '<tr><td class="px-4 py-3 text-[15px] font-bold text-ink">'+r.name+'</td>'
+        return '<tr class="reprow cursor-pointer hover:bg-[#fafafe]" data-r="'+r.name+'"><td class="px-4 py-3 text-[15px] font-bold text-ink">'+r.name+' <span class="text-[color:var(--brand)] text-[12px]">›</span></td>'
           + '<td class="py-3 text-[13px] text-neutral-500">'+r.dept+'</td>'
           + '<td class="py-3 text-right font-display">'+r.cs.length+'社</td>'
           + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(r.sales)+'</td>'
+          + '<td class="py-3 text-right font-display text-emerald-700">'+yen(r.gross)+'<div class="text-[11px] text-neutral-400 font-sans">粗利率'+r.gpr+'%</div></td>'
           + '<td class="py-3 text-right font-display '+(r.unpaid>0?'font-bold':'text-neutral-300')+'" '+(r.unpaid>0?'style="color:#e60012"':'')+'>'+(r.unpaid>0?yen(r.unpaid):'—')+'</td>'
           + '<td class="px-4 py-3 text-right font-display '+(r.rate>=100?'text-emerald-600':'text-amber-600')+' font-bold">'+r.rate+'%</td></tr>';
       }).join('');
+      document.querySelectorAll('.reprow').forEach(function(row){
+        row.addEventListener('click', function(){ openRep(row.getAttribute('data-r')); });
+      });
 
       // 顧客ランキング
       document.getElementById('fRep').innerHTML='<option value="">全担当</option>'+REPS.map(function(r){return '<option>'+r.name+'</option>';}).join('');
@@ -152,6 +181,49 @@
       document.getElementById('sortUnpaid').addEventListener('click', function(){ setSort('unpaid', this); });
       document.getElementById('fRep').addEventListener('change', renderRank);
       renderRank();
+
+      // ===== 担当者 詳細モーダル（月次売上推移・粗利額） =====
+      function openRep(name){
+        var r=reps.filter(function(x){return x.name===name;})[0]; if(!r) return;
+        // 月次売上・粗利（年間値を季節ウェイトで按分）
+        var mSales=MW.map(function(w){return Math.round(r.sales*w);});
+        var mGross=MW.map(function(w){return Math.round(r.gross*w);});
+        var mMax=Math.max.apply(null,mSales);
+        var bars='<div class="flex items-end gap-1.5" style="height:150px">'+mSales.map(function(v,i){
+          var h=Math.round(v/mMax*130)+8;
+          return '<div class="flex-1 flex flex-col items-center justify-end" title="'+MLAB[i]+'：売上 '+yen(v)+' / 粗利 '+yen(mGross[i])+'">'
+            + '<div class="w-full relative" style="height:'+h+'px;background:#e60012">'
+            + '<div class="w-full absolute bottom-0" style="height:'+Math.round(mGross[i]/mMax*130)+'px;background:#14887b"></div></div></div>';
+        }).join('')+'</div>'
+          + '<div class="flex gap-1.5 mt-1">'+MLAB.map(function(l){return '<div class="flex-1 text-center text-[10px] text-neutral-400 font-display">'+l+'</div>';}).join('')+'</div>';
+
+        var custList=r.cs.slice().sort(function(a,b){return b.salesYear-a.salesYear;}).map(function(c){
+          return '<tr class="border-t border-[#f0f0f4]"><td class="py-2 text-[14px] text-ink font-bold">'+c.company
+            + '<span class="badge ml-1 text-white" style="background:'+(c.rank==='A'?'#e60012':c.rank==='B'?'#393b56':'#8b8ea8')+'">得値'+c.rank+'</span></td>'
+            + '<td class="py-2 text-right font-display text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-2 text-right font-display text-emerald-700">'+yen(grossOf(c))+'</td>'
+            + '<td class="py-2 text-right font-display text-neutral-500">'+Math.round(grossRate(c.rank)*100)+'%</td></tr>';
+        }).join('');
+
+        document.getElementById('rmTitle').textContent=r.name+'（'+r.dept+'）— 月次売上・粗利';
+        document.getElementById('rmBody').innerHTML=
+          '<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">'
+          + '<div class="p-3" style="background:var(--lav)"><div class="text-[12px] text-neutral-500">年間売上</div><div class="font-display text-xl font-black text-ink">'+yen(r.sales)+'</div></div>'
+          + '<div class="p-3" style="background:#f2fbf6"><div class="text-[12px] text-neutral-500">年間粗利額</div><div class="font-display text-xl font-black text-emerald-700">'+yen(r.gross)+'</div></div>'
+          + '<div class="p-3" style="background:#f6f5f4"><div class="text-[12px] text-neutral-500">粗利率</div><div class="font-display text-xl font-black text-ink">'+r.gpr+'%</div></div>'
+          + '<div class="p-3" style="background:#f6f5f4"><div class="text-[12px] text-neutral-500">目標達成率</div><div class="font-display text-xl font-black '+(r.rate>=100?'text-emerald-600':'text-amber-600')+'">'+r.rate+'%</div></div>'
+          + '</div>'
+          + '<div class="text-[14px] font-bold text-ink mb-2">月次 売上・粗利 推移（直近12ヶ月）</div>'
+          + '<div class="flex items-center gap-4 text-[12px] text-neutral-500 mb-2"><span class="flex items-center gap-1"><span class="w-3 h-3 inline-block" style="background:#e60012"></span>売上</span><span class="flex items-center gap-1"><span class="w-3 h-3 inline-block" style="background:#14887b"></span>粗利</span></div>'
+          + bars
+          + '<div class="text-[14px] font-bold text-ink mt-6 mb-2">担当顧客別 売上・粗利（'+r.cs.length+'社）</div>'
+          + '<table class="w-full"><thead><tr class="text-[12px] text-neutral-400 text-left"><th class="py-1">顧客</th><th class="py-1 text-right">年間売上</th><th class="py-1 text-right">粗利額</th><th class="py-1 text-right">粗利率</th></tr></thead><tbody>'+custList+'</tbody></table>'
+          + '<p class="text-[12px] text-neutral-400 mt-3">※ 月次配分・想定粗利率はモック用のダミー値です。粗利は社内管理のみ表示します。</p>';
+        document.getElementById('repModal').classList.remove('hidden');
+      }
+      function closeRep(){ document.getElementById('repModal').classList.add('hidden'); }
+      document.getElementById('rmClose').addEventListener('click', closeRep);
+      document.getElementById('repModal').addEventListener('click', function(e){ if(e.target===this||e.target===this.firstElementChild) closeRep(); });
     }
   });
 </script>

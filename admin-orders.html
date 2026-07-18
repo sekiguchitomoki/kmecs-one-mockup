@@ -288,6 +288,8 @@
       document.querySelectorAll('.kpi').forEach(function(card){
         card.addEventListener('click', function(){ setFilter(card.getAttribute('data-k')); });
       });
+      // URLパラメータ（ダッシュボード等からの遷移）で初期フィルタを反映
+      var qf=qs('f'); if(qf && ['all','auto','check','error','nolead'].indexOf(qf)>=0) f=qf;
       render();
     }
   });

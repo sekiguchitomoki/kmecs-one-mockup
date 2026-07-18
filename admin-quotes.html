@@ -27,7 +27,7 @@
         <span class="text-[13px] font-bold text-ink">見積業務の流れ（全体像）</span>
         <span class="text-[12px] text-neutral-400">この画面は見積業務の入口です。各工程はここから開きます</span>
       </div>
-      <a href="admin-quote-new.html" class="inline-flex items-center gap-1 text-white px-4 py-2.5 font-bold" style="background:#e60012"><span class="text-[16px] leading-none">＋</span> 新規見積を作成</a>
+      <a href="admin-quote-new.html" class="inline-flex items-center gap-1 text-white px-3 py-1.5 text-[13px] font-bold whitespace-nowrap" style="background:#e60012"><span class="text-[14px] leading-none">＋</span> 新規見積を作成</a>
     </div>
     <div class="flex items-stretch gap-0 text-[13px]">
       <!-- ① -->
@@ -124,7 +124,7 @@
           + '<td class="py-3 text-neutral-600 text-[14px]">'+reqSummary(r)+'</td>'
           + '<td class="py-3"><span class="badge '+(r.type==='特殊見積'?'text-white':'bg-neutral-200 text-neutral-700')+'" '+(r.type==='特殊見積'?'style="background:#393b56"':'')+'>'+r.type+'</span></td>'
           + '<td class="py-3">'+reqStatus(r)+'</td>'
-          + '<td class="px-4 py-3 text-right"><a href="admin-quote-request.html?id='+r.id+'" class="inline-block text-[13px] text-white px-3 py-1.5" style="background:'+(ready?'#e60012':'#393b56')+'">'+(ready?'見積を作成 ›':'依頼を開く ›')+'</a></td></tr>';
+          + '<td class="px-4 py-3 text-right"><a href="admin-quote-request.html?id='+r.id+'" class="inline-block text-[13px] text-white px-3 py-1.5 whitespace-nowrap" style="background:'+(ready?'#e60012':'#393b56')+'">'+(ready?'見積を作成 ›':'依頼を開く ›')+'</a></td></tr>';
       }).join('');
 
       function renderQuotes(){

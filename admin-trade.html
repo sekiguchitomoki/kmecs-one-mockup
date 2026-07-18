@@ -33,12 +33,12 @@
     </div>
   </div>
 
-  <!-- KPI -->
+  <!-- KPI（クリックで下の一覧を絞り込み） -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">発注IP 未処理</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">3<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">PI 待ち（納期IP）</div><div class="font-display text-2xl font-black text-amber-600 mt-1">2<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">入荷済（仕入IP待ち）</div><div class="font-display text-2xl font-black text-ink mt-1">1<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
-    <div class="adm-card p-4"><div class="text-[14px] text-neutral-500">RMA 申請中</div><div class="font-display text-2xl font-black text-ink mt-1">1<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div></div>
+    <div class="adm-card p-4 tkpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="po"><div class="text-[14px] text-neutral-500">発注IP 未処理</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012"><span id="kPo">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <div class="adm-card p-4 tkpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="pi"><div class="text-[14px] text-neutral-500">PI 待ち（納期IP）</div><div class="font-display text-2xl font-black text-amber-600 mt-1"><span id="kPi">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <div class="adm-card p-4 tkpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="sr"><div class="text-[14px] text-neutral-500">入荷済（仕入IP待ち）</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="kSr">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <a href="#rmaRow" class="adm-card p-4 tkpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm block" data-k="rma"><div class="text-[14px] text-neutral-500">RMA 申請中</div><div class="font-display text-2xl font-black text-ink mt-1">1<span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">その他業務で確認 ›</div></a>
   </div>
 
   <!-- 発注・納期・仕入 -->
@@ -72,7 +72,7 @@
       <div class="divide-y divide-[#eceef5]">
         <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">納期短縮リクエスト</div><div class="text-[14px] text-neutral-400">ODU AMC-2P-08 ×20（WO-24073）</div></div><button id="tLead" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5">メーカーへ依頼</button></div>
         <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">代品リクエスト（検品時 数量不足）</div><div class="text-[14px] text-neutral-400">ODU MS-K1P-06 ×2 不足</div></div><button id="tOdu" class="text-[14px] text-white px-2.5 py-1.5" style="background:#e60012">ODUへ申請</button></div>
-        <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">RMA申請</div><div class="text-[14px] text-neutral-400">MOXA EDS-408A ×1（初期不良）・申請中</div></div><span class="badge bg-amber-100 text-amber-700">物の移動待ち</span></div>
+        <div id="rmaRow" class="flex items-center justify-between px-4 py-3 scroll-mt-24"><div><div class="text-[16px] text-ink font-bold">RMA申請</div><div class="text-[14px] text-neutral-400">MOXA EDS-408A ×1（初期不良）・申請中</div></div><span class="badge bg-amber-100 text-amber-700">物の移動待ち</span></div>
         <div class="flex items-center justify-between px-4 py-3"><div><div class="text-[16px] text-ink font-bold">フォワダーとのやりとり</div><div class="text-[14px] text-neutral-400">発送先指定 / 通関で保留中の貨物 1件</div></div><button id="tFwd" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5">確認</button></div>
       </div>
     </div>
@@ -120,7 +120,22 @@
     title:'貿易 — 発注 / 納期 / 仕入 インプット',
     sub:'②受発注・③納期/仕入IP — 発注IP → PI受領で納期IP → 入荷で仕入IP（IBM基幹へ）',
     onReady:function(){
-      document.getElementById('rows').innerHTML = PO.map(function(r,i){
+      // KPI件数（PO実データ）
+      document.getElementById('kPo').textContent = PO.filter(function(r){return r.po==='wait';}).length;
+      document.getElementById('kPi').textContent = PO.filter(function(r){return r.pi==='wait';}).length;
+      document.getElementById('kSr').textContent = PO.filter(function(r){return r.sr==='wait';}).length;
+
+      var tf='all';  // 絞り込み状態（KPIカードで切替）
+      function match(r){
+        if(tf==='all') return true;
+        if(tf==='po') return r.po==='wait';
+        if(tf==='pi') return r.pi==='wait';
+        if(tf==='sr') return r.sr==='wait';
+        return true;
+      }
+      function renderRows(){
+      document.getElementById('rows').innerHTML = PO.map(function(r,i){ return {r:r,i:i}; }).filter(function(x){return match(x.r);}).map(function(x){
+        var r=x.r, i=x.i;
         var m = MAKERS[r.maker];
         return '<tr class="'+(r.po==='wait'?'bg-[#fff5f5]':'')+'">'
           + '<td class="px-4 py-3"><input type="checkbox" class="chk accent-[#e60012]" data-i="'+i+'"></td>'
@@ -137,7 +152,7 @@
           + (r.sr==='wait' ? '<button class="go text-[14px] text-white px-2.5 py-1.5" data-i="'+i+'" data-k="sr" style="background:#393b56">仕入IP</button>' : '')
           + (r.po==='done'&&r.pi==='done'&&r.sr==='done' ? '<button class="text-[14px] border border-[#dcdce6] text-neutral-400 px-2.5 py-1.5" disabled>完了</button>' : '')
           + '</td></tr>';
-      }).join('');
+      }).join('') || '<tr><td colspan="9" class="px-4 py-6 text-center text-neutral-400 text-[14px]">この状態の発注はありません。</td></tr>';
 
       document.querySelectorAll('.go').forEach(function(b){
         b.addEventListener('click', function(){
@@ -148,6 +163,20 @@
           if(k==='pi') PO[i].sr = 'wait';
           alert(PO[i].no+' の'+names[k]+'をIBMへ実行しました。'+(k==='pi'?'（IPCは業務へメール通知も送信）':'')+'（モック）');
           location.reload();
+        });
+      });
+      }  // end renderRows
+      renderRows();
+
+      // KPIカードのクリックで発注テーブルを絞り込み（RMAカードはアンカー遷移）
+      document.querySelectorAll('.tkpi').forEach(function(card){
+        var k=card.getAttribute('data-k');
+        if(k==='rma') return;  // RMAはその他業務へアンカー
+        card.addEventListener('click', function(){
+          tf = (tf===k ? 'all' : k);
+          document.querySelectorAll('.tkpi').forEach(function(c){ c.style.outline = (c.getAttribute('data-k')===tf?'2px solid var(--brand)':''); c.style.outlineOffset='-1px'; });
+          renderRows();
+          var t=document.getElementById('rows'); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'center'});
         });
       });
 

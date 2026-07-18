@@ -563,17 +563,17 @@ window.INQ_STATUS = {
 };
 window.INQUIRIES = [
   { id:'IQ-2607-011', at:'2026/07/17 10:20', cust:'1042-01', order:'WO-24075', ch:'ポータル', status:'open', staff:'鈴木 慶博',
-    subject:'納期を1週間前倒しできますか', body:'ライン立上げの都合で、7/24までに納品いただけると助かります。分納でも構いません。' },
+    subject:'納期を1週間前倒しできますか', email:'t.tanaka@sample-densi.example.jp', body:'ライン立上げの都合で、7/24までに納品いただけると助かります。分納でも構いません。' },
   { id:'IQ-2607-010', at:'2026/07/17 09:05', cust:'2055-03', order:'WO-24072', ch:'電話', status:'open', staff:'田村 直樹',
-    subject:'EDS-518A のファームウェア指定', body:'FW v3.9 で出荷してほしい。現行ラインの他機と揃える必要あり。' },
+    subject:'EDS-518A のファームウェア指定', email:'h.suzuki@tokai-seiki.example.jp', body:'FW v3.9 で出荷してほしい。現行ラインの他機と揃える必要あり。' },
   { id:'IQ-2607-009', at:'2026/07/16 16:40', cust:'5088-04', order:'WO-24070', ch:'メール', status:'working', staff:'佐々木 涼',
-    subject:'IBM連携エラーの件（在庫マスタ不整合）', body:'注文が通っているか確認したい。エラー通知が届いた。' },
+    subject:'IBM連携エラーの件（在庫マスタ不整合）', email:'kobai@kansai-autome.example.jp', body:'注文が通っているか確認したい。エラー通知が届いた。' },
   { id:'IQ-2607-008', at:'2026/07/16 11:15', cust:'1042-01', order:'WO-24073', ch:'ポータル', status:'working', staff:'鈴木 慶博',
-    subject:'ODU AMC の代替品について', body:'AMC-2P-08 が長納期の場合、互換のある代替型番があれば提案してほしい。' },
+    subject:'ODU AMC の代替品について', email:'t.tanaka@sample-densi.example.jp', body:'AMC-2P-08 が長納期の場合、互換のある代替型番があれば提案してほしい。' },
   { id:'IQ-2607-007', at:'2026/07/15 14:30', cust:'3011-02', order:'WO-24074', ch:'メール', status:'done', staff:'田村 直樹',
-    subject:'請求書の宛名変更', body:'請求書の宛名を「マルショウ工業株式会社 経理部」に変更してください。', reply:'次回請求分より変更いたしました。' },
+    subject:'請求書の宛名変更', email:'keiri@marusho.example.jp', body:'請求書の宛名を「マルショウ工業株式会社 経理部」に変更してください。', reply:'次回請求分より変更いたしました。' },
   { id:'IQ-2607-006', at:'2026/07/14 09:50', cust:'8006-01', order:'WO-24068', ch:'電話', status:'done', staff:'佐々木 涼',
-    subject:'検品時に数量不足（MS-K1P-06 ×2）', body:'納品数が2個不足していました。', reply:'ODUへ代品申請済み。7/22に不足分を出荷予定です。' },
+    subject:'検品時に数量不足（MS-K1P-06 ×2）', email:'kobai@chubu-plant.example.jp', body:'納品数が2個不足していました。', reply:'ODUへ代品申請済み。7/22に不足分を出荷予定です。' },
 ];
 window.getInquiry = (id) => window.INQUIRIES.filter(q => q.id === id)[0] || window.INQUIRIES[0];
 

@@ -109,22 +109,12 @@
             + '<span class="text-neutral-400">担当 '+q.staff+'</span>'
             + '<span class="ml-auto flex gap-1">'
             + (q.status!=='done'
-                ? '<button class="rep text-[13px] text-white px-2.5 py-1.5" data-id="'+q.id+'" style="background:#e60012">返信する</button>'
+                ? '<a href="admin-inquiry-reply.html?id='+q.id+'" class="text-[13px] text-white px-2.5 py-1.5 inline-block" style="background:#e60012">返信する ›</a>'
                   + '<button class="dn text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5" data-id="'+q.id+'">完了にする</button>'
-                : '<span class="text-[12px] text-neutral-400">対応済み</span>')
+                : '<a href="admin-inquiry-reply.html?id='+q.id+'" class="text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">内容を見る ›</a>')
             + '</span></div></div>';
         }).join('') || '<div class="px-4 py-8 text-center text-neutral-400 text-[14px]">条件に一致する問合せがありません。</div>';
 
-        document.querySelectorAll('.rep').forEach(function(b){
-          b.addEventListener('click', function(){
-            var q=getInquiry(b.getAttribute('data-id'));
-            var t=prompt('「'+q.subject+'」への返信を入力', '');
-            if(t===null || !t.trim()) return;
-            q.reply=t.trim(); q.status='working';
-            alert('返信を送信しました。顧客ポータルの注文詳細にも表示されます。（モック）');
-            render();
-          });
-        });
         document.querySelectorAll('.dn').forEach(function(b){
           b.addEventListener('click', function(){
             var q=getInquiry(b.getAttribute('data-id'));
