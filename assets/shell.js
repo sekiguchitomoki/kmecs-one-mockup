@@ -218,11 +218,9 @@
     const cart = KMECS.cartCount();
 
     const transHref = `https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location.href)}`;
-    // 上部ユーティリティバー右側（ログイン状態）
+    // 上部ユーティリティバー右側：ログイン中はアカウント表示を出さない（会員ポータルバーへ集約）。未ログインのみログインボタン。
     const utilAccount = a
-      ? `<span class="hidden lg:inline text-neutral-400">${a.company}</span>
-         <span class="text-white font-medium">${a.user} 様</span>
-         <button id="logoutBtn" class="text-neutral-400 hover:text-white border border-white/25 px-2 py-0.5">ログアウト</button>`
+      ? ``
       : `<a href="login.html" class="inline-flex items-center gap-1 text-white font-bold border border-white/40 hover:bg-white/10 px-3 py-1">
            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>ログイン</a>`;
 
@@ -267,8 +265,7 @@
               <a href="recruit.html" class="text-neutral-300 hover:text-white">採用情報</a>
               <span class="text-neutral-600">|</span>
               <span class="text-neutral-400 font-display">JP<span class="text-neutral-600"> / </span><a href="${transHref}" target="_blank" rel="noopener" class="hover:text-white">EN</a></span>
-              <span class="text-neutral-600 hidden sm:inline">|</span>
-              <span class="hidden sm:flex items-center gap-2">${utilAccount}</span>
+              ${utilAccount ? `<span class="text-neutral-600 hidden sm:inline">|</span><span class="hidden sm:flex items-center gap-2">${utilAccount}</span>` : ''}
             </div>
           </div>
         </div>
@@ -297,12 +294,19 @@
           </div>
         </div>
 
-        <!-- ③ 会員ポータルバー（ログイン後のみ・マーケナビの下段にセンター寄せで露出） -->
+        <!-- ③ 会員ポータルバー（ログイン後のみ・マーケナビの下段に露出。ログイン状態＋会社名・氏名を表示） -->
         ${a ? `<div class="hidden xl:block border-b-2 shadow-sm" style="background:#fbfbfd;border-color:#e60012">
-          <div class="max-w-[1200px] mx-auto flex items-center justify-center gap-1 px-4 xl:px-8">
-            <span class="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-white px-3 py-1.5 mr-3 shrink-0 rounded-sm" style="background:#e60012">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>会員ポータル</span>
-            <nav class="flex items-stretch">${PNAV.map(pnavItem).join('')}</nav>
+          <div class="max-w-[1320px] mx-auto flex items-center gap-3 px-4 xl:px-8">
+            <div class="flex items-center gap-2.5 shrink-0 py-1.5">
+              <span class="inline-flex items-center gap-1.5 text-[12px] font-bold text-white px-2.5 py-1 rounded-sm" style="background:#e60012">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>会員ポータルにログイン中</span>
+              <span class="leading-tight">
+                <span class="block text-[13px] font-bold text-ink">${a.company} 様</span>
+                <span class="block text-[11px] text-neutral-500">${a.user} 様</span>
+              </span>
+            </div>
+            <nav class="flex items-stretch mx-auto">${PNAV.map(pnavItem).join('')}</nav>
+            <button id="logoutBtn" class="shrink-0 text-[12.5px] text-neutral-500 hover:text-[color:var(--brand)] border border-[color:var(--line)] hover:border-[color:var(--brand)] px-3 py-1.5">ログアウト</button>
           </div>
         </div>` : ''}
 
@@ -312,7 +316,12 @@
             ${MGNAV.map(n => `<a href="${n.href}" class="px-3 py-2.5 text-[15px] text-neutral-200 hover:bg-white/10"><span class="font-display font-bold text-[12px] text-neutral-400 block">${n.en}</span>${n.ja}</a>`).join('')}
           </div>
           ${a ? `<div class="border-t border-white/10 pt-3">
-            <div class="text-[12px] font-bold px-3 mb-1" style="color:#e60012">会員ポータル</div>
+            <div class="px-3 mb-2 flex items-center justify-between gap-2">
+              <div><div class="text-[12px] font-bold" style="color:#e60012">会員ポータルにログイン中</div>
+              <div class="text-[14px] text-white font-bold mt-0.5">${a.company} 様</div>
+              <div class="text-[12px] text-neutral-400">${a.user} 様</div></div>
+              <button id="logoutBtnM" class="shrink-0 text-[13px] text-neutral-300 border border-white/30 px-3 py-1.5">ログアウト</button>
+            </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
               ${PNAV.map(n => `<a href="${n.href}" class="px-3 py-2.5 text-[15px] text-neutral-200 hover:bg-white/10">${n.ja}</a>`).join('')}
             </div></div>` : `<a href="login.html" class="block px-3 py-2.5 text-[15px] text-white font-bold border border-white/30">ログイン</a>`}
@@ -404,8 +413,11 @@
 
     const tg = document.getElementById('navToggle');
     if (tg) tg.addEventListener('click', () => document.getElementById('mnav').classList.toggle('hidden'));
+    const doLogout = () => { KMECS.logout(); location.href = 'index.html'; };
     const lo = document.getElementById('logoutBtn');
-    if (lo) lo.addEventListener('click', () => { KMECS.logout(); location.href = 'index.html'; });
+    if (lo) lo.addEventListener('click', doLogout);
+    const loM = document.getElementById('logoutBtnM');
+    if (loM) loM.addEventListener('click', doLogout);
     if (typeof cfg.onReady === 'function') cfg.onReady();
   };
 
