@@ -201,3 +201,17 @@ input[type=checkbox]{ width:16px; height:16px; }
 .home-tile .tile-arrow{transition:transform .3s ease;}
 .home-tile:hover .tile-arrow{transform:translateX(4px);}
 .home-tile .tile-bar{transition:background .3s ease;}
+
+/* ===== KV ネットワーク・アニメーション（地球上のノード明滅＋光の弧） ===== */
+.kv-net{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.kv-net svg{position:absolute;inset:0;width:100%;height:100%}
+.kv-dot{fill:#dbeafe;transform-box:fill-box;transform-origin:center;animation:kvTwinkle 3.4s ease-in-out infinite}
+.kv-dot.big{fill:#fff}
+@keyframes kvTwinkle{0%,100%{opacity:.25;transform:scale(.6)}50%{opacity:1;transform:scale(1.2)}}
+.kv-arc{fill:none;stroke:rgba(140,190,255,.55);stroke-width:1.1;stroke-linecap:round;stroke-dasharray:5 210;animation:kvFlow 4.6s linear infinite}
+.kv-arc.warm{stroke:rgba(255,120,90,.5)}
+@keyframes kvFlow{0%{stroke-dashoffset:215}100%{stroke-dashoffset:0}}
+/* ゆっくり回るハロー（地球の周囲の淡い輪） */
+.kv-halo{position:absolute;border-radius:50%;border:1px solid rgba(120,170,255,.10);animation:kvSpin 40s linear infinite}
+@keyframes kvSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.kv-dot,.kv-arc,.kv-halo{animation:none!important}}

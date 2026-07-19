@@ -86,33 +86,95 @@
   </section>
 
   <!-- ============================================================
-       02 数字で見るケーメックスONE（スタッツ帯・ダーク）
+       02 数字で見るケーメックスONE（アイコン＋グラフのビジュアルグリッド）
        ============================================================ -->
-  <section style="background:#0d1024">
+  <section style="background:var(--paper)">
     <div class="max-w-[1240px] mx-auto px-5 xl:px-10 py-16 sm:py-20">
-      <div class="flex flex-wrap items-end gap-x-6 gap-y-2 mb-12">
-        <div class="rc-eyebrow on-dark">By the numbers</div>
-        <p class="text-neutral-400 text-[14px]">数字で見るケーメックスONE</p>
+      <div class="flex flex-wrap items-end gap-x-6 gap-y-2 mb-10">
+        <div class="rc-eyebrow">By the numbers</div>
+        <p class="text-neutral-500 text-[14px]">数字で見るケーメックスONE</p>
       </div>
-      <div class="grid grid-cols-2 lg:grid-cols-4">
-        <div class="rc-stat px-5 py-4 text-white">
-          <div class="flex items-baseline gap-1"><span class="font-display font-black text-5xl sm:text-6xl">1955</span><span class="text-[14px] text-neutral-400 font-bold">年</span></div>
-          <div class="text-[14px] text-neutral-400 mt-3">創業（創業70年の実績）</div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+        <!-- 創業 -->
+        <div class="bg-white border border-[color:var(--line)] p-5 flex flex-col">
+          <span class="w-11 h-11 rounded-lg flex items-center justify-center mb-3" style="background:rgba(230,0,18,.08)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5"/></svg></span>
+          <div class="text-[13px] font-bold text-ink">創業</div>
+          <div class="text-[11px] text-neutral-400">創業70年の実績</div>
+          <div class="mt-auto pt-2 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">1955</span><span class="text-[13px] font-bold text-neutral-500">年</span></div>
         </div>
-        <div class="rc-stat px-5 py-4 text-white">
-          <div class="flex items-baseline gap-1"><span class="font-display font-black text-5xl sm:text-6xl">16</span><span class="text-[14px] text-neutral-400 font-bold">社</span></div>
-          <div class="text-[14px] text-neutral-400 mt-3">取扱メーカー数（海外中心）</div>
+
+        <!-- 取扱メーカー -->
+        <div class="bg-white border border-[color:var(--line)] p-5 flex flex-col">
+          <span class="w-11 h-11 rounded-lg flex items-center justify-center mb-3" style="background:rgba(230,0,18,.08)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+          <div class="text-[13px] font-bold text-ink">取扱メーカー</div>
+          <div class="text-[11px] text-neutral-400">海外一流メーカー中心</div>
+          <div class="mt-auto pt-2 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">16</span><span class="text-[13px] font-bold text-neutral-500">社</span></div>
         </div>
-        <div class="rc-stat px-5 py-4 text-white">
-          <div class="flex items-baseline gap-1"><span class="font-display font-black text-5xl sm:text-6xl">4</span><span class="text-[14px] text-neutral-400 font-bold">拠点</span></div>
-          <div class="text-[14px] text-neutral-400 mt-3">東京・名古屋・大阪＋物流センター</div>
+
+        <!-- 拠点 -->
+        <div class="bg-white border border-[color:var(--line)] p-5 flex flex-col">
+          <span class="w-11 h-11 rounded-lg flex items-center justify-center mb-3" style="background:rgba(230,0,18,.08)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+          <div class="text-[13px] font-bold text-ink">拠点ネットワーク</div>
+          <div class="text-[11px] text-neutral-400">東京・名古屋・大阪＋物流</div>
+          <div class="mt-auto pt-2 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">4</span><span class="text-[13px] font-bold text-neutral-500">拠点</span></div>
         </div>
-        <div class="rc-stat px-5 py-4 text-white">
-          <div class="flex items-baseline gap-1"><span class="font-display font-black text-5xl sm:text-6xl">3</span><span class="text-[14px] text-neutral-400 font-bold">社</span></div>
-          <div class="text-[14px] text-neutral-400 mt-3">正規代理店（ODU／MOXA／POSITAL）</div>
+
+        <!-- 正規代理店 -->
+        <div class="bg-white border border-[color:var(--line)] p-5 flex flex-col">
+          <span class="w-11 h-11 rounded-lg flex items-center justify-center mb-3" style="background:rgba(230,0,18,.08)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8z"/></svg></span>
+          <div class="text-[13px] font-bold text-ink">正規代理店</div>
+          <div class="text-[11px] text-neutral-400">ODU／MOXA／POSITAL</div>
+          <div class="mt-auto pt-2 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">3</span><span class="text-[13px] font-bold text-neutral-500">社</span></div>
         </div>
+
+        <!-- 円グラフ：有給取得率 -->
+        <div class="bg-white border border-[color:var(--line)] p-5 flex items-center gap-4">
+          <div class="relative shrink-0" style="width:96px;height:96px">
+            <svg viewBox="0 0 100 100" width="96" height="96">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#eeeef2" stroke-width="9"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#e60012" stroke-width="9" stroke-linecap="round"
+                stroke-dasharray="263.9" stroke-dashoffset="58" transform="rotate(-90 50 50)"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center"><span class="font-display font-black text-2xl text-ink">78<span class="text-sm">%</span></span></div>
+          </div>
+          <div>
+            <div class="text-[13px] font-bold text-ink">有給取得率</div>
+            <div class="text-[11px] text-neutral-400 mt-0.5 leading-relaxed">働きやすい環境づくりを推進</div>
+          </div>
+        </div>
+
+        <!-- 年間休日 -->
+        <div class="bg-white border border-[color:var(--line)] p-5 flex flex-col">
+          <span class="w-11 h-11 rounded-lg flex items-center justify-center mb-3" style="background:rgba(230,0,18,.08)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span>
+          <div class="text-[13px] font-bold text-ink">年間休日</div>
+          <div class="text-[11px] text-neutral-400">土日祝・年末年始・夏季</div>
+          <div class="mt-auto pt-2 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">125</span><span class="text-[13px] font-bold text-neutral-500">日</span></div>
+        </div>
+
+        <!-- 棒グラフ：職種構成（2カラム分） -->
+        <div class="bg-white border border-[color:var(--line)] p-5 col-span-2 flex flex-col">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(230,0,18,.08)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg></span>
+            <div><div class="text-[13px] font-bold text-ink">職種構成比</div><div class="text-[11px] text-neutral-400">社員の職種内訳</div></div>
+          </div>
+          <div class="space-y-2 mt-1">
+            <div><div class="flex justify-between text-[12px] mb-0.5"><span class="text-neutral-600">法人営業</span><span class="font-display font-bold text-ink">45%</span></div><div class="h-2 rounded-full" style="background:#f0f0f4"><div class="h-2 rounded-full" style="width:45%;background:#e60012"></div></div></div>
+            <div><div class="flex justify-between text-[12px] mb-0.5"><span class="text-neutral-600">技術サポート</span><span class="font-display font-bold text-ink">30%</span></div><div class="h-2 rounded-full" style="background:#f0f0f4"><div class="h-2 rounded-full" style="width:30%;background:#e60012"></div></div></div>
+            <div><div class="flex justify-between text-[12px] mb-0.5"><span class="text-neutral-600">物流・ロジ</span><span class="font-display font-bold text-ink">15%</span></div><div class="h-2 rounded-full" style="background:#f0f0f4"><div class="h-2 rounded-full" style="width:15%;background:#e60012"></div></div></div>
+            <div><div class="flex justify-between text-[12px] mb-0.5"><span class="text-neutral-600">貿易事務・管理</span><span class="font-display font-bold text-ink">10%</span></div><div class="h-2 rounded-full" style="background:#f0f0f4"><div class="h-2 rounded-full" style="width:10%;background:#e60012"></div></div></div>
+          </div>
+        </div>
+
       </div>
-      <p class="text-[12px] text-neutral-500 mt-8">※ 数値はデモ用のイメージです。実際の最新情報は会社案内をご確認ください。</p>
+      <p class="text-[12px] text-neutral-400 mt-6">※ 数値はデモ用のイメージです。実際の最新情報は会社案内をご確認ください。</p>
     </div>
   </section>
 
@@ -124,14 +186,11 @@
       <!-- 画像側 -->
       <div class="relative min-h-[360px] lg:min-h-[600px] order-1 lg:order-none">
         <img src="assets/img/biz-global.jpg" alt="世界のネットワーク" class="absolute inset-0 w-full h-full object-cover">
-        <div class="absolute left-6 bottom-6 lg:left-10 lg:bottom-10">
-          <div class="rc-idx text-7xl sm:text-8xl">01</div>
-        </div>
       </div>
       <!-- テキスト側 -->
       <div class="flex items-center order-2 lg:order-none">
         <div class="px-6 sm:px-10 xl:px-16 py-16 lg:py-20 max-w-2xl">
-          <div class="rc-eyebrow">Our Mission</div>
+          <div class="flex items-center gap-5"><span class="rc-idx text-6xl sm:text-7xl">01</span><div class="rc-eyebrow">Our Mission</div></div>
           <h2 class="text-3xl sm:text-5xl font-bold text-ink mt-6 leading-[1.2]">
             世界の一流を、<br>日本の現場の“当たり前”に。
           </h2>
@@ -159,7 +218,6 @@
         <!-- 写真 -->
         <div class="lg:col-span-5">
           <div class="relative">
-            <div class="absolute -top-6 -left-2 rc-idx-solid text-7xl sm:text-8xl" style="opacity:.9">02</div>
             <div class="relative w-full aspect-[4/5] overflow-hidden" style="background:#22243a;box-shadow:0 30px 60px -24px rgba(0,0,0,.7)">
               <img src="assets/img/ceo-portrait.jpg"
                    onerror="this.onerror=null;this.src='assets/img/ceo-message.jpg';this.style.objectPosition='78% center'"
@@ -175,7 +233,7 @@
         </div>
         <!-- メッセージ -->
         <div class="lg:col-span-7">
-          <div class="rc-eyebrow on-dark">Message</div>
+          <div class="flex items-center gap-5"><span class="rc-idx text-6xl sm:text-7xl" style="-webkit-text-stroke-color:rgba(255,90,103,.6)">02</span><div class="rc-eyebrow on-dark">Message</div></div>
           <p class="text-2xl sm:text-4xl font-bold mt-6 leading-[1.3]">
             お客様の“ものづくり”と<br>社会の豊かな未来に、貢献する。
           </p>
