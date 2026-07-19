@@ -260,7 +260,7 @@
         <!-- ① ユーティリティバー -->
         <div class="text-white text-[12px]" style="background:#080a18">
           <div class="flex items-center justify-between gap-3 px-4 xl:px-8 h-9">
-            <div class="hidden sm:flex items-center gap-2 text-neutral-400"><span class="inline-block w-1.5 h-1.5 rounded-full" style="background:#e60012"></span>ODU / MOXA 正規代理店 ・ 産業用部品の輸入商社（創業1955年）</div>
+            <div class="hidden sm:flex items-center gap-2 text-neutral-400"><span class="inline-block w-1.5 h-1.5 rounded-full" style="background:#e60012"></span>MOXA / ODU / POSITAL 正規代理店 ・ 産業用部品の輸入商社（創業1955年）</div>
             <div class="flex items-center gap-3 ml-auto whitespace-nowrap">
               <a href="recruit.html" class="text-neutral-300 hover:text-white">採用情報</a>
               <span class="text-neutral-600">|</span>
