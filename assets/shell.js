@@ -74,11 +74,11 @@
   const MGNAV = [
     { key: 'products', en: 'PRODUCTS',    ja: '取扱製品を探す',       href: 'products.html', mega: 'products' },
     { key: 'case',     en: 'CASE',        ja: '導入事例',             href: 'leading.html' },
-    { key: 'tech',     en: 'TECH',        ja: '技術情報・コラム',     href: 'tech.html' },
-    { key: 'event',    en: 'EVENT',       ja: 'セミナー・イベント',   href: 'event.html' },
+    { key: 'tech',     en: 'TECH',        ja: '技術情報・コラム',     href: 'tech.html',     mega: 'tech' },
+    { key: 'event',    en: 'EVENT',       ja: 'セミナー・イベント',   href: 'event.html',    mega: 'event' },
     { key: 'news',     en: 'NEWS',        ja: 'ニュース',             href: 'news.html' },
-    { key: 'download', en: 'DOWNLOAD',    ja: '資料ダウンロード',     href: 'download.html' },
-    { key: 'support',  en: 'SUPPORT',     ja: 'サポート',             href: 'support.html' },
+    { key: 'download', en: 'DOWNLOAD',    ja: '資料ダウンロード',     href: 'download.html', mega: 'download' },
+    { key: 'support',  en: 'SUPPORT',     ja: 'サポート',             href: 'support.html',  mega: 'support' },
     { key: 'company',  en: 'COMPANY',     ja: '会社情報',             href: 'company.html' },
   ];
   // 会員（取引）ポータルナビ ＝ ログイン後のみ、マーケナビの下段に露出
@@ -100,7 +100,10 @@
 
   /* ===== メガメニュー（写真付き・ホバーで展開） ===== */
   function megaCol(title, inner) {
-    return `<div><div class="text-[11px] font-bold tracking-widest text-neutral-400 mb-3">${title}</div>${inner}</div>`;
+    return `<div><div class="flex items-center gap-2 mb-3.5 pb-2 border-b border-[color:var(--line)]">
+      <span class="inline-block w-2 h-2" style="background:#e60012"></span>
+      <span class="text-[12.5px] font-bold tracking-wider text-ink">${title}</span>
+    </div>${inner}</div>`;
   }
   function megaLink(href, ja, desc) {
     return `<a href="${href}" class="block py-1.5 hover:text-[color:var(--brand)] group/l">
@@ -130,7 +133,7 @@
       return `<div class="grid grid-cols-12 gap-8">
         <div class="col-span-5">${megaCol('CATEGORY ／ カテゴリから', `<div class="grid grid-cols-2 gap-x-6 gap-y-0.5">${cats}</div>`)}</div>
         <div class="col-span-3">${megaCol('MAKER ／ メーカーから', makers + `<a href="makers.html" class="text-[13px] font-bold mt-1 inline-block" style="color:#e60012">取扱メーカー一覧 ›</a>`)}</div>
-        <div class="col-span-4">${megaCol('SOLUTIONS ／ 業界事例から', megaFeature('leading.html', 'assets/img/case-factory.jpg', '業界・用途から探す') + `<div class="grid grid-cols-2 gap-x-4 mt-2">${inds}</div>`)}</div>
+        <div class="col-span-4">${megaCol('SOLUTIONS ／ 業界事例から', megaFeature('leading.html', 'assets/img/case-machinery.jpg', '業界・用途から探す') + `<div class="grid grid-cols-2 gap-x-4 mt-2">${inds}</div>`)}</div>
       </div>
       <div class="border-t border-[color:var(--line)] mt-5 pt-3 flex items-center justify-between">
         <span class="text-[13px] text-neutral-400">型番・キーワードでも検索できます</span>
@@ -178,6 +181,31 @@
         <div class="col-span-4">${megaCol('ACCOUNT ／ お取引', megaLink('mypage.html', 'お取引条件', '支払条件・請求・ご登録情報') + megaLink('cart.html', 'カート', 'カート内容を確認'))}</div>
       </div>`;
     }
+    if (key === 'tech') {
+      return `<div class="grid grid-cols-12 gap-8">
+        <div class="col-span-4">${megaFeature('tech.html', 'assets/img/moxa-switch.jpg', '技術情報・コラム トップ')}</div>
+        <div class="col-span-4">${megaCol('BY MAKER ／ メーカー軸', megaLink('tech.html', 'Moxa 技術解説', 'EDS設定・FW更新・冗長化リング') + megaLink('tech.html', 'メーカー別 技術記事', '正規代理店ならではの実践ノウハウ'))}</div>
+        <div class="col-span-4">${megaCol('BY SOLUTION ／ 課題軸', megaLink('tech.html', '産業用ネットワーク解説', 'Modbus / EtherNet/IP / EtherCAT') + megaLink('tech.html', 'コネクタ・接続技術', 'IP67・防爆・耐環境の基礎'))}</div>
+      </div>`;
+    }
+    if (key === 'event') {
+      return `<div class="grid grid-cols-12 gap-8">
+        <div class="col-span-4">${megaFeature('event.html', 'assets/img/support1.jpg', 'セミナー・イベント')}</div>
+        <div class="col-span-8">${megaCol('EVENT ／ セミナー・イベント', `<div class="grid grid-cols-2 gap-x-8">${megaLink('event.html', '開催予定セミナー', 'オンライン／会場・ハンズオン') + megaLink('event.html', 'ウェビナー', '産業用ネットワーク・製品選定')}${megaLink('event.html', 'アーカイブ・過去資料', '見逃し配信・スライド') + megaLink('contact.html', '個別デモのご相談', '製品デモ・技術相談を承ります')}</div>`)}</div>
+      </div>`;
+    }
+    if (key === 'download') {
+      return `<div class="grid grid-cols-12 gap-8">
+        <div class="col-span-4">${megaFeature('download.html', 'assets/img/support1.jpg', '資料ダウンロード')}</div>
+        <div class="col-span-8">${megaCol('DOWNLOAD ／ カタログ・資料', `<div class="grid grid-cols-2 gap-x-8">${megaLink('download.html', 'カタログ一覧', 'メーカー・カテゴリ別') + megaLink('download.html', 'データシート（型番別）', '仕様・寸法図PDF')}${megaLink('download.html', 'ホワイトペーパー', '技術資料でリード獲得') + megaLink('support.html#discontinued', '販売終了製品の資料', '既存製品の継続サポート')}</div>`)}</div>
+      </div>`;
+    }
+    if (key === 'support') {
+      return `<div class="grid grid-cols-12 gap-8">
+        <div class="col-span-4">${megaFeature('support.html', 'assets/img/support2.jpg', 'サポート トップ')}</div>
+        <div class="col-span-8">${megaCol('SUPPORT ／ サポート', `<div class="grid grid-cols-2 gap-x-8">${megaLink('support.html#faq', 'よくあるご質問（FAQ）', '選定・設定・納期・保証') + megaLink('support.html#certification', 'メーカー認定資格', 'Moxa／ODU 正規代理店')}${megaLink('support.html#standards', '国際規格・認証', 'EN 50155・IEC 62443・RoHS') + megaLink('support.html#discontinued', '販売終了製品', '後継品・継続サポートのご案内')}</div>`)}</div>
+      </div>`;
+    }
     return '';
   }
 
@@ -218,9 +246,9 @@
       const on = n.key === active;
       const mega = n.mega ? megaFor(n.mega, a) : '';
       return `<div class="group flex items-stretch">
-        <a href="${n.href}" class="relative px-3.5 py-2 flex items-center gap-1.5 whitespace-nowrap ${on ? 'text-ink font-bold' : 'text-neutral-600 hover:text-[color:var(--brand)]'}">
+        <a href="${n.href}" class="relative px-4 py-2.5 flex items-center gap-1.5 whitespace-nowrap font-bold ${on ? 'text-[color:var(--brand)]' : 'text-ink hover:text-[color:var(--brand)]'}">
           <span class="text-[15px]">${n.ja}</span>
-          <span class="absolute left-3.5 right-3.5 bottom-0 h-[2px] ${on ? '' : 'scale-x-0 group-hover:scale-x-100'} transition-transform" style="background:#e60012"></span>
+          <span class="absolute left-3 right-3 bottom-0 h-[3px] ${on ? '' : 'scale-x-0 group-hover:scale-x-100'} transition-transform" style="background:#e60012"></span>
         </a>
         ${mega ? `<div class="hidden group-hover:block absolute left-0 right-0 top-full z-50 text-ink" style="background:#fff;border-top:3px solid #e60012;box-shadow:0 24px 40px -14px rgba(0,0,0,.28)">
           <div class="max-w-[1200px] mx-auto px-8 py-7">${mega}</div>
@@ -269,13 +297,12 @@
           </div>
         </div>
 
-        <!-- ③ 会員ポータルバー（ログイン後のみ・マーケナビの下段に露出） -->
-        ${a ? `<div class="hidden xl:block border-b border-[color:var(--line)] bg-white shadow-sm">
-          <div class="flex items-center px-4 xl:px-8">
-            <span class="inline-flex items-center gap-1.5 text-[12px] font-bold text-white px-3 py-1 mr-2 shrink-0" style="background:#e60012">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>会員ポータル</span>
+        <!-- ③ 会員ポータルバー（ログイン後のみ・マーケナビの下段にセンター寄せで露出） -->
+        ${a ? `<div class="hidden xl:block border-b-2 shadow-sm" style="background:#fbfbfd;border-color:#e60012">
+          <div class="max-w-[1200px] mx-auto flex items-center justify-center gap-1 px-4 xl:px-8">
+            <span class="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-white px-3 py-1.5 mr-3 shrink-0 rounded-sm" style="background:#e60012">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>会員ポータル</span>
             <nav class="flex items-stretch">${PNAV.map(pnavItem).join('')}</nav>
-            <a href="admin-dashboard.html" class="ml-auto text-[13px] text-neutral-400 hover:text-[color:var(--brand)] py-2 shrink-0">社内管理画面 ›</a>
           </div>
         </div>` : ''}
 
@@ -289,7 +316,6 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
               ${PNAV.map(n => `<a href="${n.href}" class="px-3 py-2.5 text-[15px] text-neutral-200 hover:bg-white/10">${n.ja}</a>`).join('')}
             </div></div>` : `<a href="login.html" class="block px-3 py-2.5 text-[15px] text-white font-bold border border-white/30">ログイン</a>`}
-          <a href="admin-dashboard.html" class="block px-3 py-2 text-[14px] text-neutral-400 hover:bg-white/10 border-t border-white/10 pt-3">管理画面（社内）</a>
         </nav>
       </header>
 
@@ -357,8 +383,14 @@
               <li><a href="orders.html" class="hover:text-[color:var(--brand)]">注文履歴・進捗</a></li>
               <li><a href="notifications.html" class="hover:text-[color:var(--brand)]">PCN / EOL 情報</a></li>
               <li><a href="mypage.html" class="hover:text-[color:var(--brand)]">マイページ</a></li>
-              <li><a href="admin-dashboard.html" class="text-neutral-400 hover:text-[color:var(--brand)]">管理画面（社内）</a></li>
             </ul>
+          </div>
+        </div>
+        <div class="border-t border-[color:var(--line)]">
+          <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-neutral-500">
+            <a href="privacy.html" class="hover:text-[color:var(--brand)]">個人情報保護方針</a>
+            <a href="terms.html" class="hover:text-[color:var(--brand)]">ご利用規約</a>
+            <a href="sitemap.html" class="hover:text-[color:var(--brand)]">サイトマップ</a>
           </div>
         </div>
         <div class="text-white py-5" style="background:#0d1024">

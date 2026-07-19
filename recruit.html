@@ -15,76 +15,413 @@
   }}};
 </script>
 <link rel="stylesheet" href="assets/common.css">
+<style>
+  .anchor-sec{ scroll-margin-top:165px; }
+</style>
 </head>
 <body>
 <div id="content">
-  <!-- ヒーロー -->
-  <section class="relative text-white overflow-hidden" style="background:#22243a">
-    <div class="absolute inset-0" style="opacity:.34;background:url(assets/img/case-logistics.jpg) center/cover no-repeat"></div>
-    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-16">
-      <div class="sec-label text-neutral-400">RECRUIT</div>
-      <h1 class="font-display font-black text-4xl sm:text-5xl mt-2 leading-tight">世界と、<br>ものづくりの現場をつなぐ。</h1>
-      <p class="text-neutral-300 text-[16px] mt-4 max-w-2xl leading-relaxed">世界中の一流メーカーの産業用部品を、日本のものづくりの現場へ。ケーメックスONEは、商社の“調達力”と“技術サポート”の両輪で、産業の基盤を支える仲間を募集しています。</p>
-      <a href="contact.html" class="btn-red mt-6 !bg-white" style="color:#e60012">エントリー・お問い合わせ</a>
+
+  <!-- ================= HERO ================= -->
+  <section class="text-white relative overflow-hidden anchor-sec" style="background:#05060f">
+    <div class="kv-bg" style="background-image:url(assets/img/bg2.jpg);opacity:.5"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(5,6,15,.92) 0%,rgba(5,6,15,.72) 48%,rgba(5,6,15,.4) 100%)"></div>
+    <div class="kv-glow"></div>
+    <div class="kv-sheen"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-28 sm:py-36">
+      <div class="sec-label text-neutral-300">RECRUIT 2027</div>
+      <h1 class="font-display font-black text-5xl sm:text-7xl xl:text-8xl tracking-tight mt-4 leading-none">RECRUIT</h1>
+      <p class="text-2xl sm:text-4xl font-bold mt-6 leading-tight">世界と、ものづくりの<br>現場をつなぐ。</p>
+      <p class="text-[15px] text-neutral-300 mt-6 max-w-2xl leading-loose">
+        産業用部品のプロフェッショナルとして、<br class="hidden sm:block">
+        世界の一流と日本の現場をつなぐ仕事。<br>
+        創業70年の基盤の上で、次の70年をつくる仲間を募集します。
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a href="#requirements" class="btn-red !py-4 !px-9">募集要項を見る</a>
+        <a href="contact.html" class="btn-red-o !py-4 !px-9 !text-white !border-white">エントリー</a>
+      </div>
     </div>
   </section>
 
-  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
-    <!-- 募集職種 -->
-    <div class="border-t-2 border-ink pt-3 mb-5">
-      <div class="sec-label">POSITIONS</div>
-      <h2 class="text-lg font-bold text-ink mt-0.5">募集職種</h2>
-    </div>
-    <div id="jobGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-14"></div>
-
-    <!-- 働く環境 -->
-    <div class="border-t-2 border-ink pt-3 mb-5">
-      <div class="sec-label">ENVIRONMENT</div>
-      <h2 class="text-lg font-bold text-ink mt-0.5">働く環境</h2>
-    </div>
-    <div class="grid lg:grid-cols-3 gap-5 mb-8">
-      <div class="lg:col-span-2 card overflow-hidden">
-        <img src="assets/img/support2.jpg" alt="" class="w-full h-56 object-cover">
-        <div class="p-6">
-          <h3 class="text-base font-bold text-ink">創業70年の安定基盤と、専門商社ならではの裁量</h3>
-          <p class="text-[15px] text-neutral-600 mt-2 leading-relaxed">創業1955年、正規代理店として海外一流メーカーと長期的な関係を築いてきた安定基盤の上で、一人ひとりが担当領域を持って裁量高く働ける環境です。技術と商流の両方に触れられるのが専門商社の面白さです。</p>
+  <!-- ================= PHILOSOPHY（私たちの想い） ================= -->
+  <section class="bg-white anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <div class="sec-label">OUR MISSION</div>
+          <h2 class="text-2xl sm:text-4xl font-bold text-ink mt-3 leading-tight">
+            世界の一流を、<br>
+            日本のものづくりの現場へ。
+          </h2>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="text-[15px] text-neutral-500 leading-loose">
+            創業1955年。私たちは産業用部品の輸入商社として、日本のものづくりを部品調達の面から支えてきました。
+            正規代理店として世界の一流メーカーを扱う誇りと、若手にも大きな裁量を委ねる風土。
+            70年の基盤の上で、あなたの挑戦を後押しします。
+          </p>
         </div>
       </div>
-      <div class="grid gap-5">
-        <div class="card p-5 flex flex-col">
-          <div class="w-10 h-10 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5z"/></svg></div>
-          <div class="text-[15px] font-bold text-ink">充実の福利厚生</div>
-          <p class="text-[14px] text-neutral-500 mt-1 leading-relaxed flex-1">各種社会保険・退職金制度など、社員と家族の“一生”を支える制度を整備。</p>
-        </div>
-        <div class="card p-5 flex flex-col">
-          <div class="w-10 h-10 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></div>
-          <div class="text-[15px] font-bold text-ink">少数精鋭・風通しの良さ</div>
-          <p class="text-[14px] text-neutral-500 mt-1 leading-relaxed flex-1">経営との距離が近く、提案が形になりやすいフラットな組織です。</p>
-        </div>
-      </div>
-    </div>
 
-    <!-- 外部エージェント動線 -->
-    <div class="card p-6 mb-8" style="background:var(--paper)">
-      <div class="sec-label">HOW TO APPLY</div>
-      <h3 class="text-base font-bold text-ink mt-1">ご応募方法について</h3>
-      <p class="text-[15px] text-neutral-600 mt-2 leading-relaxed max-w-3xl">現在、採用は各求人媒体・人材紹介エージェントを通じたご応募を中心に受け付けております。Indeed・エン転職などの求人サイトに掲載中の募集要項もあわせてご確認ください。本サイトからのお問い合わせも承ります。</p>
-      <div class="flex flex-wrap gap-2 mt-4">
-        <span class="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-4 py-2 text-[14px] font-bold text-neutral-600">Indeed で募集中</span>
-        <span class="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-4 py-2 text-[14px] font-bold text-neutral-600">エン転職 で募集中</span>
-        <span class="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-4 py-2 text-[14px] font-bold text-neutral-600">人材紹介エージェント経由</span>
+      <!-- スタッツ帯 -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 border-t-2 border-ink">
+        <div class="p-6 sm:p-8 border-b border-r border-[color:var(--line)] lg:border-b-0">
+          <div class="sec-label">SINCE</div>
+          <div class="font-display font-black text-4xl sm:text-5xl text-ink mt-2 leading-none">1955</div>
+          <div class="text-[14px] text-neutral-500 mt-2">創業70年の実績</div>
+        </div>
+        <div class="p-6 sm:p-8 border-b border-[color:var(--line)] lg:border-r lg:border-b-0">
+          <div class="sec-label">MAKERS</div>
+          <div class="font-display font-black text-4xl sm:text-5xl text-ink mt-2 leading-none">16<span class="text-2xl">社</span></div>
+          <div class="text-[14px] text-neutral-500 mt-2">取扱メーカー数</div>
+        </div>
+        <div class="p-6 sm:p-8 border-b border-r border-[color:var(--line)] lg:border-b-0">
+          <div class="sec-label">BASES</div>
+          <div class="font-display font-black text-4xl sm:text-5xl text-ink mt-2 leading-none">4<span class="text-2xl">拠点</span></div>
+          <div class="text-[14px] text-neutral-500 mt-2">東京・名古屋・大阪・寄居</div>
+        </div>
+        <div class="p-6 sm:p-8 border-b border-[color:var(--line)] lg:border-b-0">
+          <div class="sec-label">PARTNER</div>
+          <div class="font-display font-black text-4xl sm:text-5xl text-ink mt-2 leading-none">No.<span class="text-3xl">1</span></div>
+          <div class="text-[14px] text-neutral-500 mt-2">を目指す技術商社</div>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- エントリー CTA -->
-    <div class="card p-8 flex flex-wrap items-center justify-between gap-4" style="background:#22243a">
-      <div class="text-white">
-        <h3 class="text-lg font-bold">まずはお気軽にお問い合わせください</h3>
-        <p class="text-[15px] text-neutral-300 mt-1.5">職種のご相談・カジュアル面談のご希望も、お問い合わせフォームより承ります。</p>
+  <!-- ================= 代表メッセージ ================= -->
+  <section class="text-white overflow-hidden anchor-sec" style="background:#151830">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 grid lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-5">
+        <div class="relative overflow-hidden">
+          <img src="assets/img/case-machinery.jpg" alt="" class="w-full h-72 lg:h-96 object-cover">
+          <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(13,16,36,0) 40%,rgba(13,16,36,.85) 100%)"></div>
+          <div class="absolute left-0 bottom-0 p-6">
+            <div class="text-[13px] text-neutral-300">代表取締役</div>
+            <div class="text-2xl font-bold">亀田 圭彦</div>
+          </div>
+        </div>
       </div>
-      <a href="contact.html" class="btn-red whitespace-nowrap">エントリーフォームへ</a>
+      <div class="lg:col-span-7">
+        <div class="sec-label text-neutral-400">MESSAGE</div>
+        <h2 class="text-2xl sm:text-3xl font-bold mt-3 leading-snug">人を大切に。<br>そして、共に成長する。</h2>
+        <p class="text-[15px] leading-loose text-neutral-300 mt-6">
+          ケーメックスONEの社名に込めた「ONE」には、社員と家族の“一生”を支援するという想いがあります。
+          会社の成長は、そこで働く一人ひとりの成長の総和にほかなりません。
+        </p>
+        <p class="text-[15px] leading-loose text-neutral-300 mt-4">
+          世界の一流メーカーを扱う正規代理店として、私たちには本物に触れ、学び続けられる環境があります。
+          若いうちから責任ある仕事を任せ、挑戦を歓迎する。失敗を糧に次へ進める。
+          そんな健全で誠実な経営を、これからも貫いていきます。世界と日本の現場をつなぐ仕事に、ぜひ挑んでください。
+        </p>
+        <p class="text-[15px] text-neutral-400 mt-6">株式会社ケーメックスONE　代表取締役　亀田 圭彦</p>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ================= 仕事のフィールド（事業領域） ================= -->
+  <section style="background:var(--paper)" class="anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <h2 class="sec-title text-5xl sm:text-6xl leading-none">FIELD</h2>
+      <p class="text-sm text-neutral-600 mt-5">仕事のフィールド － 技術商社として、世界の一流と日本の現場をつなぐ</p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
+        <div class="card card-h sweep overflow-hidden flex flex-col bg-white">
+          <div class="h-40 overflow-hidden"><img src="assets/img/cat-connector.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
+          <div class="p-5 flex-1 flex flex-col">
+            <div class="sec-label">CONNECTOR</div>
+            <div class="text-[17px] font-bold text-ink mt-1">産業用コネクタ</div>
+            <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">ODUをはじめとする高信頼コネクタ。カスタムAssyや特注ケーブルの提案まで担います。</p>
+          </div>
+        </div>
+        <div class="card card-h sweep overflow-hidden flex flex-col bg-white">
+          <div class="h-40 overflow-hidden"><img src="assets/img/moxa-switch.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
+          <div class="p-5 flex-1 flex flex-col">
+            <div class="sec-label">NETWORK</div>
+            <div class="text-[17px] font-bold text-ink mt-1">産業用ネットワーク機器</div>
+            <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">MOXAの産業用スイッチ・ルータ等。工場やインフラの通信基盤を支える機器を扱います。</p>
+          </div>
+        </div>
+        <div class="card card-h sweep overflow-hidden flex flex-col bg-white">
+          <div class="h-40 overflow-hidden"><img src="assets/img/cat-sensor.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
+          <div class="p-5 flex-1 flex flex-col">
+            <div class="sec-label">SENSOR</div>
+            <div class="text-[17px] font-bold text-ink mt-1">センサ</div>
+            <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">POSITAL/Frabaのエンコーダ・傾斜センサなど。用途に応じた型番選定と後継提案を行います。</p>
+          </div>
+        </div>
+        <div class="card card-h sweep overflow-hidden flex flex-col bg-white">
+          <div class="h-40 overflow-hidden"><img src="assets/img/moxa-ipc.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
+          <div class="p-5 flex-1 flex flex-col">
+            <div class="sec-label">INDUSTRIAL PC</div>
+            <div class="text-[17px] font-bold text-ink mt-1">産業用PC</div>
+            <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">過酷な環境で動作する産業用コンピュータ。エッジ処理・制御用途の提案を支援します。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 技術商社としての役割 -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        <div class="card p-5 bg-white">
+          <div class="font-display font-black text-2xl" style="color:#e60012">01</div>
+          <div class="text-[16px] font-bold text-ink mt-2">調達</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">世界のメーカーから最適な製品を安定供給。</p>
+        </div>
+        <div class="card p-5 bg-white">
+          <div class="font-display font-black text-2xl" style="color:#e60012">02</div>
+          <div class="text-[16px] font-bold text-ink mt-2">選定提案</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">用途・環境から最適な型番を選び提案。</p>
+        </div>
+        <div class="card p-5 bg-white">
+          <div class="font-display font-black text-2xl" style="color:#e60012">03</div>
+          <div class="text-[16px] font-bold text-ink mt-2">技術サポート</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">認定エンジニアが設定・トラブルを一次対応。</p>
+        </div>
+        <div class="card p-5 bg-white">
+          <div class="font-display font-black text-2xl" style="color:#e60012">04</div>
+          <div class="text-[16px] font-bold text-ink mt-2">受発注DX</div>
+          <p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed">受発注ポータルでお取引の利便性を向上。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 求める人物像 ================= -->
+  <section class="bg-white anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <h2 class="sec-title text-5xl sm:text-6xl leading-none">PEOPLE</h2>
+          <p class="text-sm text-neutral-600 mt-5">求める人物像</p>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="text-[15px] text-neutral-500 leading-loose">経験や知識よりも大切にしているのは、姿勢です。次の4つに共感できる方と、ともに働きたいと考えています。</p>
+        </div>
+      </div>
+
+      <div class="border-t border-ink">
+        <div class="grid md:grid-cols-12 gap-4 md:gap-8 items-baseline py-8 border-b border-[color:var(--line)]">
+          <div class="md:col-span-1 font-display text-[15px] text-neutral-300">01</div>
+          <div class="md:col-span-4"><span class="text-xl sm:text-2xl font-bold text-ink">ものづくり・技術に興味がある</span></div>
+          <div class="md:col-span-7"><p class="text-[15px] text-neutral-500 leading-relaxed">産業機械やネットワーク、電子部品の仕組みに関心を持ち、学ぶことを楽しめる方。</p></div>
+        </div>
+        <div class="grid md:grid-cols-12 gap-4 md:gap-8 items-baseline py-8 border-b border-[color:var(--line)]">
+          <div class="md:col-span-1 font-display text-[15px] text-neutral-300">02</div>
+          <div class="md:col-span-4"><span class="text-xl sm:text-2xl font-bold text-ink">誠実で信頼を大切にできる</span></div>
+          <div class="md:col-span-7"><p class="text-[15px] text-neutral-500 leading-relaxed">お客様ともメーカーとも、長期的な信頼関係を誠実に築ける方。</p></div>
+        </div>
+        <div class="grid md:grid-cols-12 gap-4 md:gap-8 items-baseline py-8 border-b border-[color:var(--line)]">
+          <div class="md:col-span-1 font-display text-[15px] text-neutral-300">03</div>
+          <div class="md:col-span-4"><span class="text-xl sm:text-2xl font-bold text-ink">学び続けられる</span></div>
+          <div class="md:col-span-7"><p class="text-[15px] text-neutral-500 leading-relaxed">扱う製品も技術も日々進化します。変化を前向きに捉え、成長し続けられる方。</p></div>
+        </div>
+        <div class="grid md:grid-cols-12 gap-4 md:gap-8 items-baseline py-8 border-b border-[color:var(--line)]">
+          <div class="md:col-span-1 font-display text-[15px] text-neutral-300">04</div>
+          <div class="md:col-span-4"><span class="text-xl sm:text-2xl font-bold text-ink">人と組織をつなげる</span></div>
+          <div class="md:col-span-7"><p class="text-[15px] text-neutral-500 leading-relaxed">お客様・メーカー・社内をつなぎ、チームで成果を出すことにやりがいを感じる方。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 社員インタビュー ================= -->
+  <section style="background:var(--paper)" class="anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <h2 class="sec-title text-5xl sm:text-6xl leading-none">INTERVIEW</h2>
+      <p class="text-sm text-neutral-600 mt-5">社員インタビュー</p>
+
+      <div class="grid lg:grid-cols-2 gap-6 mt-12">
+        <!-- インタビュー1 -->
+        <div class="card overflow-hidden bg-white flex flex-col">
+          <div class="relative h-56 overflow-hidden">
+            <img src="assets/img/bg2.jpg" alt="" class="w-full h-full object-cover">
+            <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(13,16,36,0) 45%,rgba(13,16,36,.8) 100%)"></div>
+            <div class="absolute left-0 bottom-0 p-5 text-white">
+              <span class="badge text-white" style="background:#e60012">法人営業</span>
+              <div class="text-lg font-bold mt-2">A.S.／2021年入社</div>
+            </div>
+          </div>
+          <div class="p-6 flex-1">
+            <h3 class="text-lg font-bold text-ink">お客様の“困った”に、いちばん近い存在。</h3>
+            <dl class="mt-4 space-y-3">
+              <div><dt class="sec-label">入社動機</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">世界の一流メーカーを扱える技術商社という点に惹かれました。モノを売るだけでなく課題解決に関われる仕事です。</dd></div>
+              <div><dt class="sec-label">仕事内容</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">担当のお客様への提案・見積・納期調整が中心。技術サポートと連携しながら最適な製品を届けます。</dd></div>
+              <div><dt class="sec-label">1日の流れ</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">午前は見積対応とメール、午後はお客様訪問やオンライン商談。夕方に社内で情報共有。</dd></div>
+              <div><dt class="sec-label">メッセージ</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">若手にも裁量があり、任される幅が広い会社です。挑戦したい人にはぴったりだと思います。</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- インタビュー2 -->
+        <div class="card overflow-hidden bg-white flex flex-col">
+          <div class="relative h-56 overflow-hidden">
+            <img src="assets/img/support1.jpg" alt="" class="w-full h-full object-cover">
+            <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(13,16,36,0) 45%,rgba(13,16,36,.8) 100%)"></div>
+            <div class="absolute left-0 bottom-0 p-5 text-white">
+              <span class="badge bg-ink text-white">技術サポート</span>
+              <div class="text-lg font-bold mt-2">K.T.／2015年入社</div>
+            </div>
+          </div>
+          <div class="p-6 flex-1">
+            <h3 class="text-lg font-bold text-ink">選定から設定まで、技術で信頼を積み上げる。</h3>
+            <dl class="mt-4 space-y-3">
+              <div><dt class="sec-label">入社動機</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">前職で扱っていた産業用ネットワーク機器を、もっと深く提案側で関わりたいと考え入社しました。</dd></div>
+              <div><dt class="sec-label">仕事内容</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">MOXA製品などの型番選定・初期設定・トラブルシューティング。メーカー認定エンジニアとして一次対応します。</dd></div>
+              <div><dt class="sec-label">1日の流れ</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">午前は問い合わせ対応と検証、午後は営業同行や設定サポート。合間に技術資料の整備も。</dd></div>
+              <div><dt class="sec-label">メッセージ</dt><dd class="text-[14px] text-neutral-600 mt-1 leading-relaxed">本物の製品に触れ、学び続けられる環境があります。技術で人の役に立ちたい方を歓迎します。</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 働く環境 ================= -->
+  <section class="bg-white anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <h2 class="sec-title text-5xl sm:text-6xl leading-none">ENVIRONMENT</h2>
+      <p class="text-sm text-neutral-600 mt-5">働く環境</p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
+        <div class="card card-h p-6 flex flex-col">
+          <div class="w-11 h-11 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg></div>
+          <div class="text-[16px] font-bold text-ink">メーカー研修・認定制度</div>
+          <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">海外メーカーの研修を受け、認定エンジニア資格を取得。本物の技術を体系的に学べます。</p>
+        </div>
+        <div class="card card-h p-6 flex flex-col">
+          <div class="w-11 h-11 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M17 8.5a3 3 0 0 1 0 5"/><path d="M19 20c0-2-1-3.7-2.5-4.8"/></svg></div>
+          <div class="text-[16px] font-bold text-ink">メンター制度</div>
+          <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">先輩社員がマンツーマンで伴走。仕事の進め方から悩みまで気軽に相談できる体制です。</p>
+        </div>
+        <div class="card card-h p-6 flex flex-col">
+          <div class="w-11 h-11 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <div class="text-[16px] font-bold text-ink">全国拠点</div>
+          <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">東京本社・名古屋・大阪営業所・寄居ロジスティクス。全国のお客様を4拠点で支えます。</p>
+        </div>
+        <div class="card card-h p-6 flex flex-col">
+          <div class="w-11 h-11 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M20.8 8.6a5 5 0 0 0-8.8-2 5 5 0 0 0-8.8 2c-1 3 1.4 6 3.9 8.2C9 18.4 12 21 12 21s3-2.6 4.9-4.2c2.5-2.2 4.9-5.2 3.9-8.2Z"/></svg></div>
+          <div class="text-[16px] font-bold text-ink">福利厚生</div>
+          <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed flex-1">社会保険完備、各種手当、健康診断など。社員と家族の“一生”を支える制度を整えています。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 待遇・福利厚生 ================= -->
+  <section style="background:var(--paper)" class="anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20">
+      <div class="grid lg:grid-cols-3 gap-10">
+        <div class="lg:col-span-1">
+          <h2 class="sec-title text-5xl sm:text-6xl leading-none">BENEFITS</h2>
+          <p class="text-sm text-neutral-600 mt-5">待遇・福利厚生</p>
+          <p class="text-[13px] text-neutral-400 mt-4 leading-relaxed">※ 掲載の給与・休日等の数値はデモ用のモデルケースです。</p>
+        </div>
+        <div class="lg:col-span-2">
+          <dl class="divide-y divide-[color:var(--line)] border-t-2 border-ink">
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">モデル給与</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">大卒初任給 月給24.5万円／中途は経験・能力を考慮のうえ優遇（例：法人営業5年 年収480万円〜）</dd>
+            </div>
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">昇給・賞与</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">昇給 年1回（4月）／賞与 年2回（7月・12月）</dd>
+            </div>
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">各種手当</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">通勤交通費全額支給／時間外手当／役職手当／資格手当／家族手当</dd>
+            </div>
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">社会保険</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">健康保険・厚生年金・雇用保険・労災保険（社会保険完備）</dd>
+            </div>
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">勤務時間</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">9:00〜18:00（休憩60分）／所定労働8時間</dd>
+            </div>
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">年間休日</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">年間120日以上／完全週休2日（土日）・祝日／夏季・年末年始・有給・慶弔休暇</dd>
+            </div>
+            <div class="grid sm:grid-cols-[180px_1fr] gap-1 sm:gap-6 py-4">
+              <dt class="text-[15px] font-bold text-ink">研修制度</dt>
+              <dd class="text-[15px] text-neutral-700 leading-relaxed">新入社員研修／メーカー製品研修・認定資格取得支援／メンター制度／OJT</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 募集要項（アコーディオン） ================= -->
+  <section id="requirements" class="bg-white anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <h2 class="sec-title text-5xl sm:text-6xl leading-none">POSITIONS</h2>
+      <p class="text-sm text-neutral-600 mt-5">募集要項 － 職種をクリックすると詳細が開きます</p>
+      <div id="jobList" class="mt-12 max-w-4xl"></div>
+    </div>
+  </section>
+
+  <!-- ================= 選考フロー ================= -->
+  <section style="background:var(--paper)" class="anchor-sec">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <h2 class="sec-title text-5xl sm:text-6xl leading-none">FLOW</h2>
+      <p class="text-sm text-neutral-600 mt-5">選考フロー</p>
+
+      <div class="grid lg:grid-cols-2 gap-6 mt-12">
+        <!-- 新卒 -->
+        <div class="card p-6 sm:p-8 bg-white">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="badge text-white" style="background:#e60012">新卒採用</span>
+            <span class="text-[14px] text-neutral-500">全6ステップ</span>
+          </div>
+          <ol class="space-y-5">
+            <li class="flex items-start gap-4"><span class="step-dot step-done">1</span><div><div class="text-[15px] font-bold text-ink">エントリー</div><p class="text-[13px] text-neutral-500 mt-0.5">応募フォームより必要事項を送信。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">2</span><div><div class="text-[15px] font-bold text-ink">会社説明会</div><p class="text-[13px] text-neutral-500 mt-0.5">事業内容や職種、社風をご紹介。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">3</span><div><div class="text-[15px] font-bold text-ink">書類選考</div><p class="text-[13px] text-neutral-500 mt-0.5">エントリーシート・履歴書を確認。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">4</span><div><div class="text-[15px] font-bold text-ink">一次面接</div><p class="text-[13px] text-neutral-500 mt-0.5">人物・志望動機を中心に対話。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">5</span><div><div class="text-[15px] font-bold text-ink">最終面接</div><p class="text-[13px] text-neutral-500 mt-0.5">役員面接。相互理解を深めます。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-current">6</span><div><div class="text-[15px] font-bold text-ink">内定</div><p class="text-[13px] text-neutral-500 mt-0.5">条件をご案内し、入社へ。</p></div></li>
+          </ol>
+        </div>
+
+        <!-- 中途 -->
+        <div class="card p-6 sm:p-8 bg-white">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="badge bg-ink text-white">中途採用</span>
+            <span class="text-[14px] text-neutral-500">全5ステップ</span>
+          </div>
+          <ol class="space-y-5">
+            <li class="flex items-start gap-4"><span class="step-dot step-done">1</span><div><div class="text-[15px] font-bold text-ink">エントリー</div><p class="text-[13px] text-neutral-500 mt-0.5">応募フォーム／各エージェント経由で応募。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">2</span><div><div class="text-[15px] font-bold text-ink">書類選考</div><p class="text-[13px] text-neutral-500 mt-0.5">履歴書・職務経歴書を確認。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">3</span><div><div class="text-[15px] font-bold text-ink">一次面接</div><p class="text-[13px] text-neutral-500 mt-0.5">経験・スキルと配属部署の相性を確認。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-done">4</span><div><div class="text-[15px] font-bold text-ink">最終面接</div><p class="text-[13px] text-neutral-500 mt-0.5">役員面接。条件面のすり合わせ。</p></div></li>
+            <li class="flex items-start gap-4"><span class="step-dot step-current">5</span><div><div class="text-[15px] font-bold text-ink">内定</div><p class="text-[13px] text-neutral-500 mt-0.5">オファー面談を経て入社。</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= エントリー CTA ================= -->
+  <section class="relative overflow-hidden text-white" style="background:#e60012">
+    <div class="absolute inset-0" style="background:url(assets/img/mvimg.jpg) center/cover no-repeat;opacity:.18"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(230,0,18,.95) 0%,rgba(204,0,0,.85) 100%)"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-20 text-center">
+      <div class="sec-label text-white/80">ENTRY</div>
+      <h2 class="text-3xl sm:text-4xl font-bold mt-3 leading-tight">世界と、ものづくりの現場をつなぐ仲間へ。</h2>
+      <p class="text-[15px] text-white/90 mt-4 max-w-2xl mx-auto leading-loose">少しでも興味を持っていただけたら、まずはお気軽にエントリーください。ご質問だけのお問い合わせも歓迎します。</p>
+      <div class="mt-9 flex flex-wrap gap-4 justify-center">
+        <a href="contact.html" class="btn-ink !py-4 !px-10">エントリーはこちら</a>
+        <a href="#requirements" class="inline-flex items-center justify-center gap-2 border border-white text-white font-bold px-9 py-4 hover:bg-white hover:text-[color:var(--brand)] transition-colors">募集要項をもう一度見る</a>
+      </div>
+      <p class="text-[13px] text-white/80 mt-8 leading-relaxed">
+        各種求人媒体（Indeed／エン転職 等）からもご応募いただけます。<br class="hidden sm:block">
+        ※ 本ページは受発注ポータルのデモ用モックです。掲載内容は実際の募集条件とは異なる場合があります。
+      </p>
+    </div>
+  </section>
+
 </div>
 
 <script src="assets/data.js"></script>
@@ -94,22 +431,75 @@
     active:'recruit',
     crumbs:[{label:'トップ',href:'index.html'},{label:'採用情報'}],
     onReady:function(){
+      // 募集要項アコーディオン
       var JOBS = [
-        { cat:'営業', title:'法人営業（産業用部品）', img:'case-factory.jpg', desc:'メーカーとお客様をつなぐ提案営業。既存顧客のフォローから新規開拓まで、技術サポートと連携して最適な部品調達をご提案します。', tags:['正社員','東京 / 名古屋 / 大阪'] },
-        { cat:'技術', title:'技術サポート（フィールド）', img:'moxa-switch.jpg', desc:'MOXA・ODU 等の製品選定・初期設定・トラブルシューティングを担当。メーカー認定資格の取得も支援します。', tags:['正社員','東京本社'] },
-        { cat:'物流', title:'物流・在庫管理', img:'case-logistics.jpg', desc:'ロジスティクス拠点での入出荷・在庫管理。全国への安定供給を支える重要なポジションです。', tags:['正社員','埼玉・寄居'] },
-        { cat:'管理', title:'貿易事務・輸入業務', img:'case-ship.jpg', desc:'海外メーカーからの輸入手配・通関・納期管理など、商社の要となるバックオフィス業務。', tags:['正社員','東京本社'] }
+        {
+          en:'SALES', title:'法人営業',
+          lead:'既存・新規のお客様への提案営業。技術サポートと連携し、世界の一流部品を届けます。',
+          duty:'担当顧客への提案・見積作成・受発注・納期調整。展示会やメーカー同行を通じた新規開拓。',
+          req:'学歴不問／未経験可。普通自動車運転免許（AT可）。人と話すことが好きな方歓迎。',
+          place:'東京本社／名古屋営業所／大阪営業所',
+          pay:'月給24.5万円〜（新卒）／年収420万〜600万円（中途・経験により優遇）',
+          steps:'エントリー → 書類選考 → 面接（1〜2回）→ 内定'
+        },
+        {
+          en:'FIELD ENGINEER', title:'技術サポート（フィールドエンジニア）',
+          lead:'産業用ネットワーク機器・センサ等の選定・設定・トラブル対応を担う技術職。',
+          duty:'型番選定サポート、初期設定・検証、現地/リモートでのトラブルシューティング、技術資料整備。',
+          req:'電気・電子・情報系の知識があれば尚可（未経験からの育成も可）。ネットワークに興味のある方。',
+          place:'東京本社（顧客先への出張あり）',
+          pay:'年収400万〜650万円（経験・保有スキルにより優遇）／メーカー認定取得支援あり',
+          steps:'エントリー → 書類選考 → 技術面接 → 最終面接 → 内定'
+        },
+        {
+          en:'LOGISTICS', title:'物流・ロジスティクス',
+          lead:'寄居ロジスティクスを拠点に、入出荷・在庫管理・品質管理を担います。',
+          duty:'入荷検品、在庫管理、ピッキング・梱包・出荷手配、棚卸、システムへの実績入力。',
+          req:'学歴不問／未経験可。フォークリフト免許があれば尚可（入社後取得支援あり）。',
+          place:'ケーメックスONE ロジスティクス（埼玉県寄居町）',
+          pay:'月給21万円〜／年収330万〜450万円（経験により優遇）',
+          steps:'エントリー → 書類選考 → 面接（1回）→ 内定'
+        },
+        {
+          en:'TRADE ADMIN', title:'貿易事務',
+          lead:'海外メーカーからの輸入業務を支える貿易事務。調達と物流をつなぐ要のポジション。',
+          duty:'発注・輸入手配、インボイス/パッキングリスト等の書類作成、通関・フォワーダー対応、納期管理。',
+          req:'貿易事務・輸入業務の経験があれば尚可。基本的なPC操作・英文メールに抵抗のない方。',
+          place:'東京本社',
+          pay:'月給23万円〜／年収360万〜520万円（経験により優遇）',
+          steps:'エントリー → 書類選考 → 面接（1〜2回）→ 内定'
+        }
       ];
-      document.getElementById('jobGrid').innerHTML = JOBS.map(function(j){
-        return '<div class="card card-h overflow-hidden flex flex-col">'
-          + '<div class="h-36 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/'+j.img+'" alt="" class="w-full h-full object-cover"></div>'
-          + '<div class="p-5 flex-1 flex flex-col">'
-          + '<div class="flex items-center gap-2 mb-1"><span class="badge text-white" style="background:#e60012">'+j.cat+'</span></div>'
-          + '<div class="text-[16px] font-bold text-ink leading-snug">'+j.title+'</div>'
-          + '<p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed flex-1">'+j.desc+'</p>'
-          + '<div class="flex flex-wrap gap-1.5 mt-3">'+j.tags.map(function(t){ return '<span class="badge border border-[color:var(--line)] text-neutral-500">'+t+'</span>'; }).join('')+'</div>'
-          + '<a href="contact.html" class="btn-red-o mt-4 self-start !py-2.5 !px-6 !text-[14px]">エントリー</a></div></div>';
-      }).join('');
+      document.getElementById('jobList').innerHTML =
+        '<div class="card divide-y divide-[color:var(--line)]">'
+        + JOBS.map(function(j,i){
+          return '<div class="job-item">'
+            + '<button type="button" class="job-q w-full flex items-center gap-4 text-left px-5 py-5" data-i="'+i+'">'
+            + '<span class="font-display font-black text-[13px] shrink-0 w-24" style="color:#e60012">'+j.en+'</span>'
+            + '<span class="text-[18px] font-bold text-ink flex-1">'+j.title+'</span>'
+            + '<span class="job-ico shrink-0 text-neutral-400 transition-transform"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></button>'
+            + '<div class="job-a hidden px-5 pb-6">'
+            + '<p class="text-[15px] text-neutral-600 leading-relaxed mb-5">'+j.lead+'</p>'
+            + '<dl class="divide-y divide-[color:var(--line)] border-t border-[color:var(--line)]">'
+            + '<div class="grid sm:grid-cols-[130px_1fr] gap-1 sm:gap-5 py-3"><dt class="text-[14px] font-bold text-ink">仕事内容</dt><dd class="text-[14px] text-neutral-600 leading-relaxed">'+j.duty+'</dd></div>'
+            + '<div class="grid sm:grid-cols-[130px_1fr] gap-1 sm:gap-5 py-3"><dt class="text-[14px] font-bold text-ink">応募資格</dt><dd class="text-[14px] text-neutral-600 leading-relaxed">'+j.req+'</dd></div>'
+            + '<div class="grid sm:grid-cols-[130px_1fr] gap-1 sm:gap-5 py-3"><dt class="text-[14px] font-bold text-ink">勤務地</dt><dd class="text-[14px] text-neutral-600 leading-relaxed">'+j.place+'</dd></div>'
+            + '<div class="grid sm:grid-cols-[130px_1fr] gap-1 sm:gap-5 py-3"><dt class="text-[14px] font-bold text-ink">給与（モデル）</dt><dd class="text-[14px] text-neutral-600 leading-relaxed">'+j.pay+'</dd></div>'
+            + '<div class="grid sm:grid-cols-[130px_1fr] gap-1 sm:gap-5 py-3"><dt class="text-[14px] font-bold text-ink">選考フロー</dt><dd class="text-[14px] text-neutral-600 leading-relaxed">'+j.steps+'</dd></div>'
+            + '</dl>'
+            + '<div class="mt-5"><a href="contact.html" class="btn-red !py-3 !px-7 !text-[15px]">この職種にエントリー</a></div>'
+            + '</div></div>';
+        }).join('')
+        + '</div>';
+      document.getElementById('jobList').addEventListener('click', function(e){
+        var btn = e.target.closest('.job-q'); if(!btn) return;
+        var item = btn.parentNode;
+        var ans = item.querySelector('.job-a');
+        var ico = btn.querySelector('.job-ico');
+        var open = !ans.classList.contains('hidden');
+        ans.classList.toggle('hidden', open);
+        ico.style.transform = open ? '' : 'rotate(180deg)';
+      });
     }
   });
 </script>

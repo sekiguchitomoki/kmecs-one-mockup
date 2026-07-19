@@ -183,3 +183,21 @@ input[type=checkbox]{ width:16px; height:16px; }
 
 /* KPIカードの数字は視認性のため維持、ラベルは落ち着いた色 */
 .adm-scope .font-black{ letter-spacing:0; }
+
+/* ===== KV（キービジュアル）アニメーション ===== */
+.kv-bg{position:absolute;inset:0;background-size:cover;background-position:center;will-change:transform;animation:kvZoom 26s ease-in-out infinite alternate;}
+@keyframes kvZoom{0%{transform:scale(1.06)}100%{transform:scale(1.18)}}
+/* ドリフトする光のオーバーレイ（ネットワーク感） */
+.kv-glow{position:absolute;inset:-20% -20% -20% -20%;pointer-events:none;background:radial-gradient(circle at 30% 40%,rgba(230,0,18,.20),transparent 40%),radial-gradient(circle at 75% 60%,rgba(60,120,255,.16),transparent 45%);mix-blend-mode:screen;animation:kvDrift 18s ease-in-out infinite alternate;}
+@keyframes kvDrift{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(3%, -2%,0)}100%{transform:translate3d(-3%,2%,0)}}
+/* 上部を横切る光のスイープ */
+.kv-sheen{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.06) 50%,transparent 60%);background-size:250% 100%;animation:kvSheen 9s linear infinite;}
+@keyframes kvSheen{0%{background-position:150% 0}100%{background-position:-150% 0}}
+@media (prefers-reduced-motion: reduce){.kv-bg,.kv-glow,.kv-sheen{animation:none!important}}
+
+/* ===== ホームのバナータイル ホバー ===== */
+.home-tile{transition:transform .35s ease, box-shadow .35s ease;}
+.home-tile:hover{transform:translateY(-6px);box-shadow:0 22px 40px -18px rgba(0,0,0,.45);}
+.home-tile .tile-arrow{transition:transform .3s ease;}
+.home-tile:hover .tile-arrow{transform:translateX(4px);}
+.home-tile .tile-bar{transition:background .3s ease;}

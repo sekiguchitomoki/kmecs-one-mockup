@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <section class="text-white relative overflow-hidden" style="background:#0d1024">
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-16">
+      <div class="sec-label text-neutral-300">SITEMAP</div>
+      <h1 class="font-display font-black text-4xl sm:text-5xl mt-3 leading-none">サイトマップ</h1>
+    </div>
+  </section>
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-16">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10 text-[15px]">
+
+      <div>
+        <a href="products.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">取扱製品を探す</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="products.html" class="hover:text-[color:var(--brand)]">カテゴリから探す</a></li>
+          <li><a href="makers.html" class="hover:text-[color:var(--brand)]">メーカーから探す</a></li>
+          <li><a href="products.html" class="hover:text-[color:var(--brand)]">キーワード・型番から探す</a></li>
+          <li><a href="product-detail.html?code=EDS-408A" class="hover:text-[color:var(--brand)]">製品詳細（型番別）</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="leading.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">導入事例</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="leading.html" class="hover:text-[color:var(--brand)]">業界別の導入事例</a></li>
+          <li><a href="leading.html" class="hover:text-[color:var(--brand)]">製品別の導入事例</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="tech.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">技術情報・コラム</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="tech.html" class="hover:text-[color:var(--brand)]">Moxa 技術解説</a></li>
+          <li><a href="tech.html" class="hover:text-[color:var(--brand)]">産業用ネットワーク技術解説</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="event.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">セミナー・イベント</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="event.html" class="hover:text-[color:var(--brand)]">開催予定</a></li>
+          <li><a href="event.html" class="hover:text-[color:var(--brand)]">アーカイブ・過去資料</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="news.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">ニュース</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="news.html" class="hover:text-[color:var(--brand)]">新製品情報</a></li>
+          <li><a href="news.html" class="hover:text-[color:var(--brand)]">お知らせ・プレスリリース</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="download.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">資料ダウンロード</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="download.html" class="hover:text-[color:var(--brand)]">カタログ一覧</a></li>
+          <li><a href="download.html" class="hover:text-[color:var(--brand)]">ホワイトペーパー</a></li>
+          <li><a href="download.html" class="hover:text-[color:var(--brand)]">データシート（型番別）</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="support.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">サポート</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="support.html#faq" class="hover:text-[color:var(--brand)]">よくあるご質問</a></li>
+          <li><a href="support.html#certification" class="hover:text-[color:var(--brand)]">メーカー認定資格</a></li>
+          <li><a href="support.html#standards" class="hover:text-[color:var(--brand)]">国際規格・認証</a></li>
+          <li><a href="support.html#discontinued" class="hover:text-[color:var(--brand)]">販売終了製品</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="company.html" class="block font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3 hover:text-[color:var(--brand)]">会社案内</a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="company.html" class="hover:text-[color:var(--brand)]">会社情報</a></li>
+          <li><a href="recruit.html" class="hover:text-[color:var(--brand)]">採用情報</a></li>
+          <li><a href="contact.html" class="hover:text-[color:var(--brand)]">お問い合わせ</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <a href="mypage.html" class="block font-bold text-ink text-[17px] border-b-2 pb-2 mb-3 hover:text-[color:var(--brand)]" style="border-color:#e60012">会員ポータル<span class="badge ml-2 text-white align-middle" style="background:#e60012">ログイン</span></a>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="quotes.html" class="hover:text-[color:var(--brand)]">見積一覧・発注</a></li>
+          <li><a href="orders.html" class="hover:text-[color:var(--brand)]">注文履歴・進捗</a></li>
+          <li><a href="notifications.html" class="hover:text-[color:var(--brand)]">製品変更情報（PCN／EOL）</a></li>
+          <li><a href="mypage.html" class="hover:text-[color:var(--brand)]">マイページ</a></li>
+          <li><a href="cart.html" class="hover:text-[color:var(--brand)]">カート</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="font-bold text-ink text-[17px] border-b-2 border-ink pb-2 mb-3">その他</div>
+        <ul class="space-y-2 text-neutral-600">
+          <li><a href="privacy.html" class="hover:text-[color:var(--brand)]">個人情報保護方針</a></li>
+          <li><a href="terms.html" class="hover:text-[color:var(--brand)]">ご利用規約</a></li>
+          <li><a href="login.html" class="hover:text-[color:var(--brand)]">ログイン</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({ active:'', crumbs:[{label:'トップ',href:'index.html'},{label:'サイトマップ'}] });
+</script>
+</body>
+</html>
