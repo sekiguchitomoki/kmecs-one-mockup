@@ -145,7 +145,7 @@
 
         // ダイワボウ風の横並びリスト
         document.getElementById('list').innerHTML = list.map(function(p){
-          return '<div class="card card-h p-4 flex flex-col sm:flex-row gap-4">'
+          return '<div class="card p-4 flex flex-col sm:flex-row gap-4">'
             + '<input type="checkbox" class="accent-[#e60012] mt-1 hidden sm:block">'
             + '<a href="product-detail.html?code='+p.code+'" class="w-full sm:w-32 h-28 shrink-0 overflow-hidden bg-white border border-[color:var(--line)] flex items-center justify-center p-2"><img src="'+prodImg(p)+'" alt="" class="max-w-full max-h-full object-contain"></a>'
             + '<div class="flex-1 min-w-0">'

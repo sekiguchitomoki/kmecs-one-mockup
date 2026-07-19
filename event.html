@@ -72,7 +72,7 @@
           : '<span class="badge bg-ink text-white">'+m+'</span>';
       }
       document.getElementById('upGrid').innerHTML = UP.map(function(e){
-        return '<div class="card card-h overflow-hidden flex flex-col sm:flex-row">'
+        return '<div class="card overflow-hidden flex flex-col sm:flex-row">'
           + '<div class="sm:w-40 h-32 sm:h-auto shrink-0 overflow-hidden"><img src="assets/img/'+e.img+'" alt="" class="w-full h-full object-cover"></div>'
           + '<div class="p-5 flex-1 flex flex-col">'
           + '<div class="flex items-center gap-2 mb-1.5"><span class="font-display font-bold text-[15px] text-ink">'+e.date+'</span>'+modeBadge(e.mode)+'</div>'
