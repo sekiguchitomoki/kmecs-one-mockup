@@ -70,13 +70,24 @@
   const logoImgW = (h) => `<img src="assets/img/logo.png" alt="K.MECS ONE" style="height:${h}px;width:auto;display:block;filter:invert(1) hue-rotate(180deg) saturate(2.4) brightness(1.1)">`;
 
   /* ================= 顧客向けシェル ================= */
-  const GNAV = [
-    { key: 'products',      en: 'PRODUCTS',  ja: '製品を探す',     href: 'products.html' },
-    { key: 'makers',        en: 'MAKERS',    ja: '取扱メーカー',   href: 'makers.html' },
-    { key: 'quotes',        en: 'QUOTE',     ja: '見積から発注',   href: 'quotes.html' },
-    { key: 'orders',        en: 'ORDERS',    ja: '注文・進捗',     href: 'orders.html' },
-    { key: 'notifications', en: 'PCN / EOL', ja: '製品変更情報',   href: 'notifications.html' },
-    { key: 'mypage',        en: 'MYPAGE',    ja: 'マイページ',     href: 'mypage.html' },
+  // マーケティング・グローバルナビ（ログイン前後とも常設）＝ ディレクトリマップ v3 準拠
+  const MGNAV = [
+    { key: 'products', en: 'PRODUCTS',    ja: '取扱製品を探す',       href: 'products.html', mega: 'products' },
+    { key: 'case',     en: 'CASE',        ja: '導入事例',             href: 'leading.html' },
+    { key: 'tech',     en: 'TECH',        ja: '技術情報・コラム',     href: 'tech.html' },
+    { key: 'event',    en: 'EVENT',       ja: 'セミナー・イベント',   href: 'event.html' },
+    { key: 'news',     en: 'NEWS',        ja: 'ニュース',             href: 'news.html' },
+    { key: 'download', en: 'DOWNLOAD',    ja: '資料ダウンロード',     href: 'download.html' },
+    { key: 'support',  en: 'SUPPORT',     ja: 'サポート',             href: 'support.html' },
+    { key: 'company',  en: 'COMPANY',     ja: '会社情報',             href: 'company.html' },
+  ];
+  // 会員（取引）ポータルナビ ＝ ログイン後のみ、マーケナビの下段に露出
+  const PNAV = [
+    { key: 'p-products',    en: 'ORDER',   ja: '価格・在庫・発注', href: 'products.html' },
+    { key: 'quotes',        en: 'QUOTE',   ja: '見積から発注',     href: 'quotes.html',        mega: 'quotes' },
+    { key: 'orders',        en: 'ORDERS',  ja: '注文・進捗',       href: 'orders.html',        mega: 'orders' },
+    { key: 'notifications', en: 'PCN/EOL', ja: '製品変更情報',     href: 'notifications.html', mega: 'notifications' },
+    { key: 'mypage',        en: 'MYPAGE',  ja: 'マイページ',       href: 'mypage.html',        mega: 'mypage' },
   ];
 
   function mockBar() {
@@ -178,59 +189,107 @@
     const contentHTML = content ? content.innerHTML : '';
     const cart = KMECS.cartCount();
 
-    const accountArea = a
-      ? `<div class="flex items-center gap-2.5 shrink-0 whitespace-nowrap">
-           <div class="text-right leading-tight hidden xl:block">
-             <div class="text-[13px] text-neutral-400 hidden 2xl:block">${a.company}</div>
-             <div class="text-[14px] text-white font-medium justify-end">${a.user} 様</div>
-           </div>
-           <button id="logoutBtn" class="text-[13px] text-neutral-400 hover:text-white border border-white/25 px-2.5 py-1 shrink-0">ログアウト</button>
-         </div>`
-      : `<a href="login.html" class="text-[14px] text-white font-bold border border-white/40 hover:bg-white/10 px-4 py-2 shrink-0">ログイン</a>`;
+    const transHref = `https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(location.href)}`;
+    // 上部ユーティリティバー右側（ログイン状態）
+    const utilAccount = a
+      ? `<span class="hidden lg:inline text-neutral-400">${a.company}</span>
+         <span class="text-white font-medium">${a.user} 様</span>
+         <button id="logoutBtn" class="text-neutral-400 hover:text-white border border-white/25 px-2 py-0.5">ログアウト</button>`
+      : `<a href="login.html" class="inline-flex items-center gap-1 text-white font-bold border border-white/40 hover:bg-white/10 px-3 py-1">
+           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>ログイン</a>`;
+
+    // マーケナビ1項目
+    const mnavItem = (n) => {
+      const on = n.key === active;
+      const mega = n.mega ? megaFor(n.mega, a) : '';
+      return `<div class="group flex items-stretch">
+        <a href="${n.href}" class="relative px-3 py-2.5 text-center whitespace-nowrap flex flex-col justify-center">
+          <span class="block font-display text-[13px] font-bold tracking-wide ${on ? 'text-white' : 'text-neutral-300 group-hover:text-white'}">${n.en}</span>
+          <span class="block text-[13px] mt-0.5 ${on ? 'text-white' : 'text-neutral-400 group-hover:text-white'}">${n.ja}</span>
+          <span class="absolute left-3 right-3 bottom-0 h-[2px] ${on ? '' : 'scale-x-0 group-hover:scale-x-100'} transition-transform" style="background:#e60012"></span>
+        </a>
+        ${mega ? `<div class="hidden group-hover:block absolute left-0 right-0 top-full z-50 text-ink" style="background:#fff;border-top:3px solid #e60012;box-shadow:0 24px 40px -14px rgba(0,0,0,.28)">
+          <div class="max-w-[1200px] mx-auto px-8 py-7">${mega}</div>
+        </div>` : ''}
+      </div>`;
+    };
+    // 会員ポータルバー1項目
+    const pnavItem = (n) => {
+      const on = n.key === active;
+      const mega = n.mega ? megaFor(n.mega, a) : '';
+      return `<div class="group flex items-stretch">
+        <a href="${n.href}" class="relative px-3.5 py-2 flex items-center gap-1.5 whitespace-nowrap ${on ? 'text-ink font-bold' : 'text-neutral-600 hover:text-[color:var(--brand)]'}">
+          <span class="text-[15px]">${n.ja}</span>
+          <span class="absolute left-3.5 right-3.5 bottom-0 h-[2px] ${on ? '' : 'scale-x-0 group-hover:scale-x-100'} transition-transform" style="background:#e60012"></span>
+        </a>
+        ${mega ? `<div class="hidden group-hover:block absolute left-0 right-0 top-full z-50 text-ink" style="background:#fff;border-top:3px solid #e60012;box-shadow:0 24px 40px -14px rgba(0,0,0,.28)">
+          <div class="max-w-[1200px] mx-auto px-8 py-7">${mega}</div>
+        </div>` : ''}
+      </div>`;
+    };
 
     document.body.innerHTML = `
       ${mockBar()}
-      <header class="sticky top-0 z-40 text-white" style="background:#0d1024">
-        <div class="flex items-center gap-3 px-4 xl:px-8 h-[68px]">
-          <a href="index.html" class="flex items-center gap-3 shrink-0">
-            ${logoImgW(32)}
-            <span class="hidden 2xl:block text-[13px] text-neutral-400 border-l border-white/20 pl-3 leading-tight">受発注<br>ポータル</span>
-          </a>
-
-          <nav class="hidden xl:flex items-stretch mx-auto shrink-0">
-            ${GNAV.map(n => {
-              const on = n.key === active;
-              const mega = megaFor(n.key, a);
-              return `<div class="group flex items-stretch">
-                <a href="${n.href}" class="relative px-2.5 py-2 text-center whitespace-nowrap flex flex-col justify-center">
-                  <span class="block font-display text-[14px] font-bold tracking-wide ${on ? 'text-white' : 'text-neutral-300 group-hover:text-white'}">${n.en}</span>
-                  <span class="block text-[12px] mt-0.5 ${on ? 'text-neutral-300' : 'text-neutral-500 group-hover:text-neutral-300'}">${n.ja}</span>
-                  <span class="absolute left-2.5 right-2.5 bottom-0 h-[2px] ${on ? '' : 'scale-x-0 group-hover:scale-x-100'} transition-transform" style="background:#e60012"></span>
-                </a>
-                ${mega ? `<div class="hidden group-hover:block absolute left-0 right-0 top-full z-50 text-ink" style="background:#fff;border-top:3px solid #e60012;box-shadow:0 24px 40px -14px rgba(0,0,0,.28)">
-                  <div class="max-w-[1200px] mx-auto px-8 py-7">${mega}</div>
-                </div>` : ''}
-              </div>`;
-            }).join('')}
-          </nav>
-
-          <div class="flex items-center gap-2.5 ml-auto xl:ml-0 shrink-0 whitespace-nowrap">
-            <div class="hidden 2xl:block text-[13px] text-neutral-400 font-display">JP<span class="text-neutral-600"> | </span><a href="#" class="hover:text-white">EN</a></div>
-            ${accountArea}
-            <a href="cart.html" class="relative p-1.5 hover:bg-white/10 shrink-0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3h2l2 12h11l2-8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
-              ${cart > 0 ? `<span class="absolute -top-0.5 -right-0.5 text-white text-[12px] font-bold rounded-full min-w-[16px] h-[16px] px-1 flex items-center justify-center" style="background:#e60012">${cart}</span>` : ''}
-            </a>
-            <a href="contact.html" class="hidden 2xl:inline-flex items-center gap-1.5 text-white text-[14px] font-bold px-4 py-2.5 shrink-0" style="background:#e60012">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>CONTACT
-            </a>
-            <button id="navToggle" class="xl:hidden p-1.5 shrink-0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <header class="sticky top-0 z-40">
+        <!-- ① ユーティリティバー -->
+        <div class="text-white text-[12px]" style="background:#080a18">
+          <div class="flex items-center justify-between gap-3 px-4 xl:px-8 h-9">
+            <div class="hidden sm:flex items-center gap-2 text-neutral-400"><span class="inline-block w-1.5 h-1.5 rounded-full" style="background:#e60012"></span>ODU / MOXA 正規代理店 ・ 産業用部品の輸入商社（創業1955年）</div>
+            <div class="flex items-center gap-3 ml-auto whitespace-nowrap">
+              <a href="recruit.html" class="text-neutral-300 hover:text-white">採用情報</a>
+              <span class="text-neutral-600">|</span>
+              <span class="text-neutral-400 font-display">JP<span class="text-neutral-600"> / </span><a href="${transHref}" target="_blank" rel="noopener" class="hover:text-white">EN</a></span>
+              <span class="text-neutral-600 hidden sm:inline">|</span>
+              <span class="hidden sm:flex items-center gap-2">${utilAccount}</span>
+            </div>
           </div>
         </div>
+
+        <!-- ② メインヘッダー（マーケティング・グローバルナビ） -->
+        <div class="text-white" style="background:#0d1024">
+          <div class="flex items-center gap-3 px-4 xl:px-8 h-[64px]">
+            <a href="index.html" class="flex items-center gap-3 shrink-0">${logoImgW(30)}</a>
+            <nav class="hidden xl:flex items-stretch mx-auto shrink-0">
+              ${MGNAV.map(mnavItem).join('')}
+            </nav>
+            <div class="flex items-center gap-2 ml-auto xl:ml-0 shrink-0 whitespace-nowrap">
+              <form action="products.html" class="hidden lg:flex items-center bg-white/10 border border-white/20 focus-within:border-[color:var(--brand)]">
+                <input name="q" placeholder="型番・キーワード検索" class="bg-transparent text-white placeholder:text-neutral-400 text-[13px] px-3 py-1.5 w-40 2xl:w-52 outline-none">
+                <button class="px-2.5 py-1.5 text-neutral-300 hover:text-white"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg></button>
+              </form>
+              <a href="cart.html" class="relative p-1.5 hover:bg-white/10 shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3h2l2 12h11l2-8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+                ${cart > 0 ? `<span class="absolute -top-0.5 -right-0.5 text-white text-[12px] font-bold rounded-full min-w-[16px] h-[16px] px-1 flex items-center justify-center" style="background:#e60012">${cart}</span>` : ''}
+              </a>
+              <a href="contact.html" class="hidden xl:inline-flex items-center gap-1.5 text-white text-[14px] font-bold px-4 py-2.5 shrink-0" style="background:#e60012">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>お問い合わせ
+              </a>
+              <button id="navToggle" class="xl:hidden p-1.5 shrink-0 text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ③ 会員ポータルバー（ログイン後のみ・マーケナビの下段に露出） -->
+        ${a ? `<div class="hidden xl:block border-b border-[color:var(--line)] bg-white shadow-sm">
+          <div class="flex items-center px-4 xl:px-8">
+            <span class="inline-flex items-center gap-1.5 text-[12px] font-bold text-white px-3 py-1 mr-2 shrink-0" style="background:#e60012">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>会員ポータル</span>
+            <nav class="flex items-stretch">${PNAV.map(pnavItem).join('')}</nav>
+            <a href="admin-dashboard.html" class="ml-auto text-[13px] text-neutral-400 hover:text-[color:var(--brand)] py-2 shrink-0">社内管理画面 ›</a>
+          </div>
+        </div>` : ''}
+
         <!-- モバイル/タブレットナビ -->
-        <nav id="mnav" class="hidden xl:hidden border-t border-white/10 px-4 py-3 grid grid-cols-2 sm:grid-cols-3 gap-1" style="background:#0d1024">
-          ${GNAV.map(n => `<a href="${n.href}" class="px-3 py-2.5 text-[15px] text-neutral-200 hover:bg-white/10"><span class="font-display font-bold">${n.en}</span> <span class="text-[13px] text-neutral-500">${n.ja}</span></a>`).join('')}
-          <a href="admin-orders.html" class="px-3 py-2.5 text-[15px] text-neutral-400 hover:bg-white/10">管理画面（社内）</a>
+        <nav id="mnav" class="hidden xl:hidden px-4 py-3 space-y-3" style="background:#0d1024">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+            ${MGNAV.map(n => `<a href="${n.href}" class="px-3 py-2.5 text-[15px] text-neutral-200 hover:bg-white/10"><span class="font-display font-bold text-[12px] text-neutral-400 block">${n.en}</span>${n.ja}</a>`).join('')}
+          </div>
+          ${a ? `<div class="border-t border-white/10 pt-3">
+            <div class="text-[12px] font-bold px-3 mb-1" style="color:#e60012">会員ポータル</div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+              ${PNAV.map(n => `<a href="${n.href}" class="px-3 py-2.5 text-[15px] text-neutral-200 hover:bg-white/10">${n.ja}</a>`).join('')}
+            </div></div>` : `<a href="login.html" class="block px-3 py-2.5 text-[15px] text-white font-bold border border-white/30">ログイン</a>`}
+          <a href="admin-dashboard.html" class="block px-3 py-2 text-[14px] text-neutral-400 hover:bg-white/10 border-t border-white/10 pt-3">管理画面（社内）</a>
         </nav>
       </header>
 
@@ -256,33 +315,49 @@
 
       <!-- フッター -->
       <footer class="bg-white border-t border-[color:var(--line)]">
-        <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-[15px]">
+        <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10 grid grid-cols-2 md:grid-cols-5 gap-8 text-[15px]">
           <div>
-            <a href="index.html" class="block font-bold text-ink mb-3 font-display">TOP</a>
-            <a href="#" class="block text-neutral-500 hover:text-[color:var(--brand)]">ケーメックスONEについて</a>
-          </div>
-          <div>
-            <div class="font-bold text-ink mb-3 font-display">取扱い製品</div>
+            <div class="font-bold text-ink mb-3 font-display">製品・事例</div>
             <ul class="space-y-1.5 text-neutral-500">
-              <li><a href="products.html" class="hover:text-[color:var(--brand)]">キーワードから探す</a></li>
-              <li><a href="products.html" class="hover:text-[color:var(--brand)]">カテゴリから探す</a></li>
+              <li><a href="products.html" class="hover:text-[color:var(--brand)]">取扱製品を探す</a></li>
               <li><a href="makers.html" class="hover:text-[color:var(--brand)]">取扱メーカー</a></li>
+              <li><a href="leading.html" class="hover:text-[color:var(--brand)]">導入事例</a></li>
             </ul>
           </div>
           <div>
-            <div class="font-bold text-ink mb-3 font-display">受発注</div>
+            <div class="font-bold text-ink mb-3 font-display">情報・資料</div>
             <ul class="space-y-1.5 text-neutral-500">
-              <li><a href="quotes.html" class="hover:text-[color:var(--brand)]">見積一覧・発注</a></li>
-              <li><a href="orders.html" class="hover:text-[color:var(--brand)]">注文履歴・進捗</a></li>
-              <li><a href="notifications.html" class="hover:text-[color:var(--brand)]">PCN / EOL 情報</a></li>
+              <li><a href="tech.html" class="hover:text-[color:var(--brand)]">技術情報・コラム</a></li>
+              <li><a href="event.html" class="hover:text-[color:var(--brand)]">セミナー・イベント</a></li>
+              <li><a href="news.html" class="hover:text-[color:var(--brand)]">ニュース</a></li>
+              <li><a href="download.html" class="hover:text-[color:var(--brand)]">資料ダウンロード</a></li>
             </ul>
           </div>
           <div>
             <div class="font-bold text-ink mb-3 font-display">サポート</div>
             <ul class="space-y-1.5 text-neutral-500">
-              <li><a href="#" class="hover:text-[color:var(--brand)]">ダウンロード</a></li>
-              <li><a href="#" class="hover:text-[color:var(--brand)]">よくあるご質問</a></li>
-              <li><a href="admin-dashboard.html" class="hover:text-[color:var(--brand)]">管理画面（社内）</a></li>
+              <li><a href="support.html#faq" class="hover:text-[color:var(--brand)]">よくあるご質問</a></li>
+              <li><a href="support.html#certification" class="hover:text-[color:var(--brand)]">メーカー認定資格</a></li>
+              <li><a href="support.html#standards" class="hover:text-[color:var(--brand)]">国際規格・認証</a></li>
+              <li><a href="support.html#discontinued" class="hover:text-[color:var(--brand)]">販売終了製品</a></li>
+            </ul>
+          </div>
+          <div>
+            <div class="font-bold text-ink mb-3 font-display">会社案内</div>
+            <ul class="space-y-1.5 text-neutral-500">
+              <li><a href="company.html" class="hover:text-[color:var(--brand)]">会社情報</a></li>
+              <li><a href="recruit.html" class="hover:text-[color:var(--brand)]">採用情報</a></li>
+              <li><a href="contact.html" class="hover:text-[color:var(--brand)]">お問い合わせ</a></li>
+            </ul>
+          </div>
+          <div>
+            <div class="font-bold text-ink mb-3 font-display">会員ポータル</div>
+            <ul class="space-y-1.5 text-neutral-500">
+              <li><a href="quotes.html" class="hover:text-[color:var(--brand)]">見積一覧・発注</a></li>
+              <li><a href="orders.html" class="hover:text-[color:var(--brand)]">注文履歴・進捗</a></li>
+              <li><a href="notifications.html" class="hover:text-[color:var(--brand)]">PCN / EOL 情報</a></li>
+              <li><a href="mypage.html" class="hover:text-[color:var(--brand)]">マイページ</a></li>
+              <li><a href="admin-dashboard.html" class="text-neutral-400 hover:text-[color:var(--brand)]">管理画面（社内）</a></li>
             </ul>
           </div>
         </div>

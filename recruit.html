@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <!-- ヒーロー -->
+  <section class="relative text-white overflow-hidden" style="background:#22243a">
+    <div class="absolute inset-0" style="opacity:.34;background:url(assets/img/case-logistics.jpg) center/cover no-repeat"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-16">
+      <div class="sec-label text-neutral-400">RECRUIT</div>
+      <h1 class="font-display font-black text-4xl sm:text-5xl mt-2 leading-tight">世界と、<br>ものづくりの現場をつなぐ。</h1>
+      <p class="text-neutral-300 text-[16px] mt-4 max-w-2xl leading-relaxed">世界中の一流メーカーの産業用部品を、日本のものづくりの現場へ。ケーメックスONEは、商社の“調達力”と“技術サポート”の両輪で、産業の基盤を支える仲間を募集しています。</p>
+      <a href="contact.html" class="btn-red mt-6 !bg-white" style="color:#e60012">エントリー・お問い合わせ</a>
+    </div>
+  </section>
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+    <!-- 募集職種 -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">POSITIONS</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">募集職種</h2>
+    </div>
+    <div id="jobGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-14"></div>
+
+    <!-- 働く環境 -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">ENVIRONMENT</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">働く環境</h2>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-5 mb-8">
+      <div class="lg:col-span-2 card overflow-hidden">
+        <img src="assets/img/support2.jpg" alt="" class="w-full h-56 object-cover">
+        <div class="p-6">
+          <h3 class="text-base font-bold text-ink">創業70年の安定基盤と、専門商社ならではの裁量</h3>
+          <p class="text-[15px] text-neutral-600 mt-2 leading-relaxed">創業1955年、正規代理店として海外一流メーカーと長期的な関係を築いてきた安定基盤の上で、一人ひとりが担当領域を持って裁量高く働ける環境です。技術と商流の両方に触れられるのが専門商社の面白さです。</p>
+        </div>
+      </div>
+      <div class="grid gap-5">
+        <div class="card p-5 flex flex-col">
+          <div class="w-10 h-10 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5z"/></svg></div>
+          <div class="text-[15px] font-bold text-ink">充実の福利厚生</div>
+          <p class="text-[14px] text-neutral-500 mt-1 leading-relaxed flex-1">各種社会保険・退職金制度など、社員と家族の“一生”を支える制度を整備。</p>
+        </div>
+        <div class="card p-5 flex flex-col">
+          <div class="w-10 h-10 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></div>
+          <div class="text-[15px] font-bold text-ink">少数精鋭・風通しの良さ</div>
+          <p class="text-[14px] text-neutral-500 mt-1 leading-relaxed flex-1">経営との距離が近く、提案が形になりやすいフラットな組織です。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 外部エージェント動線 -->
+    <div class="card p-6 mb-8" style="background:var(--paper)">
+      <div class="sec-label">HOW TO APPLY</div>
+      <h3 class="text-base font-bold text-ink mt-1">ご応募方法について</h3>
+      <p class="text-[15px] text-neutral-600 mt-2 leading-relaxed max-w-3xl">現在、採用は各求人媒体・人材紹介エージェントを通じたご応募を中心に受け付けております。Indeed・エン転職などの求人サイトに掲載中の募集要項もあわせてご確認ください。本サイトからのお問い合わせも承ります。</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-4 py-2 text-[14px] font-bold text-neutral-600">Indeed で募集中</span>
+        <span class="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-4 py-2 text-[14px] font-bold text-neutral-600">エン転職 で募集中</span>
+        <span class="inline-flex items-center gap-1.5 border border-[color:var(--line)] bg-white px-4 py-2 text-[14px] font-bold text-neutral-600">人材紹介エージェント経由</span>
+      </div>
+    </div>
+
+    <!-- エントリー CTA -->
+    <div class="card p-8 flex flex-wrap items-center justify-between gap-4" style="background:#22243a">
+      <div class="text-white">
+        <h3 class="text-lg font-bold">まずはお気軽にお問い合わせください</h3>
+        <p class="text-[15px] text-neutral-300 mt-1.5">職種のご相談・カジュアル面談のご希望も、お問い合わせフォームより承ります。</p>
+      </div>
+      <a href="contact.html" class="btn-red whitespace-nowrap">エントリーフォームへ</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'recruit',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'採用情報'}],
+    onReady:function(){
+      var JOBS = [
+        { cat:'営業', title:'法人営業（産業用部品）', img:'case-factory.jpg', desc:'メーカーとお客様をつなぐ提案営業。既存顧客のフォローから新規開拓まで、技術サポートと連携して最適な部品調達をご提案します。', tags:['正社員','東京 / 名古屋 / 大阪'] },
+        { cat:'技術', title:'技術サポート（フィールド）', img:'moxa-switch.jpg', desc:'MOXA・ODU 等の製品選定・初期設定・トラブルシューティングを担当。メーカー認定資格の取得も支援します。', tags:['正社員','東京本社'] },
+        { cat:'物流', title:'物流・在庫管理', img:'case-logistics.jpg', desc:'ロジスティクス拠点での入出荷・在庫管理。全国への安定供給を支える重要なポジションです。', tags:['正社員','埼玉・寄居'] },
+        { cat:'管理', title:'貿易事務・輸入業務', img:'case-ship.jpg', desc:'海外メーカーからの輸入手配・通関・納期管理など、商社の要となるバックオフィス業務。', tags:['正社員','東京本社'] }
+      ];
+      document.getElementById('jobGrid').innerHTML = JOBS.map(function(j){
+        return '<div class="card card-h overflow-hidden flex flex-col">'
+          + '<div class="h-36 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/'+j.img+'" alt="" class="w-full h-full object-cover"></div>'
+          + '<div class="p-5 flex-1 flex flex-col">'
+          + '<div class="flex items-center gap-2 mb-1"><span class="badge text-white" style="background:#e60012">'+j.cat+'</span></div>'
+          + '<div class="text-[16px] font-bold text-ink leading-snug">'+j.title+'</div>'
+          + '<p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed flex-1">'+j.desc+'</p>'
+          + '<div class="flex flex-wrap gap-1.5 mt-3">'+j.tags.map(function(t){ return '<span class="badge border border-[color:var(--line)] text-neutral-500">'+t+'</span>'; }).join('')+'</div>'
+          + '<a href="contact.html" class="btn-red-o mt-4 self-start !py-2.5 !px-6 !text-[14px]">エントリー</a></div></div>';
+      }).join('');
+    }
+  });
+</script>
+</body>
+</html>

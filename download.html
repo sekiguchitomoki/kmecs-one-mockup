@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+<style>
+  .chip{ border:1px solid var(--line); background:#fff; color:#555; font-size:14px; font-weight:700; padding:6px 16px; white-space:nowrap; transition:.15s; }
+  .chip:hover{ border-color:#e60012; color:#e60012; }
+  .chip.on{ background:#e60012; border-color:#e60012; color:#fff; }
+</style>
+</head>
+<body>
+<div id="content">
+  <!-- ヒーロー -->
+  <section class="relative text-white overflow-hidden" style="background:#22243a">
+    <div class="absolute inset-0" style="opacity:.30;background:url(assets/img/support2.jpg) center/cover no-repeat"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-14">
+      <div class="sec-label text-neutral-400">DOWNLOAD</div>
+      <h1 class="font-display font-black text-4xl mt-2">カタログ・資料ダウンロード</h1>
+      <p class="text-neutral-300 text-[16px] mt-3 max-w-2xl leading-relaxed">メーカー総合カタログ・技術ホワイトペーパー・型番別データシートをまとめてご用意。検討フェーズに合わせて必要な資料をダウンロードいただけます。</p>
+    </div>
+  </section>
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+    <!-- 絞り込みチップ -->
+    <div class="mb-8">
+      <div class="text-[13px] font-bold text-neutral-400 mb-2">メーカー・カテゴリで絞り込む</div>
+      <div id="chips" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- ① カタログ -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">CATALOG</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">総合カタログ</h2>
+    </div>
+    <div id="catGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"></div>
+
+    <!-- ② ホワイトペーパー -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">WHITE PAPER</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">技術ホワイトペーパー</h2>
+    </div>
+    <div id="wpGrid" class="grid sm:grid-cols-3 gap-4 mb-12"></div>
+
+    <!-- ③ データシート -->
+    <div class="border-t-2 border-ink pt-3 mb-5">
+      <div class="sec-label">DATASHEET</div>
+      <h2 class="text-lg font-bold text-ink mt-0.5">型番別データシート</h2>
+    </div>
+    <div id="dsList" class="card divide-y divide-[color:var(--line)]"></div>
+
+    <div class="card p-6 mt-12 flex flex-wrap items-center justify-between gap-4" style="background:var(--paper)">
+      <div>
+        <h3 class="text-base font-bold text-ink">お探しの資料が見つからない場合</h3>
+        <p class="text-[15px] text-neutral-500 mt-1.5">旧版カタログ・特注仕様書・英文データシートもご用意できます。担当営業までご依頼ください。</p>
+      </div>
+      <a href="contact.html" class="btn-ink whitespace-nowrap">資料を請求する</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  function dl(){ alert('資料をダウンロードしました。（モック）'); }
+  window.dl = dl;
+
+  KMECS.renderUserShell({
+    active:'download',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'資料ダウンロード'}],
+    onReady:function(){
+      // 絞り込みチップ（見た目のフィルタ）
+      var CHIPS = ['すべて','MOXA','ODU','POSITAL','AXIOMTEK','ネットワーク','コネクタ','組込PC','センサ'];
+      var chipsEl = document.getElementById('chips');
+      chipsEl.innerHTML = CHIPS.map(function(c,i){
+        return '<button class="chip'+(i===0?' on':'')+'" data-c="'+c+'">'+c+'</button>';
+      }).join('');
+      chipsEl.addEventListener('click', function(e){
+        var b = e.target.closest('.chip'); if(!b) return;
+        Array.prototype.forEach.call(chipsEl.querySelectorAll('.chip'), function(x){ x.classList.remove('on'); });
+        b.classList.add('on');
+        var key = b.getAttribute('data-c');
+        Array.prototype.forEach.call(document.querySelectorAll('[data-tags]'), function(card){
+          var tags = card.getAttribute('data-tags');
+          card.style.display = (key==='すべて' || tags.indexOf(key)>=0) ? '' : 'none';
+        });
+      });
+
+      // PDFアイコン
+      function pdfIcon(){
+        return '<span class="w-11 h-12 shrink-0 flex flex-col items-center justify-center border" style="border-color:var(--line);background:#fff">'
+          + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'
+          + '<span class="text-[9px] font-bold font-display" style="color:#e60012">PDF</span></span>';
+      }
+
+      // ① カタログ
+      var CATS = [
+        { title:'MOXA 総合カタログ 2026', meta:'PDF・18.4 MB・全320ページ', tags:'MOXA ネットワーク' },
+        { title:'ODU MEDI-SNAP カタログ', meta:'PDF・6.1 MB・医療/産業コネクタ', tags:'ODU コネクタ' },
+        { title:'POSITAL エンコーダ 総合', meta:'PDF・9.7 MB・回転/直動', tags:'POSITAL センサ' },
+        { title:'AXIOMTEK 組込PC カタログ', meta:'PDF・12.2 MB・ファンレスIPC', tags:'AXIOMTEK 組込PC' },
+        { title:'産業用ネットワーク総覧', meta:'PDF・4.3 MB・選定チャート付', tags:'MOXA ネットワーク' },
+        { title:'ケーメックスONE 会社案内', meta:'PDF・3.0 MB・取扱メーカー一覧', tags:'すべて' }
+      ];
+      document.getElementById('catGrid').innerHTML = CATS.map(function(c){
+        return '<div data-tags="'+c.tags+'" class="card p-4 flex gap-3">'+pdfIcon()
+          + '<div class="flex-1 min-w-0"><div class="text-[15px] font-bold text-ink leading-snug">'+c.title+'</div>'
+          + '<div class="text-[13px] text-neutral-400 mt-1">'+c.meta+'</div>'
+          + '<button onclick="dl()" class="text-[14px] font-bold mt-2 inline-flex items-center gap-1" style="color:#e60012">'
+          + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>ダウンロード</button></div></div>';
+      }).join('');
+
+      // ② ホワイトペーパー
+      var WP = [
+        { title:'スマート工場の産業ネットワーク設計指針', meta:'技術WP・PDF', tags:'MOXA ネットワーク' },
+        { title:'過酷環境における防塵防水コネクタの選定', meta:'技術WP・PDF', tags:'ODU コネクタ' },
+        { title:'予知保全に向けたセンサデータ収集', meta:'技術WP・PDF', tags:'POSITAL センサ' }
+      ];
+      document.getElementById('wpGrid').innerHTML = WP.map(function(w){
+        return '<div data-tags="'+w.tags+'" class="card p-5 flex flex-col">'
+          + '<div class="w-10 h-10 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 12h8M8 16h5"/></svg></div>'
+          + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+w.title+'</div>'
+          + '<div class="text-[13px] text-neutral-400 mt-2">'+w.meta+'</div>'
+          + '<button onclick="dl()" class="btn-red-o mt-3 self-start !py-2.5 !px-6 !text-[14px]">ダウンロード</button></div>';
+      }).join('');
+
+      // ③ データシート
+      var DS = [
+        { code:'EDS-408A', name:'8ポート マネージドEthernetスイッチ', tags:'MOXA ネットワーク' },
+        { code:'AMC-2P-08', name:'8ch アナログ入力I/Oモジュール', tags:'MOXA ネットワーク' },
+        { code:'IPC-3050-i5', name:'ファンレス組込PC Core i5搭載', tags:'AXIOMTEK 組込PC' },
+        { code:'OCD-DPB1B', name:'POSITAL 絶対値エンコーダ', tags:'POSITAL センサ' },
+        { code:'MEDI-SNAP L', name:'ODU プッシュプルコネクタ', tags:'ODU コネクタ' }
+      ];
+      document.getElementById('dsList').innerHTML = DS.map(function(d){
+        return '<div data-tags="'+d.tags+'" class="flex flex-wrap items-center gap-3 p-4">'
+          + '<span class="font-display font-bold text-[15px] text-ink w-32 shrink-0">'+d.code+'</span>'
+          + '<span class="text-[15px] text-neutral-600 flex-1 min-w-[180px]">'+d.name+'</span>'
+          + '<button onclick="dl()" class="btn-red-o !py-2 !px-5 !text-[13px] shrink-0">データシート（PDF）</button></div>';
+      }).join('');
+    }
+  });
+</script>
+</body>
+</html>
