@@ -39,6 +39,14 @@
 <script src="assets/shell.js"></script>
 <script>
   var MK_NAME = { moxa:'MOXA', odu:'ODU', fraba:'POSITAL / Fraba', ipc:'AXIOMTEK / IPC' };
+  // 注目の導入事例（case-detail.html の id に対応）
+  var FEATURED_CASES = [
+    { id:'ship-marine-pump',    ind:'船・海洋',        img:'assets/img/case-ship.jpg',      title:'大型フェリー機関室ネットワークの冗長化と深海ポンプの遠隔監視' },
+    { id:'machinery-remote-cbm',ind:'マシナリー',      img:'assets/img/case-machinery.jpg', title:'工作機械の遠隔稼働監視と予知保全 — 既設装置を改造せず後付け' },
+    { id:'rail-depot-wireless', ind:'鉄道・交通インフラ', img:'assets/img/case-rail.jpg',      title:'車両基地 検修ラインの無線化と車上機器コネクタの信頼性向上' },
+  ];
+  // 業界キー → 詳細事例id（該当業界ページに事例導線を出す）
+  var IND_CASE = { ship:'ship-marine-pump', machinery:'machinery-remote-cbm', rail:'rail-depot-wireless' };
   function tagBadge(t){
     if(t==='EOL予定') return '<span class="badge text-white" style="background:#e60012">EOL予定</span>';
     if(t==='長納期')  return '<span class="badge bg-amber-100 text-amber-700">長納期</span>';
@@ -72,7 +80,20 @@
           '<h1 class="font-display font-black text-4xl mt-2">業界事例から探す</h1>'
           + '<p class="text-neutral-300 text-[16px] mt-3 max-w-2xl leading-relaxed">お客様の業界・用途から、最適な産業用ネットワーク／コネクタ／センサ／組込PCをご提案します。導入シーンごとに主力メーカーと推奨製品をまとめています。</p>';
         document.getElementById('main').innerHTML =
-          '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">'
+          // 注目の導入事例（詳細ページ case-detail.html への導線）
+          '<div class="border-t-2 border-ink pt-3 mb-5 flex items-end justify-between">'
+          + '<div><div class="sec-label" style="color:#e60012">CASE STUDY</div><h2 class="text-lg font-bold text-ink mt-0.5">注目の導入事例</h2></div></div>'
+          + '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">'
+          + FEATURED_CASES.map(function(c){
+              return '<a href="case-detail.html?id='+c.id+'" class="card card-h sweep overflow-hidden flex flex-col">'
+                + '<div class="h-36 overflow-hidden relative"><img src="'+c.img+'" alt="" class="w-full h-full object-cover sweep-img">'
+                + '<span class="absolute top-2 left-2 z-10 badge text-white" style="background:#e60012">'+c.ind+'</span></div>'
+                + '<div class="p-4 flex-1 flex flex-col"><div class="text-[15px] font-bold text-ink leading-snug flex-1">'+c.title+'</div>'
+                + '<div class="mt-2 text-[14px] font-bold" style="color:#e60012">事例の詳細を見る ›</div></div></a>';
+            }).join('')
+          + '</div>'
+          + '<div class="border-t-2 border-ink pt-3 mb-5"><div class="sec-label">BY INDUSTRY</div><h2 class="text-lg font-bold text-ink mt-0.5">業界から探す</h2></div>'
+          + '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">'
           + INDUSTRIES.map(function(s){
               return '<a href="leading.html?ind='+s.key+'" class="card card-h sweep overflow-hidden flex flex-col">'
                 + '<div class="h-32 overflow-hidden"><img src="'+s.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
@@ -101,8 +122,20 @@
       // 重複除去
       var seen={}; prods = prods.filter(function(p){ if(seen[p.code]) return false; seen[p.code]=1; return true; }).slice(0,9);
 
+      // この業界の詳細事例（該当があれば先頭に導線）
+      var caseId = IND_CASE[key];
+      var fc = caseId ? FEATURED_CASES.filter(function(c){ return c.id===caseId; })[0] : null;
+      var caseBanner = fc
+        ? '<a href="case-detail.html?id='+fc.id+'" class="card card-h sweep overflow-hidden flex mb-12" style="background:var(--paper)">'
+          + '<div class="w-40 sm:w-56 shrink-0 overflow-hidden"><img src="'+fc.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
+          + '<div class="p-5 flex-1 flex flex-col justify-center"><div class="sec-label" style="color:#e60012">CASE STUDY</div>'
+          + '<div class="text-[17px] font-bold text-ink mt-1 leading-snug">'+fc.title+'</div>'
+          + '<div class="mt-2 text-[14px] font-bold" style="color:#e60012">この業界の導入事例を見る ›</div></div></a>'
+        : '';
+
       document.getElementById('main').innerHTML =
-        '<div class="border-t-2 border-ink pt-3 mb-5"><div class="sec-label">USE CASE</div>'
+        caseBanner
+        + '<div class="border-t-2 border-ink pt-3 mb-5"><div class="sec-label">USE CASE</div>'
         + '<h2 class="text-lg font-bold text-ink mt-0.5">'+S.ja+' での主な用途</h2></div>'
         + '<div class="grid sm:grid-cols-3 gap-4 mb-12">'
         + S.makers.map(function(mk){ var m=MAKERS[mk];

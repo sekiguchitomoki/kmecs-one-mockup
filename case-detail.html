@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <!-- ヒーロー -->
+  <section class="text-white relative overflow-hidden" style="background:#05060f">
+    <div class="kv-bg" id="heroBg" style="opacity:.42"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(5,6,15,.94) 0%,rgba(5,6,15,.72) 52%,rgba(5,6,15,.4) 100%)"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-16 sm:py-20" id="hero"></div>
+  </section>
+
+  <!-- サマリ帯 -->
+  <div class="bg-white border-b border-[color:var(--line)]">
+    <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4" id="summary"></div>
+  </div>
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-12" id="main"></div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  /* ===== 導入事例モックデータ（3件・業界別）=====
+     顧客制限情報（粗利率/掛率/与信/得値ランク）は一切含めない。 */
+  var CASES = [
+    {
+      id:'ship-marine-pump',
+      ind:'船・海洋', en:'SHIP / MARINE', img:'assets/img/case-ship.jpg',
+      title:'大型フェリー機関室ネットワークの冗長化と深海ポンプの遠隔監視',
+      customer:'三洋マリンシステムズ株式会社',
+      customerNote:'船舶・海洋設備の設計／艤装',
+      voice:'「塩害と振動で止まっていた機関室の監視系が、リング冗長化と陸上からの遠隔監視で“止まらない”ネットワークに変わりました。」',
+      lead:'外航フェリーの機関室で、深海ポンプシステムの稼働データを常時モニタリングするマリンオートメーション用の独立ユニットを構築。塩害・振動・広温度という過酷環境に耐え、片系故障でもラインを止めない船内ネットワークへの刷新を支援しました。',
+      meta:[['お客様業種','船舶・海洋'],['対象設備','機関室・深海ポンプ監視'],['導入製品','3製品'],['主な効果','ダウンタイム実質ゼロ']],
+      problems:[
+        ['シリアル接続の監視系がノイズで断線', '既設のポンプ監視装置は RS-485 のシリアル配線で、機関室の強い電磁ノイズと振動により通信断・停止が頻発していました。'],
+        ['ネットワークが単系で全系停止リスク', '船内ネットワークが単系構成のため、1 箇所のケーブル・機器障害で監視系全体が停止。夜間の無人監視に踏み切れませんでした。'],
+        ['塩害・広温度に耐える船級グレードが必須', '機関室は塩害・高温多湿・振動が常態で、一般産業用の機器では長期信頼性を確保できませんでした。']
+      ],
+      solutions:[
+        ['MOXA EDS-408A の Turbo Ring で二重化', 'マネージド産業用スイッチ EDS-408A の冗長リング（Turbo Ring）で機関室 LAN を二重化。ケーブル 1 系統が切れても 300ms 以内に自動で経路を切り替えます。'],
+        ['EDR-G9010 で船内 OT と陸上 IT を安全に分離', 'セキュアルータ EDR-G9010 のファイアウォール／VPN で、船内の制御ネットワーク（OT）と陸上監視センター（IT）を分離しつつ暗号化トンネルで接続。安全に遠隔監視できる構成にしました。'],
+        ['MC-1121 でエッジ収集・広温度対応', 'ファンレス産業用コンピュータ MC-1121（-40〜70℃）を機関室エッジに設置し、ポンプの温度・振動・流量データを収集・前処理。船級認証・DC 冗長電源に対応した機器で統一しました。']
+      ],
+      results:[
+        ['32→0','時間 / 年','通信起因のダウンタイム','単系停止をリング冗長化で解消し、通信起因の計画外停止を実質ゼロに。'],
+        ['<300','ミリ秒','障害時の経路切替','ケーブル断でも自動で予備経路へ切替。従来は平均 45 分の復旧作業が不要に。'],
+        ['-40%','立会い工数','夜間監視の省人化','陸上からの遠隔監視により、夜間の現場立会い工数を約 4 割削減。']
+      ],
+      products:['EDS-408A','EDR-G9010','MC-1121']
+    },
+    {
+      id:'machinery-remote-cbm',
+      ind:'マシナリー', en:'MACHINERY', img:'assets/img/case-machinery.jpg',
+      title:'工作機械の遠隔稼働監視と予知保全 — 既設装置を改造せず後付け',
+      customer:'浪速工機株式会社',
+      customerNote:'工作機械・生産設備メーカー',
+      voice:'「全国に納めた機械の稼働状況が“見えない”のが長年の課題でした。シリアル機を改造せずにデータ化でき、出張対応が目に見えて減りました。」',
+      lead:'全国の顧客先に納入した工作機械の稼働データを、装置本体を改造することなく吸い上げてクラウドで可視化。旧型のシリアル出力機器をイーサネット化し、エッジ PC でデータを前処理する予知保全基盤の立ち上げを支援しました。',
+      meta:[['お客様業種','マシナリー（工作機械）'],['対象設備','出荷装置の稼働監視'],['導入製品','3製品'],['主な効果','計画外停止を大幅削減']],
+      problems:[
+        ['旧型機はシリアル出力で吸い上げ不可', '出荷済みの工作機械の多くは RS-485 のシリアル出力しか持たず、稼働データをネットワークで収集できませんでした。'],
+        ['故障時は現地出張・稼働率が不可視', '不具合が起きるたびに技術者が現地へ出張。稼働率や兆候が見えず、計画外停止を未然に防げませんでした。'],
+        ['装置本体の改造はコストと保証の壁', '既設装置の制御盤を改造すると保証・安全の問題が生じるため、非改造で後付けできる仕組みが必要でした。']
+      ],
+      solutions:[
+        ['NPort-5150A でシリアル機器をイーサ化', 'シリアルデバイスサーバ NPort 5150A を制御盤に後付けし、RS-232/422/485 機器をそのままイーサネット化。装置本体には手を加えません。'],
+        ['IPC-3050-i5 をエッジ PC にデータ前処理', '産業用 BOX 型 PC IPC-3050-i5（Core i5）を各ラインのエッジに置き、稼働・電流・アラーム情報を収集・一次処理してクラウドへ送信します。'],
+        ['EDS-408A で装置内 LAN を安定構成', '産業用スイッチ EDS-408A で装置内 LAN を構成し、複数機器のデータ経路を冗長化。ノイズの多い現場でも安定した収集を実現しました。']
+      ],
+      results:[
+        ['-28%','計画外停止','予知保全の効果','稼働データの兆候監視により、計画外停止を約 3 割削減。'],
+        ['18→7','件 / 月','現地出張の削減','遠隔での状態把握で、月あたりの出張対応を 18 件から 7 件へ。'],
+        ['6→2','週','部材調達の短縮','後付けユニットの型番を標準化し、部材の調達リードタイムを 6 週から 2 週に短縮。']
+      ],
+      products:['NPort-5150A','IPC-3050-i5','EDS-408A']
+    },
+    {
+      id:'rail-depot-wireless',
+      ind:'鉄道・交通インフラ', en:'RAIL / TRAFFIC', img:'assets/img/case-rail.jpg',
+      title:'車両基地 検修ラインの無線化と車上機器コネクタの信頼性向上',
+      customer:'東邦交通システム株式会社',
+      customerNote:'鉄道車両の検修・保守',
+      voice:'「移動する検査台車の有線配線が断線の常連でした。無線化と抜き差しに強いコネクタで、検修が止まらなくなりました。」',
+      lead:'鉄道車両基地の検修ラインで、移動する検査台車と管理システムをつなぐ有線配線の断線と、繰り返し抜き差しする車上機器コネクタの信頼性不足を解消。EN50155 クラスの耐環境が求められる領域に、無線ネットワークと高信頼コネクタを組み合わせて対応しました。',
+      meta:[['お客様業種','鉄道・交通インフラ'],['対象設備','車両基地・検修ライン'],['導入製品','3製品'],['主な効果','断線トラブルをほぼ根絶']],
+      problems:[
+        ['移動する検査台車の有線配線が断線多発', '検修ラインを移動する検査台車の有線ケーブルが屈曲と引き回しで断線を繰り返し、検査の中断が発生していました。'],
+        ['車上機器コネクタの嵌合信頼性不足', '検査のたびに抜き差しする車上機器コネクタの摩耗が早く、接触不良による再検査が頻発していました。'],
+        ['基地ネットワークのセグメント分離が必要', '検修系と管理系が混在し、EN50155 クラスの耐環境とネットワーク分離の両立が求められました。']
+      ],
+      solutions:[
+        ['AWK-3131A で検査台車を高速ローミング無線化', '産業用無線 AP／クライアント AWK-3131A で検査台車を無線化。移動しても切れない高速ローミングで、断線の原因となる可動ケーブルを排除しました。'],
+        ['EDR-G9010 で検修系と管理系を分離', 'セキュアルータ EDR-G9010 のファイアウォール／VLAN で、基地ネットワークを検修系・管理系にセグメント分離。安全性と可用性を両立しました。'],
+        ['ODU AMC-2P-08 で抜き差しに強い接続へ', '高密度プッシュプルコネクタ ODU AMC-2P-08（8 極）を車上機器の接続に採用。繰り返し嵌合に強く、確実なワンタッチ接続で再検査を低減しました。']
+      ],
+      results:[
+        ['24→1','件 / 年','配線断線トラブル','可動ケーブルの無線化により、断線起因のトラブルを年 24 件から 1 件へ。'],
+        ['-90%','待ち時間','再接続の短縮','無線ローミングで検査台車の再接続待ち時間を約 9 割削減。'],
+        ['6→24','ヶ月','コネクタ交換周期','高信頼コネクタへの置換で、交換周期を 6 ヶ月から 24 ヶ月へ延伸。']
+      ],
+      products:['AWK-3131A','EDR-G9010','AMC-2P-08']
+    }
+  ];
+
+  function getCase(id){ for(var i=0;i<CASES.length;i++){ if(CASES[i].id===id) return CASES[i]; } return CASES[0]; }
+  function tagBadge(t){
+    if(t==='EOL予定') return '<span class="badge text-white" style="background:#e60012">EOL予定</span>';
+    if(t==='長納期')  return '<span class="badge bg-amber-100 text-amber-700">長納期</span>';
+    if(t==='定番')    return '<span class="badge bg-ink text-white">定番</span>';
+    if(t==='上位')    return '<span class="badge bg-neutral-200 text-neutral-700">上位機種</span>';
+    return '';
+  }
+
+  var C = getCase(qs('id'));
+
+  KMECS.renderUserShell({
+    active:'case',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'導入事例',href:'leading.html'},{label:C.title}],
+    onReady:function(){
+      // ---- ヒーロー ----
+      document.getElementById('heroBg').style.backgroundImage = 'url('+C.img+')';
+      document.getElementById('hero').innerHTML =
+        '<a href="leading.html" class="inline-flex items-center gap-1.5 text-[14px] text-neutral-300 hover:text-white mb-5">‹ 導入事例一覧へ戻る</a>'
+        + '<div class="flex items-center gap-2.5">'
+        + '<span class="badge text-white" style="background:#e60012">'+C.ind+'</span>'
+        + '<span class="font-display text-[13px] tracking-widest text-neutral-400">'+C.en+'</span></div>'
+        + '<div class="sec-label text-neutral-400 mt-5">CASE STUDY</div>'
+        + '<h1 class="font-display font-black text-3xl sm:text-4xl leading-tight mt-2 max-w-4xl">'+C.title+'</h1>'
+        + '<div class="mt-5 border-l-2 pl-4 max-w-2xl" style="border-color:#e60012">'
+        + '<p class="text-[16px] text-neutral-100 leading-relaxed">'+C.voice+'</p>'
+        + '<div class="text-[13px] text-neutral-400 mt-2 font-display">'+C.customer+' ／ '+C.customerNote+'</div></div>';
+
+      // ---- サマリ帯 ----
+      document.getElementById('summary').innerHTML = C.meta.map(function(m){
+        return '<div><div class="sec-label text-[12px]">'+m[0]+'</div>'
+          + '<div class="text-[15px] font-bold text-ink mt-1 leading-snug">'+m[1]+'</div></div>';
+      }).join('');
+
+      // ---- リード ----
+      var html =
+        '<p class="text-[17px] sm:text-[18px] text-neutral-700 leading-loose max-w-4xl">'+C.lead+'</p>';
+
+      // ---- 課題（Problem）----
+      html +=
+        '<div class="mt-14 border-t-2 border-ink pt-4">'
+        + '<div class="sec-label" style="color:#e60012">PROBLEM</div>'
+        + '<h2 class="text-2xl font-bold text-ink mt-1">課題・背景</h2>'
+        + '<p class="text-[15px] text-neutral-500 mt-2">導入前にお客様が抱えていた困りごと</p></div>'
+        + '<div class="grid md:grid-cols-3 gap-5 mt-7">'
+        + C.problems.map(function(p,i){
+            return '<div class="card p-6 flex flex-col h-full" style="background:var(--paper)">'
+              + '<div class="font-display font-black text-3xl" style="color:#e60012">0'+(i+1)+'</div>'
+              + '<div class="text-[16px] font-bold text-ink mt-2 leading-snug">'+p[0]+'</div>'
+              + '<p class="text-[14px] text-neutral-600 mt-2 leading-relaxed">'+p[1]+'</p></div>';
+          }).join('')
+        + '</div>';
+
+      // ---- 解決策（Solution）----
+      html +=
+        '<div class="mt-16 border-t-2 border-ink pt-4">'
+        + '<div class="sec-label" style="color:#e60012">SOLUTION</div>'
+        + '<h2 class="text-2xl font-bold text-ink mt-1">導入・解決策</h2>'
+        + '<p class="text-[15px] text-neutral-500 mt-2">ケーメックスONE がご提案した製品と技術サポート</p></div>'
+        + '<div class="mt-7 divide-y divide-[color:var(--line)] border-y border-[color:var(--line)]">'
+        + C.solutions.map(function(s,i){
+            return '<div class="grid md:grid-cols-12 gap-4 md:gap-8 py-7">'
+              + '<div class="md:col-span-1"><div class="w-9 h-9 rounded-full flex items-center justify-center font-display font-bold text-white" style="background:#e60012">'+(i+1)+'</div></div>'
+              + '<div class="md:col-span-11"><div class="text-[18px] font-bold text-ink leading-snug">'+s[0]+'</div>'
+              + '<p class="text-[15px] text-neutral-600 mt-2 leading-relaxed max-w-3xl">'+s[1]+'</p></div></div>';
+          }).join('')
+        + '</div>';
+
+      // ---- 効果（Result）----
+      html +=
+        '<div class="mt-16 text-white" style="background:#0d1024">'
+        + '<div class="px-6 sm:px-10 py-10">'
+        + '<div class="sec-label text-neutral-400">RESULT</div>'
+        + '<h2 class="text-2xl font-bold mt-1">効果・結果</h2>'
+        + '<p class="text-[14px] text-neutral-400 mt-2">※ 数値は本モックアップ用のイメージです。</p>'
+        + '<div class="grid sm:grid-cols-3 gap-8 mt-8">'
+        + C.results.map(function(r){
+            return '<div class="border-t-2 pt-4" style="border-color:#e60012">'
+              + '<div class="font-display font-black text-4xl sm:text-5xl leading-none">'+r[0]+'<span class="text-base font-bold text-neutral-400 ml-1">'+r[1]+'</span></div>'
+              + '<div class="text-[15px] font-bold mt-3">'+r[2]+'</div>'
+              + '<p class="text-[13px] text-neutral-400 mt-1.5 leading-relaxed">'+r[3]+'</p></div>';
+          }).join('')
+        + '</div></div></div>';
+
+      // ---- 使用製品 ----
+      html +=
+        '<div class="mt-16 border-t-2 border-ink pt-4 flex items-end justify-between">'
+        + '<div><div class="sec-label" style="color:#e60012">PRODUCTS USED</div>'
+        + '<h2 class="text-2xl font-bold text-ink mt-1">使用製品</h2></div>'
+        + '<a href="products.html" class="text-[15px] hover:underline" style="color:#e60012">すべての製品を見る ›</a></div>'
+        + '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-7">'
+        + C.products.map(function(code){
+            var p = getProduct(code);
+            return '<a href="product-detail.html?code='+p.code+'" class="card card-h overflow-hidden flex flex-col">'
+              + '<div class="h-40 relative overflow-hidden bg-white border-b border-[color:var(--line)] flex items-center justify-center p-4"><img src="'+prodImg(p)+'" alt="" class="max-w-full max-h-full object-contain"><div class="absolute top-2 left-2 z-10">'+tagBadge(p.tag)+'</div></div>'
+              + '<div class="p-4 flex-1 flex flex-col"><div class="text-[14px] text-neutral-400 font-display">'+MAKERS[p.maker].name+' ・ '+p.code+'</div>'
+              + '<div class="text-[17px] font-bold text-ink leading-snug mt-1 flex-1">'+p.name+'</div>'
+              + '<div class="mt-3 pt-3 border-t border-[color:var(--line)] flex items-center justify-between"><div class="text-[17px]">'+priceOrMask(p.price)+'</div>'
+              + '<span class="text-[14px] font-bold" style="color:#e60012">詳細 ›</span></div></div></a>';
+          }).join('')
+        + '</div>';
+
+      // ---- お客様情報 ----
+      html +=
+        '<div class="card p-8 mt-16" style="background:var(--paper)">'
+        + '<div class="sec-label" style="color:#e60012">CUSTOMER</div>'
+        + '<h3 class="text-xl font-bold text-ink mt-1">お客様情報</h3>'
+        + '<dl class="mt-5 divide-y divide-[color:var(--line)] border-t border-[color:var(--line)] max-w-2xl">'
+        + [['お客様名',C.customer],['事業内容',C.customerNote],['業種',C.ind],['ご支援内容','製品選定・構成提案・技術サポート・供給']].map(function(d){
+            return '<div class="grid sm:grid-cols-[160px_1fr] gap-1 sm:gap-6 py-3">'
+              + '<dt class="text-[15px] font-bold text-ink">'+d[0]+'</dt>'
+              + '<dd class="text-[15px] text-neutral-700">'+d[1]+'</dd></div>';
+          }).join('')
+        + '</dl>'
+        + '<p class="text-[13px] text-neutral-500 mt-4">※ 本事例はモックアップ用に作成した架空の内容です。実在の企業・取引を示すものではありません。</p></div>';
+
+      // ---- 関連事例 ----
+      var others = CASES.filter(function(x){ return x.id!==C.id; });
+      html +=
+        '<div class="mt-16 border-t-2 border-ink pt-4">'
+        + '<div class="sec-label">OTHER CASES</div>'
+        + '<h2 class="text-lg font-bold text-ink mt-0.5">関連する導入事例</h2></div>'
+        + '<div class="grid sm:grid-cols-2 gap-5 mt-6">'
+        + others.map(function(x){
+            return '<a href="case-detail.html?id='+x.id+'" class="card card-h sweep overflow-hidden flex">'
+              + '<div class="w-32 sm:w-40 shrink-0 overflow-hidden"><img src="'+x.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
+              + '<div class="p-4 flex-1 flex flex-col"><span class="badge text-white w-fit" style="background:#e60012">'+x.ind+'</span>'
+              + '<div class="text-[15px] font-bold text-ink mt-2 leading-snug flex-1">'+x.title+'</div>'
+              + '<div class="mt-2 text-[14px] font-bold" style="color:#e60012">事例を見る ›</div></div></a>';
+          }).join('')
+        + '</div>';
+
+      // ---- お問い合わせ導線 ----
+      html +=
+        '<div class="card p-8 mt-14 flex flex-wrap items-center justify-between gap-4" style="background:#22243a">'
+        + '<div><h3 class="text-lg font-bold text-white">同じような課題はありませんか？</h3>'
+        + '<p class="text-[15px] text-neutral-300 mt-1.5">用途に合わせた型番選定・構成提案・カスタムAssy まで、担当営業がご対応します。</p></div>'
+        + '<div class="flex gap-3"><a href="leading.html" class="btn-ink whitespace-nowrap !bg-white !text-ink">他の事例を見る</a>'
+        + '<a href="contact.html" class="btn-red whitespace-nowrap">営業に相談する</a></div></div>';
+
+      document.getElementById('main').innerHTML = html;
+    }
+  });
+</script>
+</body>
+</html>
