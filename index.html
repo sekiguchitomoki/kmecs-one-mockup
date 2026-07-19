@@ -21,9 +21,18 @@
 
   <!-- ================= HERO ================= -->
   <section class="text-white relative overflow-hidden" style="background:#05060f">
-    <div class="kv-bg" style="background-image:url(assets/img/mvimg.jpg)"></div>
-    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(5,6,15,.85) 0%,rgba(5,6,15,.55) 45%,rgba(5,6,15,.15) 100%)"></div>
+    <div class="kv-bg-strong" style="background-image:url(assets/img/mvimg.jpg)"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(5,6,15,.82) 0%,rgba(5,6,15,.5) 45%,rgba(5,6,15,.12) 100%)"></div>
+    <div class="kv-aurora"></div>
     <div class="kv-glow"></div>
+    <!-- canvas 粒子ネットワーク（onReadyで起動） -->
+    <canvas id="kvCanvas" class="kv-canvas hidden sm:block" aria-hidden="true"></canvas>
+    <!-- 地球から広がるパルスリング -->
+    <div class="hidden sm:block" aria-hidden="true">
+      <span class="kv-pulse" style="left:74%;top:56%;animation-delay:0s"></span>
+      <span class="kv-pulse warm" style="left:74%;top:56%;animation-delay:1.8s"></span>
+      <span class="kv-pulse" style="left:74%;top:56%;animation-delay:3.6s"></span>
+    </div>
     <!-- 地球ネットワーク・アニメーション（明滅ノード＋流れる光の弧） -->
     <div class="kv-net hidden sm:block" aria-hidden="true">
       <div class="kv-halo" style="right:8%;top:30%;width:34vw;height:34vw"></div>
@@ -55,7 +64,7 @@
     <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-28 text-center">
       <p class="text-[16px] sm:text-sm tracking-wide text-neutral-300">見積〜受注〜発注〜出荷〜請求を、ひとつのポータルで。</p>
       <p class="text-[16px] sm:text-sm tracking-wide text-neutral-300 mt-1">WEB統合型受発注システム</p>
-      <h1 class="font-display font-black text-5xl sm:text-7xl xl:text-8xl tracking-tight mt-6">K.MECS <span style="color:#e60012">ONE</span></h1>
+      <h1 class="font-display font-black text-5xl sm:text-7xl xl:text-8xl tracking-tight mt-6 kv-title-glow">K.MECS <span style="color:#e60012">ONE</span></h1>
       <p class="text-[15px] text-neutral-400 mt-4 font-display tracking-[.3em]">WEB-BASED ORDER SYSTEM</p>
       <form action="products.html" class="flex gap-0 mt-10 max-w-2xl mx-auto">
         <input name="q" placeholder="型番・キーワードを入力（例: AMC / EDS-408A / エンコーダ）" class="flex-1 px-5 py-4 text-sm text-ink outline-none">
@@ -352,6 +361,53 @@
     active:'',
     onReady:function(){
       var a = KMECS.account();
+
+      // ===== KV 粒子ネットワーク・アニメーション（constellation） =====
+      (function(){
+        var cv = document.getElementById('kvCanvas');
+        if(!cv || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var ctx = cv.getContext('2d');
+        var DPR = Math.min(2, window.devicePixelRatio || 1);
+        var W=0, H=0, pts=[], raf=0, LINK=150*150;
+        function size(){
+          var r = cv.getBoundingClientRect(); W=r.width; H=r.height;
+          cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+        }
+        function seed(){
+          size();
+          var n = Math.max(28, Math.min(90, Math.floor(W*H/13000)));
+          pts = [];
+          for(var i=0;i<n;i++){
+            pts.push({ x:Math.random()*W, y:Math.random()*H,
+              vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5,
+              r:Math.random()*1.7+.7, warm:Math.random()<0.18 });
+          }
+        }
+        function frame(){
+          ctx.clearRect(0,0,W,H);
+          var i,j,p,a2,b2,dx,dy,d,o;
+          for(i=0;i<pts.length;i++){
+            p=pts[i]; p.x+=p.vx; p.y+=p.vy;
+            if(p.x<-20)p.x=W+20; if(p.x>W+20)p.x=-20; if(p.y<-20)p.y=H+20; if(p.y>H+20)p.y=-20;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.2832);
+            ctx.fillStyle = p.warm ? 'rgba(255,140,110,.85)' : 'rgba(200,222,255,.85)';
+            ctx.fill();
+          }
+          for(i=0;i<pts.length;i++){
+            a2=pts[i];
+            for(j=i+1;j<pts.length;j++){
+              b2=pts[j]; dx=a2.x-b2.x; dy=a2.y-b2.y; d=dx*dx+dy*dy;
+              if(d<LINK){ o=(1-d/LINK)*0.4;
+                ctx.strokeStyle=(a2.warm||b2.warm)?'rgba(255,120,90,'+o+')':'rgba(130,175,255,'+o+')';
+                ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(a2.x,a2.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+              }
+            }
+          }
+          raf=requestAnimationFrame(frame);
+        }
+        seed(); frame();
+        var t; window.addEventListener('resize', function(){ clearTimeout(t); t=setTimeout(seed,200); });
+      })();
 
       // ログイン状態バナー：未ログインはインライン（価格CTA）、ログイン中は画面下部に追従するスリムバー
       if(a){

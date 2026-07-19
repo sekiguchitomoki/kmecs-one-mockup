@@ -215,3 +215,26 @@ input[type=checkbox]{ width:16px; height:16px; }
 .kv-halo{position:absolute;border-radius:50%;border:1px solid rgba(120,170,255,.10);animation:kvSpin 40s linear infinite}
 @keyframes kvSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion: reduce){.kv-dot,.kv-arc,.kv-halo{animation:none!important}}
+
+/* ===== KV 派手演出（TOP） ===== */
+/* 背景の力強いズーム＋パン */
+.kv-bg-strong{position:absolute;inset:0;background-size:cover;background-position:center;will-change:transform;animation:kvZoomPan 24s ease-in-out infinite alternate;}
+@keyframes kvZoomPan{0%{transform:scale(1.08) translate(0,0)}50%{transform:scale(1.18) translate(-2%,1.4%)}100%{transform:scale(1.13) translate(2%,-1.4%)}}
+/* オーロラ状に揺らぐ光 */
+.kv-aurora{position:absolute;inset:-30%;pointer-events:none;mix-blend-mode:screen;filter:blur(34px);
+  background:radial-gradient(closest-side at 70% 42%,rgba(230,0,18,.40),transparent 70%),
+            radial-gradient(closest-side at 42% 62%,rgba(40,90,230,.34),transparent 70%),
+            radial-gradient(closest-side at 86% 72%,rgba(255,120,40,.24),transparent 70%);
+  animation:kvAurora 15s ease-in-out infinite alternate;}
+@keyframes kvAurora{0%{transform:translate(0,0) rotate(0deg) scale(1)}100%{transform:translate(-5%,3%) rotate(10deg) scale(1.15)}}
+/* 地球から広がるパルスリング */
+.kv-pulse{position:absolute;border-radius:50%;border:1.5px solid rgba(130,185,255,.55);pointer-events:none;
+  transform:translate(-50%,-50%);animation:kvPulse 5.5s ease-out infinite;}
+.kv-pulse.warm{border-color:rgba(255,120,90,.5)}
+@keyframes kvPulse{0%{width:10px;height:10px;opacity:.9}100%{width:64vw;height:64vw;opacity:0}}
+/* タイトルの発光パルス */
+.kv-title-glow{animation:kvTitleGlow 4.5s ease-in-out infinite;}
+@keyframes kvTitleGlow{0%,100%{text-shadow:0 0 0 rgba(230,0,18,0)}50%{text-shadow:0 0 34px rgba(230,0,18,.55),0 0 70px rgba(230,0,18,.28)}}
+/* canvas 粒子ネットワーク */
+.kv-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+@media (prefers-reduced-motion:reduce){.kv-bg-strong,.kv-aurora,.kv-pulse,.kv-title-glow{animation:none!important}}
