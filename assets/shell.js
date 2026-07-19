@@ -296,7 +296,7 @@
 
         <!-- ③ 会員ポータルバー（ログイン後のみ・マーケナビの下段に露出。ログイン状態＋会社名・氏名を表示） -->
         ${a ? `<div class="hidden xl:block border-b-2 shadow-sm" style="background:#fbfbfd;border-color:#e60012">
-          <div class="max-w-[1320px] mx-auto flex items-center gap-3 px-4 xl:px-8">
+          <div class="max-w-[1320px] mx-auto flex items-center gap-5 px-4 xl:px-8">
             <div class="flex items-center gap-2.5 shrink-0 py-1.5">
               <span class="inline-flex items-center gap-1.5 text-[12px] font-bold text-white px-2.5 py-1 rounded-sm" style="background:#e60012">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>会員ポータルにログイン中</span>
@@ -305,8 +305,9 @@
                 <span class="block text-[11px] text-neutral-500">${a.user} 様</span>
               </span>
             </div>
-            <nav class="flex items-stretch mx-auto">${PNAV.map(pnavItem).join('')}</nav>
-            <button id="logoutBtn" class="shrink-0 text-[12.5px] text-neutral-500 hover:text-[color:var(--brand)] border border-[color:var(--line)] hover:border-[color:var(--brand)] px-3 py-1.5">ログアウト</button>
+            <span class="w-px self-stretch my-2" style="background:var(--line)"></span>
+            <nav class="flex items-stretch">${PNAV.map(pnavItem).join('')}</nav>
+            <button id="logoutBtn" class="ml-auto shrink-0 text-[12.5px] text-neutral-500 hover:text-[color:var(--brand)] border border-[color:var(--line)] hover:border-[color:var(--brand)] px-3 py-1.5">ログアウト</button>
           </div>
         </div>` : ''}
 
