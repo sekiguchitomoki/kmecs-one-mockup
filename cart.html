@@ -88,7 +88,7 @@
           + '<a href="product-detail.html?code='+p.code+'" class="text-[17px] font-bold hover:underline" style="color:#e60012">'+p.name+'</a>'
           + '<div class="text-[14px] text-neutral-400 font-display mt-0.5">'+MAKERS[p.maker].name+' ・ '+p.code+'</div>'
           + '<div class="text-[15px] mt-1.5 text-neutral-500">得値 '+priceOrMask(p.price)+' / 個　<s class="text-neutral-300">'+yen(p.price)+'</s></div>'
-          + '<div class="text-[14px] mt-1 '+(p.stock>0?'text-emerald-600':'text-amber-600')+'">'+(p.stock>0?'在庫あり':'取寄')+' ・ 納期 '+p.lead+'</div></div>'
+          + '<div class="text-[14px] mt-1">'+stockDot(p.stock)+' <span class="text-neutral-400">・ 納期 '+p.lead+'</span></div></div>'
           + '<div class="text-center shrink-0"><div class="text-[14px] text-neutral-400 mb-1">数量</div>'
           + '<input type="number" value="'+c.qty+'" class="w-16 border border-[color:var(--line)] px-2 py-1.5 text-[16px] text-center font-display"></div>'
           + '<div class="text-right w-28 shrink-0"><div class="text-[14px] text-neutral-400">小計</div>'

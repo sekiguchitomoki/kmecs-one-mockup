@@ -86,7 +86,7 @@
               <th class="text-right py-3">合計金額（税別）</th>
               <th class="text-left py-3 pl-4">有効期限</th>
               <th class="text-left py-3">見積状況</th>
-              <th class="text-left py-3">担当者</th>
+              <th class="text-left py-3 whitespace-nowrap">担当者</th>
               <th class="text-right px-4 py-3">操作</th>
             </tr>
           </thead>
@@ -142,7 +142,7 @@
             + '<td class="py-3.5">'+(expired
                 ? '<span class="badge bg-neutral-200 text-neutral-600">期限切れ</span>'
                 : '<span class="badge bg-emerald-100 text-emerald-700">有効</span>')+'</td>'
-            + '<td class="py-3.5 text-[15px] text-neutral-600">'+q.staff+'</td>'
+            + '<td class="py-3.5 text-[15px] text-neutral-600 whitespace-nowrap">'+q.staff+'</td>'
             + '<td class="px-4 py-3.5 text-right whitespace-nowrap">'
             + '<a href="quote-order.html?no='+q.no+'" class="text-[14px] border border-[color:var(--line)] px-2.5 py-1.5 hover:bg-neutral-50 mr-1">詳細</a>'
             + (expired

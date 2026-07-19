@@ -658,3 +658,15 @@ window.lastCost = function(code){
   if(!p || p.price == null) return null;
   return { val: Math.round(p.price * 0.62 / 10) * 10, actual: false }; // 推定原価（要確認）
 };
+
+// ===== 在庫レベル表示（顧客向け：具体数は開示せず「多い/あり/わずか/なし」で表現） =====
+// 管理画面（admin-*）では実数を表示するため、この関数は顧客ページのみで使用する。
+window.stockLevel = function(q){
+  q = +q || 0;
+  if(q <= 0)  return { t:'取寄（在庫なし）', c:'text-amber-600',   dot:'#d97706', badge:'bg-amber-100 text-amber-700' };
+  if(q <= 5)  return { t:'在庫わずか',       c:'text-amber-600',   dot:'#f59e0b', badge:'bg-amber-100 text-amber-700' };
+  if(q <= 30) return { t:'在庫あり',         c:'text-emerald-600', dot:'#10b981', badge:'bg-emerald-100 text-emerald-700' };
+  return             { t:'在庫十分',         c:'text-emerald-600', dot:'#10b981', badge:'bg-emerald-100 text-emerald-700' };
+};
+// ドット付きインライン表示
+window.stockDot = function(q){ var s = window.stockLevel(q); return '<span class="'+s.c+'"><span style="display:inline-block;width:7px;height:7px;border-radius:9999px;background:'+s.dot+';margin-right:5px;vertical-align:middle"></span>'+s.t+'</span>'; };

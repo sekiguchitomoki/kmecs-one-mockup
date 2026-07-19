@@ -107,7 +107,7 @@
           + '<div class="text-[14px] text-neutral-400 font-display">'+p.catJa+' ・ '+p.code+'</div>'
           + '<div class="text-[17px] font-bold text-ink leading-snug mt-1 flex-1">'+p.name+'</div>'
           + '<div class="flex items-center justify-between mt-2 text-[14px] text-neutral-500">'
-          + '<span>'+(p.stock>0?('在庫 '+p.stock):'取寄')+'</span><span class="badge bg-neutral-100 text-neutral-600">納期 '+p.lead+'</span></div>'
+          + '<span>'+stockDot(p.stock)+'</span><span class="badge bg-neutral-100 text-neutral-600">納期 '+p.lead+'</span></div>'
           + '<div class="mt-3 pt-3 border-t border-[color:var(--line)] flex items-center justify-between">'
           + '<div class="text-[17px]">'+priceOrMask(p.price)+'</div>'
           + '<span class="text-[14px] font-bold" style="color:#e60012">詳細 ›</span></div></div></a>';

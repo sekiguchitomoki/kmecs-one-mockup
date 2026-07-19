@@ -35,20 +35,40 @@
 <script src="assets/data.js"></script>
 <script src="assets/shell.js"></script>
 <script>
+  // codes = この通知が該当する製品型番。ログイン顧客の購入履歴(CUST_ORDERS)と突合して出し分ける。
   var NOTES = [
-    { type:'EOL', urgent:true, title:'産業用IPC IPC-3000 シリーズ 生産終了のご案内', date:'2026/07/10',
-      body:'IPC-3000 シリーズは 2026/09 を最終受注として生産終了予定です。貴社では過去12ヶ月で 8台 ご購入いただいております。最終手配のご検討をお願いいたします。',
-      altCode:'IPC-3050-i5', alt:'IPC-3050-i5（後継・上位互換）', hist:'購入実績：2026/06 ×2、2026/03 ×4、2025/11 ×2' },
-    { type:'PCN', urgent:false, title:'MOXA EDS シリーズ 一部ロット ファームウェア仕様変更', date:'2026/06/28',
-      body:'EDS-408A の一部ロットで FW を v3.9 に更新します。既存構成への影響は軽微です。FW指定が必要な場合はメモ欄にご記載ください。',
-      altCode:'', alt:'該当なし（継続購入可）', hist:'購入実績：2026/07 ×2、2026/06 ×4' },
-    { type:'PCN', urgent:false, title:'ODU コンタクト材質変更のご案内', date:'2026/06/12',
-      body:'AMC シリーズのコンタクト材質を変更します。RoHS 対応は継続、互換性への影響はありません。仕様変更資料は技術部にて作成しております。',
-      altCode:'', alt:'該当なし（継続購入可）', hist:'購入実績：2026/06 ×20、2026/04 ×20' },
+    { type:'EOL', urgent:true, codes:['EDS-408A'], date:'2026/07/10',
+      title:'MOXA EDS-408A 生産終了（EOL）のご案内',
+      body:'EDS-408A は 2026/09 を最終受注として生産終了予定です。後継の EDS-518A（上位互換）への切替をご検討ください。最終手配のご相談を承ります。',
+      altCode:'EDS-518A', alt:'EDS-518A（後継・上位互換）' },
+    { type:'PCN', urgent:false, codes:['AMC-2P-08','CBL-AMC-2M'], date:'2026/06/12',
+      title:'ODU AMC シリーズ コンタクト材質変更のご案内',
+      body:'AMC シリーズのコンタクト材質を変更します。RoHS 対応は継続、互換性・寸法への影響はありません。仕様変更資料は技術部にて作成しております。',
+      altCode:'', alt:'該当なし（継続購入可）' },
+    { type:'PCN', urgent:false, codes:['NPort-5150A'], date:'2026/06/28',
+      title:'MOXA NPort-5150A ファームウェア仕様変更のご案内',
+      body:'NPort-5150A の FW を v2.10 に更新します。既存構成への影響は軽微です。FW指定が必要な場合は備考欄にご記載ください。',
+      altCode:'', alt:'該当なし（継続購入可）' },
   ];
   function badge(t,u){
     if(t==='EOL') return '<span class="badge text-white" style="background:#e60012">EOL 生産終了</span>'+(u?' <span class="badge bg-black text-white">要確認</span>':'');
     return '<span class="badge bg-amber-100 text-amber-700">PCN 仕様変更</span>';
+  }
+  // 顧客の購入履歴から、対象型番の購入実績を集計
+  function purchasesOf(accKey, codes){
+    var rows=[], total=0;
+    (window.CUST_ORDERS||[]).filter(function(o){return o.acc===accKey;}).forEach(function(o){
+      (o.lines||[]).forEach(function(l){
+        if(codes.indexOf(l.code)>=0){ rows.push({ym:(o.date||'').slice(0,7), code:l.code, qty:l.qty}); total+=l.qty; }
+      });
+    });
+    rows.sort(function(a,b){return a.ym<b.ym?1:-1;}); // 新しい順
+    return {rows:rows, total:total};
+  }
+  function histText(pur){
+    if(!pur.rows.length) return '';
+    var parts=pur.rows.map(function(r){ var p=getProduct(r.code); return r.ym.replace('/','-')+' '+(p?p.code:r.code)+' ×'+r.qty; });
+    return '購入実績：合計 '+pur.total+' 台 ／ '+parts.join('・');
   }
 
   KMECS.renderUserShell({
@@ -56,25 +76,46 @@
     crumbs:[{label:'トップ',href:'index.html'},{label:'PCN / EOL 情報'}],
     onReady:function(){
       var a = KMECS.account();
+      var list = document.getElementById('list');
+
       if(!a){
         document.getElementById('lead').innerHTML = '製品変更通知（PCN）・生産終了通知（EOL）の一覧です。<b class="text-ink">ログインすると、購入履歴に紐づく通知</b>と代替品のご提案が表示されます。';
+        // ゲスト：全件を「例」として表示（購入実績は非表示）
+        renderNotes(NOTES.map(function(n){return Object.assign({},n,{pur:null});}), false);
+        return;
       }
-      document.getElementById('list').innerHTML = NOTES.map(function(n){
-        return '<div class="card p-6 '+(n.urgent?'border-l-4':'')+'" '+(n.urgent?'style="border-left-color:#e60012"':'')+'>'
-          + '<div class="flex flex-wrap items-center justify-between gap-2 mb-3"><div class="flex items-center gap-2">'+badge(n.type,n.urgent)+'</div>'
-          + '<span class="text-[14px] text-neutral-400 font-display">'+n.date+'</span></div>'
-          + '<h3 class="text-base font-bold text-ink">'+n.title+'</h3>'
-          + '<p class="text-[16px] text-neutral-600 mt-2 leading-relaxed">'+n.body+'</p>'
-          + (a ? '<div class="text-[14px] text-neutral-400 mt-2">'+n.hist+'</div>' : '')
-          + '<div class="mt-4 pt-4 border-t border-[color:var(--line)] flex flex-wrap items-center justify-between gap-3">'
-          + '<div class="text-[15px] text-neutral-500">この製品を使うなら…：<b class="text-ink">'+n.alt+'</b></div>'
-          + '<div class="flex gap-2">'
-          + (n.altCode ? '<a href="product-detail.html?code='+n.altCode+'" class="btn-red !py-2 !px-4 !text-[15px]">後継品を見る</a>' : '')
-          + '<a href="contact.html" class="btn-red-o !py-2 !px-4 !text-[15px]">営業に相談</a>'
-          + '</div></div></div>';
-      }).join('');
+
+      // ログイン：購入履歴と突合し、該当する通知のみ表示
+      var matched = NOTES.map(function(n){ return Object.assign({}, n, {pur:purchasesOf(a.key, n.codes)}); })
+                         .filter(function(n){ return n.pur.total>0; });
+      document.getElementById('lead').innerHTML = 'お客様（<b class="text-ink">'+a.company+'</b>）の<b class="text-ink">購入履歴に紐づく</b>製品変更通知（PCN）・生産終了通知（EOL）です。代替品のご提案もあわせてご確認ください。';
+
+      if(!matched.length){
+        list.innerHTML = '<div class="card p-8 text-center text-[16px] text-neutral-500">現在、貴社の購入履歴に該当する製品変更・生産終了のお知らせはありません。<div class="text-[14px] text-neutral-400 mt-2">新しい通知は購入履歴に基づき、自動でこちらに表示されます。</div></div>';
+        return;
+      }
+      renderNotes(matched, true);
     }
   });
+
+  // 通知カード描画（ゲスト/ログイン共通）
+  function renderNotes(notes, loggedIn){
+    document.getElementById('list').innerHTML = notes.map(function(n){
+      var hist = (loggedIn && n.pur) ? histText(n.pur) : '';
+      return '<div class="card p-6 '+(n.urgent?'border-l-4':'')+'" '+(n.urgent?'style="border-left-color:#e60012"':'')+'>'
+        + '<div class="flex flex-wrap items-center justify-between gap-2 mb-3"><div class="flex items-center gap-2">'+badge(n.type,n.urgent)+'</div>'
+        + '<span class="text-[14px] text-neutral-400 font-display">'+n.date+'</span></div>'
+        + '<h3 class="text-base font-bold text-ink">'+n.title+'</h3>'
+        + '<p class="text-[16px] text-neutral-600 mt-2 leading-relaxed">'+n.body+'</p>'
+        + (hist ? '<div class="text-[14px] mt-2 inline-block px-2.5 py-1" style="background:var(--paper);color:#555">'+hist+'</div>' : '')
+        + '<div class="mt-4 pt-4 border-t border-[color:var(--line)] flex flex-wrap items-center justify-between gap-3">'
+        + '<div class="text-[15px] text-neutral-500">'+(n.altCode?'後継品のご提案：':'対応：')+'<b class="text-ink">'+n.alt+'</b></div>'
+        + '<div class="flex gap-2">'
+        + (n.altCode ? '<a href="product-detail.html?code='+n.altCode+'" class="btn-red !py-2 !px-4 !text-[15px]">後継品を見る</a>' : '')
+        + '<a href="contact.html" class="btn-red-o !py-2 !px-4 !text-[15px]">営業に相談</a>'
+        + '</div></div></div>';
+    }).join('');
+  }
 </script>
 </body>
 </html>

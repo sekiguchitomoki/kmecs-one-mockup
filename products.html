@@ -50,7 +50,7 @@
 
       <!-- 一覧 -->
       <div class="lg:col-span-3">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-ink pb-3 mb-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-ink pb-3 mb-3">
           <div class="text-sm">商品検索結果：<b class="font-display text-lg" id="count">0</b> 件</div>
           <div class="flex items-center gap-2">
             <select id="sort" class="border border-[color:var(--line)] px-2 py-1.5 text-[15px] outline-none bg-white">
@@ -60,6 +60,7 @@
             </select>
           </div>
         </div>
+        <div id="activeChips" class="flex flex-wrap items-center gap-2 mb-4 empty:hidden"></div>
         <div class="space-y-3" id="list"></div>
         <div id="empty" class="hidden card p-16 text-center text-sm text-neutral-400">条件に一致する製品がありません。</div>
       </div>
@@ -126,6 +127,22 @@
         document.getElementById('count').textContent = list.length;
         document.getElementById('empty').classList.toggle('hidden', list.length>0);
 
+        // 適用中の条件チップ（クリックで解除）— 絞り込みが効いていることを可視化
+        var chips = [];
+        if(kw) chips.push({t:'キーワード：'+document.getElementById('kw').value.trim(), clr:function(){document.getElementById('kw').value='';}});
+        mks.forEach(function(k){ chips.push({t:'メーカー：'+MAKERS[k].name, clr:(function(v){return function(){var e=document.querySelector('.mk[value="'+v+'"]');if(e)e.checked=false;};})(k)}); });
+        cts.forEach(function(k){ var c=(CATEGORIES.filter(function(x){return x.key===k;})[0]||{}); chips.push({t:'カテゴリ：'+(c.ja||k), clr:(function(v){return function(){var e=document.querySelector('.ct[value="'+v+'"]');if(e)e.checked=false;};})(k)}); });
+        if(stockOnly) chips.push({t:'在庫ありのみ', clr:function(){document.getElementById('stockOnly').checked=false;}});
+        var ac = document.getElementById('activeChips');
+        if(!chips.length){ ac.innerHTML=''; }
+        else {
+          ac.innerHTML = '<span class="text-[13px] text-neutral-400">絞り込み中：</span>' + chips.map(function(c,i){
+            return '<button class="chip inline-flex items-center gap-1 text-[13px] border px-2.5 py-1 hover:bg-neutral-50" data-i="'+i+'" style="border-color:#e60012;color:#e60012">'+c.t+' <span class="text-[15px] leading-none">×</span></button>';
+          }).join('') + '<button id="chipClear" class="text-[13px] text-neutral-500 underline ml-1">すべて解除</button>';
+          ac.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click', function(){ chips[+b.getAttribute('data-i')].clr(); render(); }); });
+          document.getElementById('chipClear').addEventListener('click', function(){ chips.forEach(function(c){c.clr();}); render(); });
+        }
+
         // ダイワボウ風の横並びリスト
         document.getElementById('list').innerHTML = list.map(function(p){
           return '<div class="card card-h p-4 flex flex-col sm:flex-row gap-4">'
@@ -141,7 +158,7 @@
             + '<div class="sm:w-44 shrink-0 sm:text-right sm:border-l sm:border-[color:var(--line)] sm:pl-4">'
             + '<div class="text-lg">'+priceOrMask(p.price)+'</div>'
             + '<div class="text-[14px] text-neutral-400">標準価格 '+yen(p.price)+'</div>'
-            + '<div class="mt-2 text-[14px] '+(p.stock>0?'text-emerald-600':'text-amber-600')+'">'+(p.stock>0?('在庫 '+p.stock+' 個'):'取寄')+' ・ 納期 '+p.lead+'</div>'
+            + '<div class="mt-2 text-[14px]">'+stockDot(p.stock)+' <span class="text-neutral-400">・ 納期 '+p.lead+'</span></div>'
             + '<a href="product-detail.html?code='+p.code+'" class="btn-red !py-2 !px-4 !text-[15px] mt-3 w-full sm:w-auto">詳細・カートへ</a>'
             + '</div></div>';
         }).join('');
