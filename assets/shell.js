@@ -266,9 +266,14 @@
       <header class="sticky top-0 z-40">
         <!-- ① ユーティリティバー -->
         <div class="text-white text-[12px]" style="background:#080a18">
-          <div class="flex items-center justify-between gap-3 px-4 xl:px-8 h-9">
-            <div class="hidden sm:flex items-center gap-2 text-neutral-400"><span class="inline-block w-1.5 h-1.5 rounded-full" style="background:#e60012"></span>MOXA / ODU / POSITAL 正規代理店 ・ 産業用部品の輸入商社（創業1955年）</div>
-            <div class="flex items-center gap-3 ml-auto whitespace-nowrap">
+          <div class="flex items-center gap-3 px-4 xl:px-8 h-9">
+            <div class="hidden sm:flex items-center gap-2 text-neutral-400 min-w-0 truncate"><span class="inline-block w-1.5 h-1.5 rounded-full shrink-0" style="background:#e60012"></span><span class="truncate">MOXA / ODU / POSITAL 正規代理店 ・ 産業用部品の輸入商社（創業1955年）</span></div>
+            <div class="flex items-center gap-3 ml-auto whitespace-nowrap shrink-0">
+              <form action="products.html" class="hidden lg:flex items-center bg-white/10 border border-white/15 focus-within:border-[color:var(--brand)] h-6">
+                <input name="q" placeholder="型番・キーワード検索" class="bg-transparent text-white placeholder:text-neutral-500 text-[12px] px-2.5 w-40 2xl:w-56 outline-none">
+                <button aria-label="検索" class="px-2 text-neutral-400 hover:text-white"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg></button>
+              </form>
+              <span class="text-neutral-700 hidden lg:inline">|</span>
               <a href="recruit.html" class="text-neutral-300 hover:text-white">採用情報</a>
               <span class="text-neutral-600">|</span>
               <span class="text-neutral-400 font-display">JP<span class="text-neutral-600"> / </span><a href="${transHref}" target="_blank" rel="noopener" class="hover:text-white">EN</a></span>
@@ -279,16 +284,12 @@
 
         <!-- ② メインヘッダー（マーケティング・グローバルナビ） -->
         <div class="text-white" style="background:#0d1024">
-          <div class="flex items-center gap-3 px-4 xl:px-8 h-[76px]">
+          <div class="flex items-center gap-2 px-4 xl:px-6 2xl:px-8 h-[76px]">
             <a href="index.html" class="flex items-center gap-3 shrink-0">${logoImgW(44)}</a>
-            <nav class="hidden xl:flex items-stretch mx-auto shrink-0">
+            <nav class="hidden xl:flex items-stretch mx-auto min-w-0">
               ${MGNAV.map(mnavItem).join('')}
             </nav>
             <div class="flex items-center gap-2 ml-auto xl:ml-0 shrink-0 whitespace-nowrap">
-              <form action="products.html" class="hidden lg:flex items-center bg-white/10 border border-white/20 focus-within:border-[color:var(--brand)]">
-                <input name="q" placeholder="型番・キーワード検索" class="bg-transparent text-white placeholder:text-neutral-400 text-[13px] px-3 py-1.5 w-40 2xl:w-52 outline-none">
-                <button class="px-2.5 py-1.5 text-neutral-300 hover:text-white"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg></button>
-              </form>
               <a href="cart.html" class="relative p-1.5 hover:bg-white/10 shrink-0">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3h2l2 12h11l2-8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
                 ${cart > 0 ? `<span class="absolute -top-0.5 -right-0.5 text-white text-[12px] font-bold rounded-full min-w-[16px] h-[16px] px-1 flex items-center justify-center" style="background:#e60012">${cart}</span>` : ''}
