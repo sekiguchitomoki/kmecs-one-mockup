@@ -15,6 +15,9 @@
   }}};
 </script>
 <link rel="stylesheet" href="assets/common.css">
+<style>
+  .pdsec{ scroll-margin-top:150px; }
+</style>
 </head>
 <body>
 <div id="content">
@@ -28,54 +31,91 @@
       <div id="info"></div>
     </div>
 
-    <!-- タブ -->
-    <div id="spec" class="mt-12">
-      <div class="grid sm:grid-cols-3 gap-6">
-        <button class="tab-head on text-left" data-tab="t1"><div class="sec-label" style="color:#e60012">SPECIFICATION</div><div class="text-sm font-bold text-ink mt-1">仕様</div></button>
-        <button class="tab-head text-left" data-tab="t2"><div class="sec-label">DOCUMENTS &amp; QA</div><div class="text-sm font-bold text-ink mt-1">商品情報 / QA</div></button>
-        <button class="tab-head text-left" data-tab="t3"><div class="sec-label">PCN / EOL</div><div class="text-sm font-bold text-ink mt-1">製品変更履歴</div></button>
-      </div>
-      <div class="card p-6 mt-6 text-sm">
-        <div class="tab t1">
-          <!-- 特長 -->
-          <div id="featWrap" class="hidden mb-7">
-            <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">特長</div>
-            <ul id="featList" class="space-y-1.5 text-[15px] text-neutral-700"></ul>
-          </div>
-          <!-- 用途 -->
-          <div id="appWrap" class="hidden mb-7">
-            <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">主な用途・アプリケーション</div>
-            <div id="appList" class="flex flex-wrap gap-2"></div>
-          </div>
-          <!-- 主な仕様 -->
-          <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">主な仕様</div>
-          <table class="w-full text-neutral-700"><tbody class="divide-y divide-[color:var(--line)]" id="specTable"></tbody></table>
-          <!-- 対応プロトコル・規格・認証 -->
-          <div id="protoWrap" class="hidden mt-7 grid sm:grid-cols-2 gap-6"></div>
-        </div>
-        <div class="tab t2 hidden">
-          <!-- Q&A（AIO対策・アコーディオン） -->
-          <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">よくあるご質問（Q&amp;A）</div>
-          <div id="qaList" class="divide-y divide-[color:var(--line)] border-y border-[color:var(--line)] mb-8"></div>
-          <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">関連資料・ダウンロード <span class="text-[12px] font-normal text-neutral-400">（会員限定）</span></div>
-          <div class="grid sm:grid-cols-2 gap-3">
-            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
-              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">データシート（PDF）</div><div class="text-[14px] text-neutral-400">仕様・寸法図</div></div></a>
-            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
-              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">取扱説明書（PDF）</div><div class="text-[14px] text-neutral-400">設置・配線</div></div></a>
-            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3 2.4V13M12 17h.01"/></svg>
-              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">よくあるご質問（QA）</div><div class="text-[14px] text-neutral-400">選定・トラブル</div></div></a>
-            <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M5 21V4h9l1 2h5v9h-6l-1-2H5"/></svg>
-              <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">環境調査 / RoHS</div><div class="text-[14px] text-neutral-400">調査票の請求</div></div></a>
-          </div>
-        </div>
-        <div class="tab t3 hidden"><ul class="space-y-2.5 text-neutral-700 text-[16px]" id="pcnList"></ul></div>
+    <!-- 製品情報：アンカーナビ＋長尺セクション（実製品ページ構成を踏襲） -->
+    <div class="sticky top-[100px] z-20 bg-white border-b-2 mt-12" style="border-color:#e8e8ee">
+      <div class="flex gap-1 overflow-x-auto text-[14px] font-bold">
+        <a href="#ov"  class="px-4 py-3 whitespace-nowrap text-ink border-b-[3px] border-transparent hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">概要</a>
+        <a href="#ft"  class="px-4 py-3 whitespace-nowrap text-ink border-b-[3px] border-transparent hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">特長</a>
+        <a href="#de"  class="px-4 py-3 whitespace-nowrap text-ink border-b-[3px] border-transparent hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">詳細情報</a>
+        <a href="#sp"  class="px-4 py-3 whitespace-nowrap text-ink border-b-[3px] border-transparent hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">製品仕様</a>
+        <a href="#od"  class="px-4 py-3 whitespace-nowrap text-ink border-b-[3px] border-transparent hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">オーダー情報</a>
+        <a href="#faq" class="px-4 py-3 whitespace-nowrap text-ink border-b-[3px] border-transparent hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">FAQ</a>
       </div>
     </div>
+
+    <!-- 概要 -->
+    <section id="ov" class="pdsec pt-10">
+      <div class="sec-label" style="color:#e60012">OVERVIEW</div>
+      <h2 class="text-xl font-bold text-ink mt-1 mb-4">概要</h2>
+      <div id="overview" class="text-[16px] text-neutral-700 leading-loose space-y-4 max-w-3xl"></div>
+    </section>
+
+    <!-- 特長 -->
+    <section id="ft" class="pdsec pt-12">
+      <div class="sec-label" style="color:#e60012">FEATURES</div>
+      <h2 class="text-xl font-bold text-ink mt-1 mb-4">特長</h2>
+      <ul id="featList" class="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 text-[15px] text-neutral-700"></ul>
+      <div id="appWrap" class="hidden mt-6">
+        <div class="text-[14px] font-bold text-ink mb-2">主な用途・アプリケーション</div>
+        <div id="appList" class="flex flex-wrap gap-2"></div>
+      </div>
+    </section>
+
+    <!-- 詳細情報 -->
+    <section id="de" class="pdsec pt-12">
+      <div class="sec-label" style="color:#e60012">DETAILS</div>
+      <h2 class="text-xl font-bold text-ink mt-1 mb-4">詳細情報</h2>
+      <div id="detailBlocks" class="grid sm:grid-cols-2 gap-5"></div>
+    </section>
+
+    <!-- 製品仕様 -->
+    <section id="sp" class="pdsec pt-12">
+      <div class="sec-label" style="color:#e60012">SPECIFICATIONS</div>
+      <h2 class="text-xl font-bold text-ink mt-1 mb-4">製品仕様</h2>
+      <div class="card overflow-hidden"><table class="w-full text-neutral-700"><tbody class="divide-y divide-[color:var(--line)]" id="specTable"></tbody></table></div>
+      <div id="protoWrap" class="hidden mt-6 grid sm:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- オーダー情報 -->
+    <section id="od" class="pdsec pt-12">
+      <div class="sec-label" style="color:#e60012">ORDERING</div>
+      <h2 class="text-xl font-bold text-ink mt-1 mb-4">オーダー情報</h2>
+      <div class="card overflow-x-auto">
+        <table class="w-full text-[15px] min-w-[560px]">
+          <thead class="text-[13px] text-neutral-500" style="background:var(--paper)"><tr>
+            <th class="text-left px-4 py-2.5">型番</th><th class="text-left py-2.5">仕様・バリエーション</th><th class="text-left py-2.5 pr-4">動作温度</th>
+          </tr></thead>
+          <tbody class="divide-y divide-[color:var(--line)]" id="orderTable"></tbody>
+        </table>
+      </div>
+      <p class="text-[13px] text-neutral-400 mt-2">※ 掲載の型番・バリエーションはデモ用のイメージです。正式な型番・オーダー番号はお見積り時にご確認ください。</p>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="pdsec pt-12">
+      <div class="sec-label" style="color:#e60012">FAQ</div>
+      <h2 class="text-xl font-bold text-ink mt-1 mb-4">よくあるご質問（Q&amp;A）</h2>
+      <div id="qaList" class="divide-y divide-[color:var(--line)] border-y border-[color:var(--line)]"></div>
+
+      <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3 mt-10" style="border-color:#e60012">関連資料・ダウンロード <span class="text-[12px] font-normal text-neutral-400">（会員限定）</span></div>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
+          <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">データシート（PDF）</div><div class="text-[14px] text-neutral-400">仕様・寸法図</div></div></a>
+        <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
+          <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">取扱説明書（PDF）</div><div class="text-[14px] text-neutral-400">設置・配線</div></div></a>
+        <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
+          <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">CADデータ / 外形図</div><div class="text-[14px] text-neutral-400">DXF・STEP</div></div></a>
+        <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M5 21V4h9l1 2h5v9h-6l-1-2H5"/></svg>
+          <div><div class="text-[16px] font-bold text-ink group-hover:text-[color:var(--brand)]">環境調査 / RoHS</div><div class="text-[14px] text-neutral-400">調査票の請求</div></div></a>
+      </div>
+
+      <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3 mt-10" style="border-color:#e60012">製品変更履歴（PCN / EOL）</div>
+      <ul class="space-y-2.5 text-neutral-700 text-[16px]" id="pcnList"></ul>
+    </section>
 
     <!-- おすすめ -->
     <div class="mt-12">
@@ -152,7 +192,7 @@
         + '<p class="text-[16px] text-neutral-600 mt-3 leading-relaxed">'+P.desc+'</p>'
         + priceBlock
         + '<div class="grid grid-cols-3 gap-2 mt-3 text-[15px]">'
-        + '<button id="toQa" type="button" class="border border-[color:var(--line)] py-3 text-center hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] text-neutral-700">商品情報 / QA</button>'
+        + '<button id="toQa" type="button" class="border border-[color:var(--line)] py-3 text-center hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] text-neutral-700">FAQ・資料</button>'
         + '<button id="tmp" class="border border-[color:var(--line)] py-3 text-center hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] text-neutral-700 inline-flex items-center justify-center gap-1.5"></button>'
         + '<a href="contact.html?product='+P.code+'" class="border py-3 text-center font-bold" style="border-color:#e60012;color:#e60012">営業に連絡</a></div>'
         + (P.tag==='EOL予定'
@@ -164,7 +204,7 @@
         + '<tr><td class="py-2.5 text-neutral-500 text-[16px]">型番</td><td class="font-display text-[16px]">'+P.code+'</td></tr>'
         + P.spec.map(function(s){ return '<tr><td class="py-2.5 text-neutral-500 text-[16px]">'+s[0]+'</td><td class="text-[16px]">'+s[1]+'</td></tr>'; }).join('');
 
-      // ===== 特長・用途・対応プロトコル/規格/認証・Q&A（カテゴリに応じて生成／実製品ページの構成を踏襲） =====
+      // ===== 概要・特長・詳細情報・オーダー情報・対応プロトコル/規格/認証・Q&A（カテゴリに応じて生成／実製品ページ構成を踏襲） =====
       (function(){
         var cj = (P.catJa||'') + ' ' + (P.cat||'');
         var isNet = /ネットワーク|スイッチ|変換|計測|スマート|コントローラ|ゲートウェイ|無線/.test(cj);
@@ -174,35 +214,86 @@
         var META;
         if(isConn){
           META = {
+            overview:'本製品は、繰り返しの着脱や振動・防塵防水が求められる現場に適した'+M.name+'の高信頼コネクタです。医療・計測・産業機械など、確実な接続が要求される用途に採用されています。用途に合わせたコンタクト配列・成端のカスタムAssyにも対応します。',
             feat:['高い接点信頼性と繰り返し挿抜耐久性','防塵・防水（IP67 等）や耐環境に配慮した設計','プッシュプル／ブレークアウェイ等の確実な嵌合機構','カスタムAssy・特注ケーブルのご相談に対応'],
             apps:['医療機器・手術支援ロボット','計測機器・産業機械','鉄道・防衛・船舶・海洋'],
+            details:[
+              {t:'確実な嵌合と操作性', d:'プッシュプル／ブレークアウェイ機構により、狭い場所でも片手で確実に着脱できます。誤挿入防止のキー構造にも対応します。'},
+              {t:'耐環境性能', d:'防塵防水（IP67 等）・耐振動・耐薬品に配慮した設計で、医療・産業・屋外用途の過酷環境に適応します。'},
+              {t:'カスタムAssy', d:'コンタクト配列・ケーブル長・成端を用途に合わせて設計。特注・少量からご相談いただけます。'},
+              {t:'豊富なラインナップ', d:'極数・サイズ・シェル形状のバリエーションから、最適な組み合わせをご提案します。'}
+            ],
+            order:[ {code:P.code, spec:'標準品', temp:'—'}, {code:P.code+'-C', spec:'カスタムAssy（特注成端）', temp:'—'} ],
+            specExtra:[['接続方式','プッシュプル／スクリュー（型による）'],['保護等級','IP50〜IP67（型による）'],['嵌合耐久','数千回以上（型による）'],['保証期間','メーカー標準保証']],
             proto:[], certs:['RoHS 対応','用途に応じた各種規格に準拠']
           };
         } else if(isSensor){
           META = {
+            overview:'本製品は、位置・回転を高精度に検出する'+M.name+'のエンコーダ／センサです。搬送・建設機械・再生可能エネルギーなど幅広いモーション用途に適し、バッテリーフリー方式に対応する機種もラインナップしています。',
             feat:['高分解能・高精度な位置／回転検出','バッテリーフリー（エネルギーハーベスト）方式に対応する機種','広動作温度・堅牢設計で過酷環境に対応','多彩なインターフェース（SSI／CANopen／IO-Link 等）'],
             apps:['搬送・建設機械・再生可能エネルギー','モーション制御・位置決め','FA・生産設備'],
+            details:[
+              {t:'高精度な検出', d:'高分解能のアブソリュート／インクリメンタル検出に対応し、位置決め・速度制御の精度を高めます。'},
+              {t:'バッテリーフリー', d:'エネルギーハーベスト方式のマルチターンにより、電池交換不要で保守負荷を低減できます（対応機種）。'},
+              {t:'堅牢設計', d:'広動作温度・高保護等級で、振動や粉塵のある現場でも安定して動作します。'}
+            ],
+            order:[ {code:P.code, spec:'標準品', temp:'-40〜85℃（型による）'} ],
+            specExtra:[['出力インターフェース','SSI／BiSS／CANopen／IO-Link（型による）'],['保護等級','IP65〜IP69K（型による）'],['電源電圧','DC10〜30V（型による）'],['保証期間','メーカー標準保証']],
             proto:['SSI／BiSS／CANopen／IO-Link（機種による）'], certs:['CE','RoHS 対応']
           };
         } else if(isIpc){
           META = {
+            overview:'本製品は、ファンレス・広動作温度の堅牢設計を備えた'+M.name+'の産業用コンピュータ／機器です。エッジ処理や装置組込に適し、長期安定供給に対応します。',
             feat:['ファンレス・広動作温度の堅牢設計','長期供給・組込用途に適した構成','豊富なI/O・拡張スロット（機種による）','エッジ処理に適した省電力設計'],
             apps:['エッジコンピューティング','装置組込・現場制御','マシンビジョン'],
+            details:[
+              {t:'ファンレス堅牢設計', d:'可動部のないファンレス構造で、粉塵・振動環境でも高い信頼性と長寿命を実現します。'},
+              {t:'豊富なインターフェース', d:'シリアル・LAN・USB・DIO等を装備し、既設設備との接続や拡張が容易です（機種による）。'},
+              {t:'長期供給', d:'産業用途向けに長期の安定供給と組込に配慮した構成を提供します。'}
+            ],
+            order:[ {code:P.code, spec:'標準構成', temp:'-10〜60℃'}, {code:P.code+'-T', spec:'ワイド温度品', temp:'-40〜70℃'} ],
+            specExtra:[['電源入力','DC9〜48V（型による）'],['取付','DINレール／壁掛け／VESA'],['冷却','ファンレス'],['保証期間','メーカー標準保証']],
             proto:['TCP/IP・各種フィールドバス（構成による）'], certs:['CE','UL / cUL','FCC Part 15B Class A']
           };
         } else { // ネットワーク機器（既定）
           META = {
+            overview:'本製品は、産業用途の過酷な環境でも安定した通信を実現する'+M.name+'の産業用ネットワーク機器です。冗長化・広動作温度・セキュリティに配慮し、生産設備からインフラ、船舶・鉄道まで幅広い現場の接続課題に応えます。既設のシリアル機器やレガシー設備のイーサネット化・IoT化にも活用いただけます。',
             feat:['産業用の堅牢設計（広動作温度 -40〜75℃対応モデルあり）','リング／RSTP 等の冗長化に対応し通信断を最小化','DINレール取付・冗長DC電源入力に対応','IEC 62443 準拠のセキュアバイデザイン設計（対応機種）'],
             apps:['ファクトリーオートメーション（生産ライン・搬送）','電力・上下水道・プラント等のインフラ','鉄道・交通／船舶などの過酷環境','遠隔監視・IoTゲートウェイ'],
+            details:[
+              {t:'簡単な設定', d:'Webベースのコンソールや、プロファイルベースのDIPスイッチ設定に対応する機種があり、専門知識がなくても短時間で導入できます。'},
+              {t:'簡単なトラブルシューティング', d:'LED表示・SNMP／イベント通知・リレー出力により、障害箇所の切り分けと通知を迅速に行えます。'},
+              {t:'イーサネットインターフェース', d:'10/100/1000BaseT(X)・SFPスロット等をラインナップ。カスケード接続や冗長リング構成に対応します。'},
+              {t:'セキュリティ', d:'IEC 62443 準拠のセキュアバイデザイン、HTTPS(TLS)・SNMPv3・Secure Boot 等に対応する機種があります。'}
+            ],
+            order:[ {code:P.code, spec:'標準温度品', temp:'-10〜60℃'}, {code:P.code+'-T', spec:'ワイド温度品', temp:'-40〜75℃'} ],
+            specExtra:[['電源入力','12〜48 VDC（冗長デュアル入力・型による）'],['取付','DINレール／パネル'],['筐体保護','IP30〜IP40'],['保証期間','5年（Moxa製品）']],
             proto:['Modbus RTU/ASCII/TCP','EtherNet/IP・PROFINET（機種による）','SNMP v1/v2c/v3・HTTPS(TLS)'],
             certs:['CE（EMC）','UL / cUL','EN 61000-6-2 / -6-4','FCC Part 15B Class A']
           };
+        }
+        // 概要
+        document.getElementById('overview').innerHTML = '<p>'+(P.desc||'')+'</p>' + (META.overview?'<p>'+META.overview+'</p>':'');
+        // 詳細情報
+        if(META.details && META.details.length){
+          document.getElementById('detailBlocks').innerHTML = META.details.map(function(d){
+            return '<div class="card p-5"><div class="text-[15px] font-bold text-ink flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#e60012"></span>'+d.t+'</div>'
+              + '<p class="text-[14px] text-neutral-600 mt-2 leading-relaxed">'+d.d+'</p></div>'; }).join('');
+        }
+        // オーダー情報
+        if(META.order && META.order.length){
+          document.getElementById('orderTable').innerHTML = META.order.map(function(o){
+            return '<tr><td class="px-4 py-3 font-display font-bold text-ink">'+o.code+'</td><td class="py-3 text-neutral-600">'+o.spec+'</td><td class="py-3 pr-4 text-neutral-600">'+o.temp+'</td></tr>'; }).join('');
+        }
+        // 製品仕様に汎用行を追記
+        if(META.specExtra && META.specExtra.length){
+          document.getElementById('specTable').innerHTML += META.specExtra.map(function(s){
+            return '<tr><td class="py-2.5 text-neutral-500 text-[16px]">'+s[0]+'</td><td class="text-[16px]">'+s[1]+'</td></tr>'; }).join('');
         }
         // 特長
         if(META.feat && META.feat.length){
           document.getElementById('featList').innerHTML = META.feat.map(function(f){
             return '<li class="flex gap-2"><span style="color:#e60012" class="shrink-0">●</span><span>'+f+'</span></li>'; }).join('');
-          document.getElementById('featWrap').classList.remove('hidden');
         }
         // 用途
         if(META.apps && META.apps.length){
@@ -269,24 +360,14 @@
       function paintTmp(){ var on=KMECS.isSaved(P.code); tmp.innerHTML=starSvg(on)+(on?'保存済み':'保存する'); tmp.style.color=on?'#e60012':''; tmp.style.borderColor=on?'#e60012':''; }
       if(tmp){ paintTmp(); tmp.addEventListener('click', function(){ KMECS.toggleSaved(P.code); paintTmp(); }); }
 
-      function activateTab(key, scroll){
-        var head = document.querySelector('.tab-head[data-tab="'+key+'"]'); if(!head) return;
-        document.querySelectorAll('.tab-head').forEach(function(x){ x.classList.remove('on'); x.querySelector('.sec-label').style.color=''; });
-        head.classList.add('on'); head.querySelector('.sec-label').style.color='#e60012';
-        document.querySelectorAll('.tab').forEach(function(t){ t.classList.add('hidden'); });
-        var pane=document.querySelector('.tab.'+key); if(pane) pane.classList.remove('hidden');
-        if(scroll){ var s=document.getElementById('spec'); if(s&&s.scrollIntoView) s.scrollIntoView({behavior:'smooth',block:'start'}); }
-      }
-      document.querySelectorAll('.tab-head').forEach(function(b){
-        b.addEventListener('click', function(){ activateTab(b.getAttribute('data-tab'), false); });
-      });
-      // 「商品情報 / QA」ボタン → QAタブ(t2)を開いてスクロール
+      function goSec(id){ var s=document.getElementById(id); if(s&&s.scrollIntoView) s.scrollIntoView({behavior:'smooth',block:'start'}); }
+      // 「FAQ・資料」ボタン → FAQセクションへスクロール
       var toQa=document.getElementById('toQa');
-      if(toQa) toQa.addEventListener('click', function(e){ e.preventDefault(); activateTab('t2', true); });
-      // URLハッシュ #qa / #spec で対象タブを開く
+      if(toQa) toQa.addEventListener('click', function(e){ e.preventDefault(); goSec('faq'); });
+      // URLハッシュ #qa/#faq → FAQ、#spec → 製品仕様
       var h=(location.hash||'').replace('#','').toLowerCase();
-      if(h==='qa') activateTab('t2', true);
-      else if(h==='spec') activateTab('t1', true);
+      if(h==='qa'||h==='faq') goSec('faq');
+      else if(h==='spec'||h==='sp') goSec('sp');
     }
   });
 </script>
