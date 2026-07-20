@@ -27,10 +27,56 @@
   var id = qs('id');
   var detail = !!id;
   var N = detail ? getNews(id) : null;
+
+  // カテゴリ別の配色（新製品＝ブランド赤／イベント＝ネイビー／お知らせ＝グレー）
+  var CAT_STYLE = {
+    '新製品情報': 'background:#e60012;color:#fff',
+    'イベント情報': 'background:#393b56;color:#fff',
+    'お知らせ': 'background:#f0f0f2;color:#555;border:1px solid var(--line)',
+  };
   function catBadge(cat){
-    return cat==='イベント情報'
-      ? '<span class="badge text-white" style="background:#393b56">'+cat+'</span>'
-      : '<span class="badge border border-[color:var(--line)] text-neutral-500">'+cat+'</span>';
+    var st = CAT_STYLE[cat] || CAT_STYLE['お知らせ'];
+    return '<span class="badge" style="'+st+'">'+cat+'</span>';
+  }
+
+  // タブ定義（すべて＋3カテゴリ）
+  var CAT_TABS = ['すべて','イベント情報','新製品情報','お知らせ'];
+  var curCat = 'すべて';
+
+  function filteredNews(){
+    return curCat==='すべて' ? NEWS : NEWS.filter(function(n){ return n.cat===curCat; });
+  }
+
+  function renderTabs(){
+    return '<div class="flex flex-wrap gap-1 mb-6 border-b border-[color:var(--line)]" id="newsTabs">'
+      + CAT_TABS.map(function(c){
+          var cnt = c==='すべて' ? NEWS.length : NEWS.filter(function(n){ return n.cat===c; }).length;
+          var on = c===curCat;
+          return '<button type="button" class="news-tab -mb-px px-4 py-2.5 text-[15px] font-bold whitespace-nowrap border-b-2 transition '
+            + (on ? 'border-[color:var(--brand)] text-[color:var(--brand)]'
+                  : 'border-transparent text-neutral-500 hover:text-ink')
+            + '" data-cat="'+c+'">'+c
+            + '<span class="ml-1.5 text-[13px] font-normal '+(on?'text-[color:var(--brand)]':'text-neutral-400')+'">('+cnt+')</span>'
+            + '</button>';
+        }).join('')
+      + '</div>';
+  }
+
+  function renderList(){
+    var list = filteredNews();
+    var rows = list.length
+      ? list.map(function(n){
+          return '<a href="news.html?id='+n.id+'" class="flex flex-wrap items-center gap-3 py-5 group">'
+            + '<span class="text-[15px] text-neutral-400 font-display w-24 shrink-0">'+n.date+'</span>'
+            + catBadge(n.cat)
+            + '<span class="text-[16px] text-ink font-medium flex-1 min-w-[200px] group-hover:text-[color:var(--brand)]">'+n.title+'</span>'
+            + '<span class="text-neutral-300 shrink-0">›</span></a>';
+        }).join('')
+      : '<div class="py-12 text-center text-neutral-400 text-[15px]">該当するニュースはありません。</div>';
+    var body = document.getElementById('newsList');
+    if(body) body.innerHTML = rows;
+    var cntEl = document.getElementById('newsCount');
+    if(cntEl) cntEl.textContent = list.length + '件';
   }
 
   KMECS.renderUserShell({
@@ -44,15 +90,20 @@
         document.getElementById('main').innerHTML =
           '<div class="border-t-2 border-ink pt-3 mb-6"><div class="sec-label">NEWS</div>'
           + '<h1 class="text-2xl font-bold text-ink mt-1">ニュース・お知らせ</h1></div>'
-          + '<div class="divide-y divide-[color:var(--line)]">'
-          + NEWS.map(function(n){
-              return '<a href="news.html?id='+n.id+'" class="flex flex-wrap items-center gap-3 py-5 group">'
-                + '<span class="text-[15px] text-neutral-400 font-display w-24 shrink-0">'+n.date+'</span>'
-                + catBadge(n.cat)
-                + '<span class="text-[16px] text-ink font-medium flex-1 min-w-[200px] group-hover:text-[color:var(--brand)]">'+n.title+'</span>'
-                + '<span class="text-neutral-300 shrink-0">›</span></a>';
-            }).join('')
-          + '</div>';
+          + renderTabs()
+          + '<div class="text-[13px] text-neutral-400 mb-2" id="newsCount">'+filteredNews().length+'件</div>'
+          + '<div class="divide-y divide-[color:var(--line)]" id="newsList"></div>';
+
+        renderList();
+
+        // タブ切替（#main に委譲＝タブ再生成後もリスナ維持）
+        document.getElementById('main').addEventListener('click', function(e){
+          var btn = e.target.closest('.news-tab');
+          if(!btn) return;
+          curCat = btn.getAttribute('data-cat');
+          document.getElementById('newsTabs').outerHTML = renderTabs();
+          renderList();
+        });
         return;
       }
 

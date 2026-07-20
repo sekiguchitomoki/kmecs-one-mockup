@@ -35,7 +35,7 @@
       <h2 class="text-lg font-bold text-ink mt-0.5">Moxa 技術解説</h2>
     </div>
     <div class="grid md:grid-cols-3 gap-5 mb-12">
-      <a href="#" class="card card-h sweep overflow-hidden flex flex-col">
+      <a href="tech-detail.html?id=tm-switch" class="card card-h sweep overflow-hidden flex flex-col">
         <div class="h-36 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/moxa-switch.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
         <div class="p-4 flex-1 flex flex-col">
           <div class="sec-label">MANAGED SWITCH</div>
@@ -44,7 +44,7 @@
           <div class="mt-2 text-[14px] font-bold" style="color:#e60012">解説を読む ›</div>
         </div>
       </a>
-      <a href="#" class="card card-h sweep overflow-hidden flex flex-col">
+      <a href="tech-detail.html?id=tm-nport" class="card card-h sweep overflow-hidden flex flex-col">
         <div class="h-36 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/moxa-serialconv.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
         <div class="p-4 flex-1 flex flex-col">
           <div class="sec-label">NPort SERIES</div>
@@ -53,7 +53,7 @@
           <div class="mt-2 text-[14px] font-bold" style="color:#e60012">解説を読む ›</div>
         </div>
       </a>
-      <a href="#" class="card card-h sweep overflow-hidden flex flex-col">
+      <a href="tech-detail.html?id=tm-awk" class="card card-h sweep overflow-hidden flex flex-col">
         <div class="h-36 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/moxa-wireless.jpg" alt="" class="w-full h-full object-cover sweep-img"></div>
         <div class="p-4 flex-1 flex flex-col">
           <div class="sec-label">WIRELESS / AWK</div>
@@ -76,7 +76,7 @@
         </div>
         <div class="text-[16px] font-bold text-ink">Modbus RTU とは</div>
         <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed">RS-485上のマスタ/スレーブ通信の基本、レジスタ・ファンクションコード・終端抵抗まで。</p>
-        <a href="#" class="text-[14px] font-bold mt-3 inline-block" style="color:#e60012">詳しく ›</a>
+        <a href="tech-detail.html?id=ts-modbus" class="text-[14px] font-bold mt-3 inline-block" style="color:#e60012">詳しく ›</a>
       </div>
       <div class="card p-5">
         <div class="w-11 h-11 flex items-center justify-center mb-3" style="background:var(--lav)">
@@ -84,7 +84,7 @@
         </div>
         <div class="text-[16px] font-bold text-ink">EtherNet/IP 比較</div>
         <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed">PROFINET・EtherCAT との違いを、リアルタイム性・配線・機器選定の観点で整理。</p>
-        <a href="#" class="text-[14px] font-bold mt-3 inline-block" style="color:#e60012">詳しく ›</a>
+        <a href="tech-detail.html?id=ts-ethernetip" class="text-[14px] font-bold mt-3 inline-block" style="color:#e60012">詳しく ›</a>
       </div>
       <div class="card p-5">
         <div class="w-11 h-11 flex items-center justify-center mb-3" style="background:var(--lav)">
@@ -92,15 +92,17 @@
         </div>
         <div class="text-[16px] font-bold text-ink">冗長化リング設計</div>
         <p class="text-[14px] text-neutral-500 mt-2 leading-relaxed">Turbo Ring / RSTP による障害時の切替時間と、リング構成の実装例。</p>
-        <a href="#" class="text-[14px] font-bold mt-3 inline-block" style="color:#e60012">詳しく ›</a>
+        <a href="tech-detail.html?id=ts-ring" class="text-[14px] font-bold mt-3 inline-block" style="color:#e60012">詳しく ›</a>
       </div>
     </div>
 
     <!-- ③ 記事一覧 -->
     <div class="border-t-2 border-ink pt-3 mb-5 flex items-end justify-between">
       <div><div class="sec-label">ARTICLES</div><h2 class="text-lg font-bold text-ink mt-0.5">記事一覧</h2></div>
-      <span class="text-[14px] text-neutral-400">新着順</span>
+      <span class="text-[14px] text-neutral-400" id="artCount">新着順</span>
     </div>
+    <!-- メーカーカテゴリ絞り込みタブ -->
+    <div id="artTabs" class="flex flex-wrap gap-1 mb-6 border-b border-[color:var(--line)]"></div>
     <div id="artGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
 
     <!-- AIO 対策注記 -->
@@ -119,28 +121,69 @@
     active:'tech',
     crumbs:[{label:'トップ',href:'index.html'},{label:'技術情報・コラム'}],
     onReady:function(){
+      // 記事一覧（id は tech-detail.html 側の既存14idの範囲。maker=メーカーカテゴリ、cat=内容カテゴリ）
       var ARTICLES = [
-        { date:'2026.07.10', cat:'MOXA',      img:'moxa-switch.jpg',     title:'MOXA EDS 初期設定ガイド' },
-        { date:'2026.06.28', cat:'選定',      img:'moxa-media.jpg',      title:'産業用スイッチの選び方' },
-        { date:'2026.06.15', cat:'ネットワーク', img:'moxa-serialconv.jpg', title:'Modbus RTU と TCP の違い' },
-        { date:'2026.06.02', cat:'コネクタ',   img:'cat-connector.jpg',   title:'IP67コネクタ 防塵防水の基礎' },
-        { date:'2026.05.20', cat:'ネットワーク', img:'moxa-io.jpg',         title:'EtherCAT 導入の勘所' },
-        { date:'2026.05.08', cat:'給電',      img:'moxa-router.jpg',     title:'PoE給電の設計' },
-        { date:'2026.04.24', cat:'MOXA',      img:'moxa-deviceserver.jpg', title:'シリアル-Ethernet変換（NPort）入門' },
-        { date:'2026.04.10', cat:'冗長化',    img:'moxa-gateway.jpg',    title:'冗長化リング（Turbo Ring）構成例' }
+        { id:'ta-eds-setup',    date:'2026.07.10', maker:'MOXA',  cat:'初期設定',    img:'moxa-switch.jpg',       title:'MOXA EDS 初期設定ガイド' },
+        { id:'ta-switch-select',date:'2026.06.28', maker:'MOXA',  cat:'選定',        img:'moxa-media.jpg',        title:'産業用スイッチの選び方' },
+        { id:'ta-modbus-diff',  date:'2026.06.15', maker:'その他', cat:'ネットワーク', img:'moxa-serialconv.jpg',   title:'Modbus RTU と TCP の違い' },
+        { id:'ta-ip67',         date:'2026.06.02', maker:'ODU',   cat:'コネクタ',    img:'cat-connector.jpg',     title:'IP67コネクタ 防塵防水の基礎' },
+        { id:'ta-ethercat',     date:'2026.05.20', maker:'その他', cat:'ネットワーク', img:'moxa-io.jpg',           title:'EtherCAT 導入の勘所' },
+        { id:'ta-poe',          date:'2026.05.08', maker:'MOXA',  cat:'給電',        img:'moxa-router.jpg',       title:'PoE給電の設計' },
+        { id:'ta-nport-intro',  date:'2026.04.24', maker:'MOXA',  cat:'変換',        img:'moxa-deviceserver.jpg', title:'シリアル-Ethernet変換（NPort）入門' },
+        { id:'ta-turboring',    date:'2026.04.10', maker:'MOXA',  cat:'冗長化',      img:'moxa-gateway.jpg',      title:'冗長化リング（Turbo Ring）構成例' }
       ];
-      function catBadge(c){
-        if(c==='MOXA') return '<span class="badge bg-ink text-white">'+c+'</span>';
-        return '<span class="badge border border-[color:var(--line)] text-neutral-500">'+c+'</span>';
+      var MAKER_TABS = ['すべて','MOXA','ODU','IEI','POSITAL','AXIOMTEK','ARBOR','IPC','その他'];
+      var curMaker = 'すべて';
+
+      function filtered(){
+        return curMaker==='すべて' ? ARTICLES : ARTICLES.filter(function(a){ return a.maker===curMaker; });
       }
-      document.getElementById('artGrid').innerHTML = ARTICLES.map(function(a){
-        return '<a href="#" class="card card-h sweep overflow-hidden flex flex-col">'
-          + '<div class="h-32 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/'+a.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
-          + '<div class="p-4 flex-1 flex flex-col">'
-          + '<div class="flex items-center gap-2 mb-1.5"><span class="text-[13px] text-neutral-400 font-display">'+a.date+'</span>'+catBadge(a.cat)+'</div>'
-          + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+a.title+'</div>'
-          + '<div class="mt-3 text-[14px] font-bold" style="color:#e60012">続きを読む ›</div></div></a>';
-      }).join('');
+      // メーカー badge（赤塗り・視認性重視）＋ 内容カテゴリ badge（枠線）
+      function makerBadge(m){ return '<span class="badge" style="background:#e60012;color:#fff">'+m+'</span>'; }
+      function catBadge(c){ return '<span class="badge border border-[color:var(--line)] text-neutral-500">'+c+'</span>'; }
+
+      function renderTabs(){
+        return MAKER_TABS.map(function(m){
+          var cnt = m==='すべて' ? ARTICLES.length : ARTICLES.filter(function(a){ return a.maker===m; }).length;
+          var on = m===curMaker;
+          return '<button type="button" class="art-tab -mb-px px-4 py-2.5 text-[15px] font-bold whitespace-nowrap border-b-2 transition '
+            + (on ? 'border-[color:var(--brand)] text-[color:var(--brand)]'
+                  : 'border-transparent text-neutral-500 hover:text-ink')
+            + '" data-maker="'+m+'">'+m
+            + '<span class="ml-1.5 text-[13px] font-normal '+(on?'text-[color:var(--brand)]':'text-neutral-400')+'">('+cnt+')</span>'
+            + '</button>';
+        }).join('');
+      }
+
+      function renderGrid(){
+        var list = filtered();
+        var grid = document.getElementById('artGrid');
+        if(!list.length){
+          grid.innerHTML = '<div class="col-span-full py-12 text-center text-neutral-400 text-[15px]">「'+curMaker+'」の記事は準備中です。</div>';
+        } else {
+          grid.innerHTML = list.map(function(a){
+            return '<a href="tech-detail.html?id='+a.id+'" class="card card-h sweep overflow-hidden flex flex-col">'
+              + '<div class="h-32 overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/'+a.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
+              + '<div class="p-4 flex-1 flex flex-col">'
+              + '<div class="flex items-center flex-wrap gap-2 mb-1.5"><span class="text-[13px] text-neutral-400 font-display">'+a.date+'</span>'+makerBadge(a.maker)+catBadge(a.cat)+'</div>'
+              + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+a.title+'</div>'
+              + '<div class="mt-3 text-[14px] font-bold" style="color:#e60012">続きを読む ›</div></div></a>';
+          }).join('');
+        }
+        var cntEl = document.getElementById('artCount');
+        if(cntEl) cntEl.textContent = '該当 '+list.length+'件';
+      }
+
+      document.getElementById('artTabs').innerHTML = renderTabs();
+      renderGrid();
+      // タブ切替（委譲：タブ再生成後もリスナ維持）
+      document.getElementById('artTabs').addEventListener('click', function(e){
+        var btn = e.target.closest('.art-tab');
+        if(!btn) return;
+        curMaker = btn.getAttribute('data-maker');
+        document.getElementById('artTabs').innerHTML = renderTabs();
+        renderGrid();
+      });
     }
   });
 </script>

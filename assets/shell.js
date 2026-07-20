@@ -279,8 +279,8 @@
 
         <!-- ② メインヘッダー（マーケティング・グローバルナビ） -->
         <div class="text-white" style="background:#0d1024">
-          <div class="flex items-center gap-3 px-4 xl:px-8 h-[64px]">
-            <a href="index.html" class="flex items-center gap-3 shrink-0">${logoImgW(30)}</a>
+          <div class="flex items-center gap-3 px-4 xl:px-8 h-[76px]">
+            <a href="index.html" class="flex items-center gap-3 shrink-0">${logoImgW(44)}</a>
             <nav class="hidden xl:flex items-stretch mx-auto shrink-0">
               ${MGNAV.map(mnavItem).join('')}
             </nav>
@@ -503,7 +503,7 @@
             <div class="flex items-center gap-3 px-5 h-14">
               <button id="navToggle" class="lg:hidden p-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
               <div class="min-w-0">
-                <div class="text-[15px] font-bold text-ink truncate">${cfg.title || ''}</div>
+                <h1 class="text-[15px] font-bold text-ink truncate">${cfg.title || ''}</h1>
                 <div class="text-[12px] text-neutral-400 truncate hidden sm:block">${cfg.sub || ''}</div>
               </div>
               <div class="flex-1"></div>

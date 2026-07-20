@@ -16,9 +16,9 @@
 </script>
 <link rel="stylesheet" href="assets/common.css">
 <style>
-  .chip{ border:1px solid var(--line); background:#fff; color:#555; font-size:14px; font-weight:700; padding:6px 16px; white-space:nowrap; transition:.15s; }
-  .chip:hover{ border-color:#e60012; color:#e60012; }
-  .chip.on{ background:#e60012; border-color:#e60012; color:#fff; }
+  .type-chip{ border:1px solid var(--line); background:#fff; color:#555; font-size:13px; font-weight:700; padding:6px 14px; white-space:nowrap; transition:.15s; }
+  .type-chip:hover{ border-color:#e60012; color:#e60012; }
+  .type-chip.on{ background:#e60012; border-color:#e60012; color:#fff; }
 </style>
 </head>
 <body>
@@ -29,37 +29,57 @@
     <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-14">
       <div class="sec-label text-neutral-400">DOWNLOAD</div>
       <h1 class="font-display font-black text-4xl mt-2">カタログ・資料ダウンロード</h1>
-      <p class="text-neutral-300 text-[16px] mt-3 max-w-2xl leading-relaxed">メーカー総合カタログ・技術ホワイトペーパー・型番別データシートをまとめてご用意。検討フェーズに合わせて必要な資料をダウンロードいただけます。</p>
+      <p class="text-neutral-300 text-[16px] mt-3 max-w-2xl leading-relaxed">メーカー総合カタログ・技術ホワイトペーパー・型番別データシート・設定マニュアルをまとめてご用意。型番やキーワード、種別・メーカー・カテゴリで絞り込んで、必要な資料をすばやく見つけられます。</p>
     </div>
   </section>
 
   <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
-    <!-- 絞り込みチップ -->
-    <div class="mb-8">
-      <div class="text-[13px] font-bold text-neutral-400 mb-2">メーカー・カテゴリで絞り込む</div>
-      <div id="chips" class="flex flex-wrap gap-2"></div>
+    <!-- 種別クイックフィルタ（チップ） -->
+    <div class="mb-6">
+      <div class="text-[13px] font-bold text-neutral-400 mb-2">種別で絞り込む</div>
+      <div id="typeChips" class="flex flex-wrap gap-2"></div>
     </div>
 
-    <!-- ① カタログ -->
-    <div class="border-t-2 border-ink pt-3 mb-5">
-      <div class="sec-label">CATALOG</div>
-      <h2 class="text-lg font-bold text-ink mt-0.5">総合カタログ</h2>
-    </div>
-    <div id="catGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"></div>
+    <div class="grid lg:grid-cols-4 gap-8">
+      <!-- 絞り込みサイドバー -->
+      <aside class="lg:col-span-1">
+        <div class="border-t-2 border-ink pt-3 mb-5">
+          <div class="text-[17px] font-bold text-ink mb-3">資料を絞り込む</div>
+          <label class="sec-label">キーワード検索</label>
+          <input id="kw" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-sm outline-none focus:border-[color:var(--brand)]" placeholder="型番・資料名（例：EDS-408A）">
+        </div>
+        <div class="border-t border-[color:var(--line)] pt-4 mb-5">
+          <div class="text-[16px] font-bold text-ink mb-2.5">種別</div>
+          <div class="space-y-2 text-[16px] text-neutral-700" id="typeFilter"></div>
+        </div>
+        <div class="border-t border-[color:var(--line)] pt-4 mb-5">
+          <div class="text-[16px] font-bold text-ink mb-2.5">メーカー</div>
+          <div class="space-y-2 text-[16px] text-neutral-700" id="makerFilter"></div>
+        </div>
+        <div class="border-t border-[color:var(--line)] pt-4 mb-5">
+          <div class="text-[16px] font-bold text-ink mb-2.5">カテゴリ</div>
+          <div class="space-y-2 text-[16px] text-neutral-700" id="catFilter"></div>
+        </div>
+        <button id="clear" class="w-full border border-[color:var(--line)] text-neutral-500 text-[15px] py-2.5 hover:bg-neutral-50">条件をクリア</button>
+      </aside>
 
-    <!-- ② ホワイトペーパー -->
-    <div class="border-t-2 border-ink pt-3 mb-5">
-      <div class="sec-label">WHITE PAPER</div>
-      <h2 class="text-lg font-bold text-ink mt-0.5">技術ホワイトペーパー</h2>
+      <!-- 一覧 -->
+      <div class="lg:col-span-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-ink pb-3 mb-3">
+          <div class="text-sm">該当資料：<b class="font-display text-lg" id="count">0</b> 件</div>
+          <div class="flex items-center gap-2">
+            <select id="sort" class="border border-[color:var(--line)] px-2 py-1.5 text-[15px] outline-none bg-white">
+              <option value="rec">おすすめ順</option>
+              <option value="type">種別順</option>
+              <option value="maker">メーカー順</option>
+            </select>
+          </div>
+        </div>
+        <div id="activeChips" class="flex flex-wrap items-center gap-2 mb-4 empty:hidden"></div>
+        <div id="grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        <div id="empty" class="hidden card p-16 text-center text-sm text-neutral-400">条件に一致する資料がありません。<br>キーワードや絞り込み条件を変更してお試しください。</div>
+      </div>
     </div>
-    <div id="wpGrid" class="grid sm:grid-cols-3 gap-4 mb-12"></div>
-
-    <!-- ③ データシート -->
-    <div class="border-t-2 border-ink pt-3 mb-5">
-      <div class="sec-label">DATASHEET</div>
-      <h2 class="text-lg font-bold text-ink mt-0.5">型番別データシート</h2>
-    </div>
-    <div id="dsList" class="card divide-y divide-[color:var(--line)]"></div>
 
     <div class="card p-6 mt-12 flex flex-wrap items-center justify-between gap-4" style="background:var(--paper)">
       <div>
@@ -74,82 +94,214 @@
 <script src="assets/data.js"></script>
 <script src="assets/shell.js"></script>
 <script>
-  function dl(){ alert('資料をダウンロードしました。（モック）'); }
+  function dl(){ alert('資料をダウンロードしました。（会員限定・モック）'); }
   window.dl = dl;
 
   KMECS.renderUserShell({
     active:'download',
     crumbs:[{label:'トップ',href:'index.html'},{label:'資料ダウンロード'}],
     onReady:function(){
-      // 絞り込みチップ（見た目のフィルタ）
-      var CHIPS = ['すべて','MOXA','ODU','POSITAL','AXIOMTEK','ネットワーク','コネクタ','組込PC','センサ'];
-      var chipsEl = document.getElementById('chips');
-      chipsEl.innerHTML = CHIPS.map(function(c,i){
-        return '<button class="chip'+(i===0?' on':'')+'" data-c="'+c+'">'+c+'</button>';
-      }).join('');
-      chipsEl.addEventListener('click', function(e){
-        var b = e.target.closest('.chip'); if(!b) return;
-        Array.prototype.forEach.call(chipsEl.querySelectorAll('.chip'), function(x){ x.classList.remove('on'); });
-        b.classList.add('on');
-        var key = b.getAttribute('data-c');
-        Array.prototype.forEach.call(document.querySelectorAll('[data-tags]'), function(card){
-          var tags = card.getAttribute('data-tags');
-          card.style.display = (key==='すべて' || tags.indexOf(key)>=0) ? '' : 'none';
-        });
-      });
 
-      // PDFアイコン
-      function pdfIcon(){
-        return '<span class="w-11 h-12 shrink-0 flex flex-col items-center justify-center border" style="border-color:var(--line);background:#fff">'
-          + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'
-          + '<span class="text-[9px] font-bold font-display" style="color:#e60012">PDF</span></span>';
+      // ===== モック資料データ（20件） =====
+      // t=種別 / mk=メーカー / cat=カテゴリ / img=サムネ（assets/img内の実在画像）
+      var DOCS = [
+        { t:'カタログ',          mk:'MOXA',     cat:'ネットワーク', title:'MOXA 総合カタログ 2026',                 img:'moxa-switch.jpg',      meta:'PDF・18.4 MB・全320ページ', desc:'産業用イーサネットスイッチ／ルータ／ゲートウェイ／無線を網羅した最新総合カタログ。' },
+        { t:'カタログ',          mk:'ODU',      cat:'コネクタ',     title:'ODU MEDI-SNAP 総合カタログ',             img:'cat-connector.jpg',    meta:'PDF・6.1 MB・医療/産業コネクタ', desc:'プッシュプル式の防塵防水コネクタMEDI-SNAP / AMCシリーズのラインナップと仕様。' },
+        { t:'カタログ',          mk:'POSITAL',  cat:'センサ',       title:'POSITAL エンコーダ総合カタログ',         img:'cat-sensor.jpg',       meta:'PDF・9.7 MB・回転/直動', desc:'IXARC 絶対値／インクリメンタルエンコーダ、傾斜センサの選定情報を収録。' },
+        { t:'カタログ',          mk:'AXIOMTEK', cat:'組込PC',       title:'AXIOMTEK 組込PC カタログ',               img:'cat-ipc.jpg',          meta:'PDF・12.2 MB・ファンレスIPC', desc:'ファンレス組込ボックスPC／産業用パネルPCの製品群と拡張性を一覧化。' },
+        { t:'カタログ',          mk:'IEI',      cat:'組込PC',       title:'IEI 産業用パネルPC カタログ',            img:'moxa-ipc.jpg',         meta:'PDF・8.9 MB・HMI/パネルPC', desc:'タッチパネル一体型の産業用HMI・パネルPCシリーズのサイズ／インターフェース一覧。' },
+        { t:'カタログ',          mk:'VIVOTEK',  cat:'カメラ',       title:'VIVOTEK 産業用IPカメラ カタログ',        img:'cat-camera.jpg',       meta:'PDF・7.3 MB・監視/画像', desc:'屋外対応ドーム／バレット型ネットワークカメラの解像度・耐環境仕様をまとめて掲載。' },
+        { t:'カタログ',          mk:'',         cat:'共通',         title:'ケーメックスONE 会社案内',               img:'kmecs-company_01.jpg', meta:'PDF・3.0 MB・取扱メーカー一覧', desc:'取扱メーカー・サポート体制・拠点情報をまとめた会社案内パンフレット。' },
+
+        { t:'セレクションガイド', mk:'MOXA',     cat:'ネットワーク', title:'産業用イーサネットスイッチ 選定ガイド',  img:'moxa-media.jpg',       meta:'PDF・2.4 MB・選定チャート付', desc:'ポート数・冗長化・PoE・使用温度から最適なスイッチを絞り込む選定フローチャート。' },
+        { t:'セレクションガイド', mk:'POSITAL',  cat:'センサ',       title:'エンコーダ 出力インターフェース選定ガイド', img:'cat-measure.jpg',   meta:'PDF・1.8 MB・IF比較表', desc:'SSI／CANopen／PROFINET／IO-Linkなど出力方式ごとの適用条件を比較。' },
+
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'EDS-408A 8ポート マネージドスイッチ',    img:'moxa-switch.jpg',      meta:'DS・PDF・型番別', desc:'Turbo Ring 冗長化対応の8ポート マネージド型産業用イーサネットスイッチ。' },
+        { t:'データシート',      mk:'ODU',      cat:'コネクタ',     title:'ODU AMC 高密度モジュラーコネクタ',       img:'cat-connector.jpg',    meta:'DS・PDF・型番別', desc:'信号・電源・同軸・光を1つのハウジングに集約する高密度モジュラーコネクタ。' },
+        { t:'データシート',      mk:'POSITAL',  cat:'センサ',       title:'POSITAL IXARC 絶対値エンコーダ',         img:'cat-sensor.jpg',       meta:'DS・PDF・型番別', desc:'マグネット式の多回転アブソリュートエンコーダ。IP69K・広温度範囲対応。' },
+        { t:'データシート',      mk:'AXIOMTEK', cat:'組込PC',       title:'AXIOMTEK eBOX ファンレス組込PC',         img:'cat-ipc.jpg',          meta:'DS・PDF・型番別', desc:'Core i5搭載のファンレス・ワイドレンジ電源対応 産業用ボックスPC。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'MGate MB3180 Modbusゲートウェイ',        img:'moxa-gateway.jpg',     meta:'DS・PDF・型番別', desc:'Modbus TCP ⇔ Modbus RTU/ASCII を変換する1ポート プロトコルゲートウェイ。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'NPort 5150 シリアルデバイスサーバ',      img:'moxa-deviceserver.jpg',meta:'DS・PDF・型番別', desc:'RS-232/422/485機器をEthernet化する1ポート シリアルデバイスサーバ。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'AWK-1137C 産業用無線アクセスポイント',   img:'moxa-wireless.jpg',    meta:'DS・PDF・型番別', desc:'IEEE 802.11a/b/g/n対応、AGV・移動体向けローミングに対応した無線AP/クライアント。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'ioLogik E1200 リモートI/Oモジュール',    img:'moxa-io.jpg',          meta:'DS・PDF・型番別', desc:'Active OPC/ Modbus TCP 対応のイーサネット リモートI/O。デイジーチェーン配線可。' },
+
+        { t:'ホワイトペーパー',  mk:'MOXA',     cat:'ネットワーク', title:'スマート工場の産業ネットワーク設計指針', img:'cat-smart.jpg',        meta:'技術WP・PDF', desc:'冗長化・ネットワーク分離・帯域設計まで、止まらない工場ネットワークの考え方を解説。' },
+        { t:'ホワイトペーパー',  mk:'ODU',      cat:'コネクタ',     title:'過酷環境における防塵防水コネクタの選定', img:'cat-connector.jpg',    meta:'技術WP・PDF', desc:'IP67/IP68・嵌合回数・耐振動など、屋外・可動部で失敗しないコネクタ選定の勘所。' },
+        { t:'ホワイトペーパー',  mk:'',         cat:'ネットワーク', title:'IEC 62443で考えるOTセキュリティ入門',    img:'cat-wired.jpg',        meta:'技術WP・PDF', desc:'制御システム(OT)のサイバーセキュリティ規格IEC 62443の基本と現場での適用ステップ。' },
+
+        { t:'マニュアル',        mk:'MOXA',     cat:'ネットワーク', title:'EDS-408A 設定・Turbo Ring 冗長化マニュアル', img:'moxa-switch.jpg',  meta:'マニュアル・PDF', desc:'IPアドレス設定・VLAN・Turbo Ring による冗長リング構成までの初期設定手順書。' }
+      ];
+
+      // メーカー表示名／ロゴ（assets/img内の実在ロゴのみ）
+      var MK = {
+        'MOXA':    { name:'MOXA',     logo:'mk-moxa.png' },
+        'ODU':     { name:'ODU',      logo:'mk-odu.png' },
+        'POSITAL': { name:'POSITAL',  logo:'mk-posital.png' },
+        'AXIOMTEK':{ name:'AXIOMTEK', logo:'mk-axiomtek.png' },
+        'IEI':     { name:'IEI',      logo:'mk-iei.jpg' },
+        'VIVOTEK': { name:'VIVOTEK',  logo:'mk-vivotek.jpg' },
+        '':        { name:'ケーメックスONE', logo:'' }
+      };
+
+      var TYPES = ['カタログ','セレクションガイド','データシート','ホワイトペーパー','マニュアル'];
+
+      function typeBadge(t){
+        var map = {
+          'カタログ':          'color:#fff;background:#e60012',
+          'セレクションガイド':'color:#393b56;background:#f0f0fa',
+          'データシート':      'color:#fff;background:#000000',
+          'ホワイトペーパー':  'color:#fff;background:#393b56',
+          'マニュアル':        'color:#c2410c;background:#ffedd5'
+        };
+        return '<span class="badge" style="'+(map[t]||'color:#555;background:#eee')+'">'+t+'</span>';
       }
 
-      // ① カタログ
-      var CATS = [
-        { title:'MOXA 総合カタログ 2026', meta:'PDF・18.4 MB・全320ページ', tags:'MOXA ネットワーク' },
-        { title:'ODU MEDI-SNAP カタログ', meta:'PDF・6.1 MB・医療/産業コネクタ', tags:'ODU コネクタ' },
-        { title:'POSITAL エンコーダ 総合', meta:'PDF・9.7 MB・回転/直動', tags:'POSITAL センサ' },
-        { title:'AXIOMTEK 組込PC カタログ', meta:'PDF・12.2 MB・ファンレスIPC', tags:'AXIOMTEK 組込PC' },
-        { title:'産業用ネットワーク総覧', meta:'PDF・4.3 MB・選定チャート付', tags:'MOXA ネットワーク' },
-        { title:'ケーメックスONE 会社案内', meta:'PDF・3.0 MB・取扱メーカー一覧', tags:'すべて' }
-      ];
-      document.getElementById('catGrid').innerHTML = CATS.map(function(c){
-        return '<div data-tags="'+c.tags+'" class="card p-4 flex gap-3">'+pdfIcon()
-          + '<div class="flex-1 min-w-0"><div class="text-[15px] font-bold text-ink leading-snug">'+c.title+'</div>'
-          + '<div class="text-[13px] text-neutral-400 mt-1">'+c.meta+'</div>'
-          + '<button onclick="dl()" class="text-[14px] font-bold mt-2 inline-flex items-center gap-1" style="color:#e60012">'
-          + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>ダウンロード</button></div></div>';
+      // カテゴリ一覧（登場順・重複除去）
+      var CATS = [];
+      DOCS.forEach(function(d){ if(CATS.indexOf(d.cat)<0) CATS.push(d.cat); });
+      // メーカー一覧（DOCSに登場するもの・空以外＋末尾に共通）
+      var MKS = [];
+      DOCS.forEach(function(d){ if(d.mk && MKS.indexOf(d.mk)<0) MKS.push(d.mk); });
+      var hasGeneral = DOCS.some(function(d){ return !d.mk; });
+
+      // ===== フィルタUI描画 =====
+      // 種別クイックチップ（単一選択：すべて/各種別）
+      var quickTypes = ['すべて'].concat(TYPES);
+      document.getElementById('typeChips').innerHTML = quickTypes.map(function(t,i){
+        return '<button type="button" class="type-chip'+(i===0?' on':'')+'" data-t="'+t+'">'+t+'</button>';
       }).join('');
 
-      // ② ホワイトペーパー
-      var WP = [
-        { title:'スマート工場の産業ネットワーク設計指針', meta:'技術WP・PDF', tags:'MOXA ネットワーク' },
-        { title:'過酷環境における防塵防水コネクタの選定', meta:'技術WP・PDF', tags:'ODU コネクタ' },
-        { title:'予知保全に向けたセンサデータ収集', meta:'技術WP・PDF', tags:'POSITAL センサ' }
-      ];
-      document.getElementById('wpGrid').innerHTML = WP.map(function(w){
-        return '<div data-tags="'+w.tags+'" class="card p-5 flex flex-col">'
-          + '<div class="w-10 h-10 flex items-center justify-center mb-3" style="background:var(--lav)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.8"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 12h8M8 16h5"/></svg></div>'
-          + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+w.title+'</div>'
-          + '<div class="text-[13px] text-neutral-400 mt-2">'+w.meta+'</div>'
-          + '<button onclick="dl()" class="btn-red-o mt-3 self-start !py-2.5 !px-6 !text-[14px]">ダウンロード</button></div>';
+      // 種別チェックボックス
+      document.getElementById('typeFilter').innerHTML = TYPES.map(function(t){
+        var n = DOCS.filter(function(d){return d.t===t;}).length;
+        return '<label class="flex items-center gap-2"><input type="checkbox" class="ty accent-[#e60012]" value="'+t+'"> '+t+' <span class="text-neutral-400">('+n+')</span></label>';
       }).join('');
 
-      // ③ データシート
-      var DS = [
-        { code:'EDS-408A', name:'8ポート マネージドEthernetスイッチ', tags:'MOXA ネットワーク' },
-        { code:'AMC-2P-08', name:'8ch アナログ入力I/Oモジュール', tags:'MOXA ネットワーク' },
-        { code:'IPC-3050-i5', name:'ファンレス組込PC Core i5搭載', tags:'AXIOMTEK 組込PC' },
-        { code:'OCD-DPB1B', name:'POSITAL 絶対値エンコーダ', tags:'POSITAL センサ' },
-        { code:'MEDI-SNAP L', name:'ODU プッシュプルコネクタ', tags:'ODU コネクタ' }
-      ];
-      document.getElementById('dsList').innerHTML = DS.map(function(d){
-        return '<div data-tags="'+d.tags+'" class="flex flex-wrap items-center gap-3 p-4">'
-          + '<span class="font-display font-bold text-[15px] text-ink w-32 shrink-0">'+d.code+'</span>'
-          + '<span class="text-[15px] text-neutral-600 flex-1 min-w-[180px]">'+d.name+'</span>'
-          + '<button onclick="dl()" class="btn-red-o !py-2 !px-5 !text-[13px] shrink-0">データシート（PDF）</button></div>';
+      // メーカーチェックボックス
+      var makerRows = MKS.map(function(m){
+        var n = DOCS.filter(function(d){return d.mk===m;}).length;
+        return '<label class="flex items-center gap-2"><input type="checkbox" class="mk accent-[#e60012]" value="'+m+'"> '+MK[m].name+' <span class="text-neutral-400">('+n+')</span></label>';
+      });
+      if(hasGeneral){
+        var ng = DOCS.filter(function(d){return !d.mk;}).length;
+        makerRows.push('<label class="flex items-center gap-2"><input type="checkbox" class="mk accent-[#e60012]" value="__none__"> 共通・その他 <span class="text-neutral-400">('+ng+')</span></label>');
+      }
+      document.getElementById('makerFilter').innerHTML = makerRows.join('');
+
+      // カテゴリチェックボックス
+      document.getElementById('catFilter').innerHTML = CATS.map(function(c){
+        var n = DOCS.filter(function(d){return d.cat===c;}).length;
+        return '<label class="flex items-center gap-2"><input type="checkbox" class="ct accent-[#e60012]" value="'+c+'"> '+c+' <span class="text-neutral-400">('+n+')</span></label>';
       }).join('');
+
+      var gridEl  = document.getElementById('grid');
+      var emptyEl = document.getElementById('empty');
+      var kwEl    = document.getElementById('kw');
+
+      function checkedVals(sel){ return [].slice.call(document.querySelectorAll(sel)).map(function(c){return c.value;}); }
+
+      function render(){
+        var kw   = kwEl.value.trim().toLowerCase();
+        var tys  = checkedVals('.ty:checked');
+        var mks  = checkedVals('.mk:checked');
+        var cts  = checkedVals('.ct:checked');
+        var sort = document.getElementById('sort').value;
+
+        var list = DOCS.filter(function(d){
+          if(tys.length && tys.indexOf(d.t)<0) return false;
+          if(mks.length){
+            var mkKey = d.mk || '__none__';
+            if(mks.indexOf(mkKey)<0) return false;
+          }
+          if(cts.length && cts.indexOf(d.cat)<0) return false;
+          if(kw){
+            var hay = (d.title+' '+d.desc+' '+d.t+' '+d.cat+' '+MK[d.mk].name).toLowerCase();
+            if(hay.indexOf(kw)<0) return false;
+          }
+          return true;
+        });
+
+        if(sort==='type')  list = list.slice().sort(function(a,b){ return TYPES.indexOf(a.t)-TYPES.indexOf(b.t); });
+        if(sort==='maker') list = list.slice().sort(function(a,b){ return MK[a.mk].name.localeCompare(MK[b.mk].name); });
+
+        document.getElementById('count').textContent = list.length;
+        emptyEl.classList.toggle('hidden', list.length>0);
+
+        // 適用中の条件チップ（クリックで解除）
+        var chips = [];
+        if(kw) chips.push({ t:'キーワード：'+kwEl.value.trim(), clr:function(){ kwEl.value=''; } });
+        tys.forEach(function(v){ chips.push({ t:'種別：'+v, clr:(function(x){return function(){var e=document.querySelector('.ty[value="'+x+'"]'); if(e)e.checked=false;};})(v) }); });
+        mks.forEach(function(v){ var nm=(v==='__none__'?'共通・その他':MK[v].name); chips.push({ t:'メーカー：'+nm, clr:(function(x){return function(){var e=document.querySelector('.mk[value="'+x+'"]'); if(e)e.checked=false;};})(v) }); });
+        cts.forEach(function(v){ chips.push({ t:'カテゴリ：'+v, clr:(function(x){return function(){var e=document.querySelector('.ct[value="'+x+'"]'); if(e)e.checked=false;};})(v) }); });
+
+        var ac = document.getElementById('activeChips');
+        if(!chips.length){ ac.innerHTML=''; }
+        else {
+          ac.innerHTML = '<span class="text-[13px] text-neutral-400">絞り込み中：</span>' + chips.map(function(c,i){
+            return '<button class="inline-flex items-center gap-1 text-[13px] border px-2.5 py-1 hover:bg-neutral-50" data-i="'+i+'" style="border-color:#e60012;color:#e60012">'+c.t+' <span class="text-[15px] leading-none">×</span></button>';
+          }).join('') + '<button id="chipClear" class="text-[13px] text-neutral-500 underline ml-1">すべて解除</button>';
+          ac.querySelectorAll('[data-i]').forEach(function(b){ b.addEventListener('click', function(){ chips[+b.getAttribute('data-i')].clr(); syncQuick(); render(); }); });
+          document.getElementById('chipClear').addEventListener('click', function(){ chips.forEach(function(c){c.clr();}); syncQuick(); render(); });
+        }
+
+        // カード描画
+        gridEl.innerHTML = list.map(function(d){
+          var m = MK[d.mk];
+          var makerHtml = m.logo
+            ? '<img src="assets/img/'+m.logo+'" alt="'+m.name+'" class="h-4 max-w-[90px] object-contain">'
+            : '<span class="text-[13px] font-bold text-neutral-500 font-display">'+m.name+'</span>';
+          return '<div class="card card-h flex flex-col overflow-hidden">'
+            + '<div class="relative h-36 bg-white border-b border-[color:var(--line)] flex items-center justify-center p-4">'
+            +   '<img src="assets/img/'+d.img+'" alt="" class="max-h-full max-w-full object-contain">'
+            +   '<span class="absolute top-2 left-2">'+typeBadge(d.t)+'</span>'
+            + '</div>'
+            + '<div class="p-4 flex flex-col flex-1">'
+            +   '<div class="flex items-center justify-between gap-2 h-5 mb-2">'+makerHtml+'<span class="text-[12px] text-neutral-400">'+d.cat+'</span></div>'
+            +   '<div class="text-[15px] font-bold text-ink leading-snug">'+d.title+'</div>'
+            +   '<p class="text-[13px] text-neutral-500 mt-1.5 leading-relaxed flex-1 line-clamp-3">'+d.desc+'</p>'
+            +   '<div class="text-[12px] text-neutral-400 mt-2">'+d.meta+'</div>'
+            +   '<button onclick="dl()" class="btn-red-o mt-3 !py-2.5 !px-5 !text-[14px] w-full">'
+            +     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>ダウンロード</button>'
+            + '</div></div>';
+        }).join('');
+      }
+
+      // 種別クイックチップ（単一）↔ 種別チェックボックス（複数）を同期
+      function syncQuick(){
+        var tys = checkedVals('.ty:checked');
+        var active = (tys.length===1) ? tys[0] : 'すべて';
+        [].slice.call(document.querySelectorAll('#typeChips .type-chip')).forEach(function(b){
+          b.classList.toggle('on', b.getAttribute('data-t')===active);
+        });
+      }
+
+      // イベント
+      document.getElementById('typeChips').addEventListener('click', function(e){
+        var b = e.target.closest('.type-chip'); if(!b) return;
+        var t = b.getAttribute('data-t');
+        document.querySelectorAll('.ty').forEach(function(c){ c.checked = (t!=='すべて' && c.value===t); });
+        syncQuick();
+        render();
+      });
+      kwEl.addEventListener('input', render);
+      document.getElementById('sort').addEventListener('change', render);
+      document.querySelectorAll('.ty,.mk,.ct').forEach(function(c){ c.addEventListener('change', function(){ syncQuick(); render(); }); });
+      document.getElementById('clear').addEventListener('click', function(){
+        kwEl.value='';
+        document.querySelectorAll('.ty,.mk,.ct').forEach(function(c){ c.checked=false; });
+        syncQuick();
+        render();
+      });
+
+      // 初期表示（URLクエリのメーカー/カテゴリ/キーワードを反映）
+      var pm = (typeof qs==='function') ? qs('maker') : null;
+      var pc = (typeof qs==='function') ? qs('cat')   : null;
+      var pq = (typeof qs==='function') ? qs('q')     : null;
+      if(pm){ var em=document.querySelector('.mk[value="'+pm+'"]'); if(em) em.checked=true; }
+      if(pc){ var ec=document.querySelector('.ct[value="'+pc+'"]'); if(ec) ec.checked=true; }
+      if(pq){ kwEl.value = pq; }
+      syncQuick();
+      render();
     }
   });
 </script>

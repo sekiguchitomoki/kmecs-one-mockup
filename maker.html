@@ -29,7 +29,7 @@
   </section>
 
   <!-- メーカー切替タブ -->
-  <div class="bg-white border-b border-[color:var(--line)] sticky top-[68px] z-20">
+  <div class="bg-white border-b border-[color:var(--line)] sticky top-[117px] xl:top-[164px] z-20">
     <div class="max-w-[1200px] mx-auto px-4 xl:px-8 flex gap-1 overflow-x-auto" id="mkTabs"></div>
   </div>
 
@@ -79,7 +79,7 @@
       document.getElementById('hero').innerHTML =
         '<div class="flex flex-wrap items-center gap-4 mt-3">'
         + '<span class="bg-white px-5 py-3 inline-flex items-center"><img src="'+M.logo+'" alt="'+M.name+'" style="height:40px;width:auto;object-fit:contain"></span>'
-        + '<span class="font-display font-black text-4xl">'+M.name+'</span>'
+        + '<h1 class="font-display font-black text-4xl">'+M.name+'</h1>'
         + '<span class="badge bg-white/10 text-neutral-300">'+M.country+'</span>'
         + '<span class="badge text-white" style="background:#e60012">'+M.quoteType+'</span></div>'
         + '<div class="text-[17px] font-bold mt-3" style="color:#ff6b6b">'+M.tagline+'</div>'

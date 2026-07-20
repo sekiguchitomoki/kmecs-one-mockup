@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content"><div id="page-body"></div></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  /* ===== 技術情報・コラム 記事データ（14件・tech.html のカードと 1:1 対応）=====
+     本文は各テーマの一次情報として実務的に記述。誇張・断定を避けたモック用コンテンツ。 */
+  var ARTICLES = {
+    /* ---- BY MAKER : Moxa 技術解説 ---- */
+    'tm-switch': {
+      cat:'MOXA', date:'2026.07.05', img:'assets/img/moxa-switch.jpg',
+      title:'産業用マネージドスイッチの基礎',
+      lead:'EDS シリーズに代表される産業用マネージドスイッチで押さえておきたい、VLAN・QoS・冗長化の考え方を体系的に整理します。オフィス用スイッチとの違いから、現場での設定方針までを解説します。',
+      sections:[
+        { h:'マネージドとアンマネージドの違い', p:[
+          'アンマネージドスイッチは電源とケーブルをつなぐだけで通信できる反面、設定・監視の手段を持ちません。マネージドスイッチは Web UI や CLI から VLAN・QoS・冗長化などを設定でき、SNMP による状態監視にも対応します。',
+          '装置単体の小規模な接続であればアンマネージドでも足りますが、複数系統が混在するライン全体や、止められない設備ではマネージドを選ぶのが基本です。'
+        ]},
+        { h:'現場で効く3つの機能', p:['産業用ネットワークで特に使う頻度が高いのは次の3つです。'],
+          list:[
+            'VLAN：制御系・監視系・情報系を論理的に分離し、不要なブロードキャストと相互干渉を抑える。',
+            'QoS：PLC 間の制御通信など遅延に敏感なトラフィックを優先制御し、映像などの帯域に埋もれさせない。',
+            '冗長化（Turbo Ring / RSTP）：リンク断が起きても別経路へ自動で切り替え、通信断を最小化する。'
+          ]},
+        { h:'選定・設置前のチェックポイント', p:[
+          'ポート数と速度（100M/1G）、PoE 給電の要否、動作温度範囲、電源の冗長性（DC 二重化）を用途に合わせて確認します。ファンレス・DIN レール対応かどうかも盤内設置では重要です。'
+        ],
+          note:{ t:'冗長化は「機器」だけでなく「経路」で考える', d:'スイッチを二重化しても配線が単系では片系停止のリスクは残ります。リング構成やデュアルホーミングで、物理経路まで冗長化して初めて「止まらない」ネットワークになります。' }
+        }
+      ],
+      faq:[
+        { q:'小規模でもマネージドスイッチは必要ですか？', a:'数台の機器を単純につなぐだけならアンマネージドでも機能します。ただし将来の増設・監視・冗長化を見込むなら、初めからマネージドを選んでおくと移行コストを抑えられます。' },
+        { q:'SNMP でネットワークを監視できますか？', a:'はい。EDS シリーズなどのマネージドスイッチは SNMP に対応しており、MXview One などの監視ツールと組み合わせてポート状態やトポロジを可視化できます。' },
+        { q:'VLAN と物理的な配線分離はどちらが良いですか？', a:'安全上の要件が厳しい場合は物理分離、コスト・配線を抑えたい場合は VLAN による論理分離が一般的です。両者を併用してセグメントを設計するケースも多くあります。' }
+      ]
+    },
+    'tm-nport': {
+      cat:'MOXA', date:'2026.07.01', img:'assets/img/moxa-serialconv.jpg',
+      title:'シリアルデバイスサーバ NPort',
+      lead:'既存の RS-232/422/485 機器を、装置本体に手を加えずにイーサネット化する定番アプローチが NPort です。動作モードの違いと、既設設備を活かす導入の考え方を解説します。',
+      sections:[
+        { h:'NPort が解決すること', p:[
+          '旧型の PLC・計測器・バーコードリーダなど、シリアル出力しか持たない機器は、そのままではネットワークで収集できません。NPort をシリアルポートに接続することで、機器を改造せずにイーサネット経由でアクセスできるようになります。',
+          '装置の制御盤に後付けできるため、保証や安全設計に影響を与えずに既設設備をネットワークへ取り込めるのが利点です。'
+        ]},
+        { h:'代表的な3つの動作モード', p:['用途に応じて主に次のモードを使い分けます。'],
+          list:[
+            'Real COM モード：PC 側に仮想 COM ポートを割り当て、既存のシリアルアプリをそのまま利用する。',
+            'TCP Server モード：NPort が接続を待ち受け、上位システムからアクセスする。',
+            'TCP Client モード：NPort 側から上位サーバへ能動的に接続する。IoT データ収集で使われる。'
+          ]},
+        { h:'導入時の注意点', p:[
+          '通信パラメータ（ボーレート・データビット・パリティ・ストップビット）は接続機器と一致させる必要があります。RS-485 では終端抵抗とバイアス、配線長にも注意します。'
+        ],
+          note:{ t:'まず既設機器の「口」を確認する', d:'RS-232 か RS-422/485 か、コネクタ形状・信号仕様を先に確認しておくと、対応モデルの選定がスムーズです。多ポートが必要な場合はポート数の多い機種を検討します。' }
+        }
+      ],
+      faq:[
+        { q:'既存のシリアルアプリを改修せずに使えますか？', a:'Real COM モードを使えば、PC に仮想 COM ポートが割り当てられるため、既存アプリケーションをほぼそのまま利用できます。' },
+        { q:'RS-232 と RS-485 のどちらにも対応できますか？', a:'モデルによります。RS-232/422/485 兼用の機種もあれば、RS-485 専用の機種もあります。接続機器の信号仕様に合わせて選定します。' }
+      ]
+    },
+    'tm-awk': {
+      cat:'MOXA', date:'2026.06.20', img:'assets/img/moxa-wireless.jpg',
+      title:'産業用無線AP/クライアント AWK',
+      lead:'AGV や搬送設備など「動く設備」を無線化する際に鍵となる、ローミング設計とアンテナ選定の勘所を解説します。可動ケーブルの断線リスクを減らし、移動しても切れないネットワークを目指します。',
+      sections:[
+        { h:'動く設備を無線化する理由', p:[
+          'AGV・スタッカクレーン・移動台車などでは、可動部の有線ケーブルが屈曲や引き回しで断線しやすく、保全の負担になります。AWK シリーズの AP／クライアント構成で無線化することで、可動ケーブルを排除できます。'
+        ]},
+        { h:'ローミング設計の考え方', p:[
+          '移動体は複数の AP をまたいで通信するため、AP 間の切り替え（ローミング）が高速でなければ通信が途切れます。Turbo Roaming のような高速ローミング機能で切替時間を短縮し、AP の設置間隔とオーバーラップを適切に設計します。'
+        ],
+          list:[
+            'AP の配置：走行経路に沿って電波が途切れない間隔で設置し、セル同士を重ねる。',
+            'チャネル設計：隣接 AP で干渉しないようチャネルを割り当てる。',
+            'ローミング閾値：電波強度のしきい値を調整し、早すぎ・遅すぎる切替を防ぐ。'
+          ]},
+        { h:'アンテナ選定', p:[
+          '広い範囲をカバーするなら無指向性アンテナ、特定方向へ飛ばすなら指向性アンテナを選びます。2.4GHz は到達距離、5GHz は干渉の少なさと帯域に利があり、環境に応じて使い分けます。'
+        ],
+          note:{ t:'電波は「環境」で大きく変わる', d:'金属棚・シャッター・他設備の電波は反射・減衰・干渉の原因になります。可能な限り実地でのサイトサーベイ（電波調査）を行い、机上設計を裏付けることをおすすめします。' }
+        }
+      ],
+      faq:[
+        { q:'移動しても通信が途切れませんか？', a:'高速ローミング機能と適切な AP 配置により、切替時間を短く抑えられます。走行速度と経路に合わせた設計が前提になります。' },
+        { q:'2.4GHz と 5GHz はどちらが良いですか？', a:'到達距離を優先するなら 2.4GHz、干渉の少なさと帯域を優先するなら 5GHz が一般的です。周囲の無線環境を確認したうえで選定します。' },
+        { q:'既存の有線ネットワークと併用できますか？', a:'はい。固定部は有線、可動部のみ無線という構成が一般的で、AWK のクライアント側を移動体に、AP 側を固定側に配置します。' }
+      ]
+    },
+
+    /* ---- BY SOLUTION : 産業用ネットワーク技術解説 ---- */
+    'ts-modbus': {
+      cat:'ネットワーク', date:'2026.06.18', img:'assets/img/moxa-serialconv.jpg',
+      title:'Modbus RTU とは',
+      lead:'産業用シリアル通信の定番である Modbus RTU について、RS-485 上のマスタ/スレーブ通信、レジスタとファンクションコード、終端抵抗まで基礎から整理します。',
+      sections:[
+        { h:'マスタ/スレーブ通信の基本', p:[
+          'Modbus RTU は 1 台のマスタが複数のスレーブに順番に問い合わせる、シンプルなマスタ/スレーブ方式です。各スレーブはユニークなスレーブアドレス（1〜247）を持ち、マスタの要求に対してのみ応答します。',
+          '物理層には主に RS-485 を用い、1 対 N のマルチドロップ配線で複数機器を数珠つなぎにできます。'
+        ]},
+        { h:'レジスタとファンクションコード', p:['Modbus のデータは 4 種類の領域で表現します。'],
+          list:[
+            'コイル（読み書き可・1bit）：出力の ON/OFF など。',
+            'ディスクリート入力（読み取り専用・1bit）：接点入力など。',
+            '入力レジスタ（読み取り専用・16bit）：計測値など。',
+            '保持レジスタ（読み書き可・16bit）：設定値・数値データなど。'
+          ]},
+        { h:'終端抵抗と配線', p:[
+          'RS-485 では反射による波形の乱れを防ぐため、バス両端に終端抵抗（一般に 120Ω）を入れます。バイアス抵抗でアイドル時の電位を安定させ、ケーブルはツイストペアを使用します。'
+        ],
+          note:{ t:'通信が不安定なときの定番チェック', d:'ボーレート・パリティの不一致、終端抵抗の入れ忘れ・二重付け、A/B 極性の逆結線、アドレス重複は、Modbus RTU で不具合が起きやすい典型ポイントです。' }
+        }
+      ],
+      faq:[
+        { q:'1 つの回線に何台まで接続できますか？', a:'仕様上のスレーブアドレスは 1〜247 ですが、RS-485 の電気的な負荷（ユニットロード）や配線長により実際の接続台数は制限されます。リピータで拡張する方法もあります。' },
+        { q:'終端抵抗はどこに入れますか？', a:'バス配線の両端（物理的に一番端の 2 か所）に入れます。途中のノードや両端以外に入れると通信が不安定になることがあります。' },
+        { q:'Modbus RTU と Modbus TCP の違いは？', a:'RTU はシリアル（RS-485 等）上のマスタ/スレーブ、TCP はイーサネット上のクライアント/サーバ方式です。詳しくは「Modbus RTU と TCP の違い」の記事で解説しています。' }
+      ]
+    },
+    'ts-ethernetip': {
+      cat:'ネットワーク', date:'2026.06.10', img:'assets/img/moxa-io.jpg',
+      title:'EtherNet/IP 比較',
+      lead:'産業用イーサネットの代表格である EtherNet/IP を、PROFINET・EtherCAT と比較しながら整理します。リアルタイム性・配線・機器選定の観点で、用途に合った選び方を考えます。',
+      sections:[
+        { h:'主要な産業用イーサネットの位置づけ', p:[
+          'EtherNet/IP は CIP プロトコルを標準イーサネット上で動かす方式で、北米を中心に広く使われています。PROFINET は欧州系、EtherCAT は高速なモーション制御に強みがあり、いずれも一般的なイーサネット物理層を活用します。'
+        ]},
+        { h:'リアルタイム性の違い', p:['要求される制御周期によって適性が分かれます。'],
+          list:[
+            'EtherNet/IP：標準イーサネット互換で構築しやすく、一般的な I/O 制御に広く対応。',
+            'PROFINET：RT/IRT により用途に応じたリアルタイム性を確保。',
+            'EtherCAT：フレームを通過させながら処理する方式で、高速・高同期のモーション制御に強い。'
+          ]},
+        { h:'配線と機器選定', p:[
+          'EtherNet/IP と PROFINET はスター型を基本に、産業用スイッチでトポロジを構成します。EtherCAT はライン/リング型で配線がシンプルになりやすい一方、専用のマスタ/スレーブ機器が前提です。上位の制御機器（PLC）が対応するプロトコルに合わせて機器を選定するのが出発点になります。'
+        ],
+          note:{ t:'まず「上位のPLCが話す言葉」を確認', d:'採用するプロトコルは、多くの場合コントローラ（PLC）側で決まります。既存設備・制御機器が対応する方式を起点に、スイッチや I/O を揃えるとトラブルを避けやすくなります。' }
+        }
+      ],
+      faq:[
+        { q:'EtherNet/IP は普通のイーサネットスイッチで使えますか？', a:'標準イーサネットをベースにしているため接続は可能ですが、マルチキャスト制御や優先制御（IGMP スヌーピング・QoS）に対応した産業用マネージドスイッチの利用が推奨されます。' },
+        { q:'EtherCAT との使い分けは？', a:'高速・高同期が必要なモーション制御は EtherCAT、一般的な I/O 制御や既存イーサネット資産の活用は EtherNet/IP が向く、というのが大まかな目安です。' }
+      ]
+    },
+    'ts-ring': {
+      cat:'冗長化', date:'2026.06.05', img:'assets/img/moxa-gateway.jpg',
+      title:'冗長化リング設計',
+      lead:'産業用ネットワークで「止めない」ための基本となるリング冗長化を、Turbo Ring と RSTP の切替時間の違いを踏まえて解説します。リング構成の考え方と設計上の注意点を整理します。',
+      sections:[
+        { h:'なぜリング冗長化なのか', p:[
+          'ライン型やスター型の単系構成では、1 か所のケーブル断・機器故障でその先の通信がすべて止まります。スイッチをリング状に接続し、片方の経路を予備として待機させておくことで、障害時に自動で経路を切り替えられます。'
+        ]},
+        { h:'Turbo Ring と RSTP の違い', p:['切替時間（復旧までの時間）に差があります。'],
+          list:[
+            'RSTP（標準規格）：相互接続性に優れる一方、切替に数秒かかる場合がある。',
+            'Turbo Ring（MOXA 独自）：同一メーカー機器で構成した際に、ミリ秒オーダーの高速切替が可能。',
+            '選定指針：異メーカー混在や汎用性重視なら RSTP、切替時間を重視する制御系なら Turbo Ring。'
+          ]},
+        { h:'リング構成の注意点', p:[
+          'リングは必ず 1 か所を論理的に開放（ブロック）してループを防ぎます。リングマスタの設定、リング上のスイッチ台数、電源の冗長性を確認し、大規模な場合はリングを分割して連結する設計も検討します。'
+        ],
+          note:{ t:'切替時間は「要求仕様」から逆算する', d:'制御系が許容できる通信断の時間（例：数十 ms 以内）を先に決め、それを満たす冗長化方式を選ぶのが確実です。監視系のみであれば RSTP でも十分なケースがあります。' }
+        }
+      ],
+      faq:[
+        { q:'Turbo Ring と RSTP は混在できますか？', a:'基本は同一方式でリングを構成します。異メーカー・汎用性を優先する区間は RSTP、切替速度が要る区間は Turbo Ring といったように、区間ごとに設計を分ける考え方が現実的です。' },
+        { q:'リングに入れられるスイッチの台数に上限はありますか？', a:'方式や機種により推奨台数の目安があります。台数が多いほど切替時間や管理が複雑になるため、大規模時はリング分割・連結を検討します。' }
+      ]
+    },
+
+    /* ---- ARTICLES : 記事一覧 ---- */
+    'ta-eds-setup': {
+      cat:'MOXA', date:'2026.07.10', img:'assets/img/moxa-switch.jpg',
+      title:'MOXA EDS 初期設定ガイド',
+      lead:'産業用マネージドスイッチ MOXA EDS シリーズの初期設定を、IP アドレス設定から VLAN・冗長化リングの基本構成まで、導入時の手順に沿って解説します。',
+      sections:[
+        { h:'最初にやること：IP アドレスの設定', p:[
+          '工場出荷時のスイッチには初期 IP アドレスが設定されています。まず PC を同一セグメントに合わせ、専用の設定ユーティリティまたは Web UI からスイッチへアクセスし、運用ネットワークに合わせた IP アドレス・サブネットに変更します。',
+          'パスワードの初期値からの変更も、この段階で必ず行います。'
+        ]},
+        { h:'基本設定の流れ', p:['アクセスできたら、次の順で設定していくと整理しやすくなります。'],
+          list:[
+            'ホスト名・IP・パスワードなどの基本情報を設定する。',
+            'VLAN を定義し、各ポートを所属 VLAN に割り当てる。',
+            '冗長化（Turbo Ring / RSTP）を有効化し、リングポートを指定する。',
+            'SNMP・ログ・時刻同期（NTP）など運用・監視の設定を行う。'
+          ]},
+        { h:'設定後の確認とバックアップ', p:[
+          '設定完了後は、リンク状態・リング状態・VLAN の疎通を実機で確認します。動作確認ができたら設定ファイルをエクスポートして保管し、故障交換時に短時間で復元できるようにしておきます。'
+        ],
+          note:{ t:'設定ファイルは必ず保存しておく', d:'現地で作り込んだ設定は、機器故障時のリカバリの生命線です。設定のバックアップと、変更履歴のメモを残しておくと、交換・増設の作業時間を大きく短縮できます。' }
+        }
+      ],
+      faq:[
+        { q:'初期 IP アドレスが分からない場合は？', a:'メーカー提供の設定ユーティリティを使うと、同一ネットワーク上のスイッチを自動検出して IP を確認・変更できます。マニュアル記載の初期値も併せて確認します。' },
+        { q:'設定をやり直したいときは？', a:'工場出荷時設定（ファクトリーリセット）に戻す機能があります。リセット後は再度 IP 設定から実施します。事前に設定ファイルを保存しておくと復旧が容易です。' }
+      ]
+    },
+    'ta-switch-select': {
+      cat:'選定', date:'2026.06.28', img:'assets/img/moxa-media.jpg',
+      title:'産業用スイッチの選び方',
+      lead:'産業用スイッチを選ぶ際に確認したい、ポート・給電・環境・冗長化の要件を整理します。オフィス用スイッチとの違いを踏まえ、失敗しない選定の観点をまとめます。',
+      sections:[
+        { h:'産業用とオフィス用の違い', p:[
+          '産業用スイッチは、広い動作温度範囲・耐振動・DC 電源・ファンレス設計・DIN レール取り付けなど、盤内や現場環境を前提に作られています。冗長電源やリング冗長化に対応する点も、可用性が求められる設備で重要です。'
+        ]},
+        { h:'選定でチェックする5項目', p:['用途に対して次の観点を順に確認します。'],
+          list:[
+            'ポート数と速度：現在の接続数＋将来の増設余地、100M/1G の別。',
+            '給電：PoE/PoE+ の要否と、必要な給電ポート数・電力。',
+            '環境：動作温度範囲・防塵防水・耐振動、設置場所の条件。',
+            '冗長化：リング冗長化・冗長電源の要否。',
+            '管理：マネージド（VLAN/QoS/監視）かアンマネージドか。'
+          ]},
+        { h:'マネージド/アンマネージドの判断', p:[
+          '単純な接続で監視も不要ならアンマネージド、セグメント分離・優先制御・冗長化・監視が要るならマネージドを選びます。迷う場合は、将来の拡張を見込んでマネージドを選んでおくと後戻りが少なくて済みます。'
+        ],
+          note:{ t:'「今」だけでなく「3年後」で選ぶ', d:'ポート数や機能をぎりぎりで選ぶと、増設のたびに機器追加が必要になります。増設余地・監視の要否を見込んで一段上を選ぶと、トータルの手間とコストを抑えられることが多いです。' }
+        }
+      ],
+      faq:[
+        { q:'PoE 対応は必ず必要ですか？', a:'カメラや無線 AP など、電源配線を減らしたい機器を接続する場合に有効です。接続機器がすべて自前電源なら PoE 非対応でも問題ありません。' },
+        { q:'動作温度範囲はどれくらい見ておくべきですか？', a:'盤内温度は外気より高くなりがちです。設置環境の想定最高温度に余裕を持たせ、広温度対応（例：-40〜75℃ など）の機種を選ぶと安全側です。' }
+      ]
+    },
+    'ta-modbus-diff': {
+      cat:'ネットワーク', date:'2026.06.15', img:'assets/img/moxa-serialconv.jpg',
+      title:'Modbus RTU と TCP の違い',
+      lead:'同じ Modbus でも、シリアルの RTU とイーサネットの TCP では通信の仕組みが異なります。両者の違いと、既設 RTU 機器をネットワークへ取り込む方法を解説します。',
+      sections:[
+        { h:'物理層と通信方式の違い', p:[
+          'Modbus RTU はシリアル（主に RS-485）上のマスタ/スレーブ方式で、スレーブアドレスで機器を識別します。Modbus TCP はイーサネット上のクライアント/サーバ方式で、IP アドレスとポート 502 を使い、複数のクライアントが同時にアクセスできます。'
+        ]},
+        { h:'それぞれの得意分野', p:['配線や機器構成の前提が異なります。'],
+          list:[
+            'Modbus RTU：既存のシリアル機器・長距離のマルチドロップ配線に強い。低コストで導入しやすい。',
+            'Modbus TCP：高速・多対多のアクセス、既存イーサネット資産の活用、上位システムとの連携に強い。',
+            '選定の目安：既設のシリアル資産を活かすなら RTU、ネットワーク統合・IoT 収集なら TCP。'
+          ]},
+        { h:'RTU と TCP をつなぐ', p:[
+          '既設の RTU 機器をそのまま活かしてネットワーク化したい場合は、Modbus ゲートウェイやシリアルデバイスサーバ（NPort など）を使い、RTU と TCP を相互変換します。装置本体を改造せずにイーサネット側へデータを取り込めます。'
+        ],
+          note:{ t:'混在環境ではゲートウェイが橋渡し役', d:'現場に RTU 機器が多く残る一方で、上位は TCP で統合したいケースは一般的です。Modbus ゲートウェイを挟むことで、既存投資を活かしつつ段階的にネットワーク化を進められます。' }
+        }
+      ],
+      faq:[
+        { q:'RTU と TCP は直接つながりますか？', a:'そのままでは相互通信できません。Modbus ゲートウェイやシリアルデバイスサーバを介して RTU と TCP を変換することで橋渡しできます。' },
+        { q:'どちらが速いですか？', a:'一般にイーサネットベースの TCP の方が高速で、多対多のアクセスにも向きます。ただし要件によっては RTU で十分なケースも多くあります。' }
+      ]
+    },
+    'ta-ip67': {
+      cat:'コネクタ', date:'2026.06.02', img:'assets/img/cat-connector.jpg',
+      title:'IP67コネクタ 防塵防水の基礎',
+      lead:'コネクタの防塵防水性能を表す IP コード（IP67 など）の読み方と、屋外・水回り・洗浄環境での選定の基礎を解説します。IP67 と IP68 の違いもあわせて整理します。',
+      sections:[
+        { h:'IP コードの読み方', p:[
+          'IP に続く 2 桁の数字は、1 桁目が防塵（0〜6）、2 桁目が防水（0〜9K）の等級を表します。IP67 なら防塵は最高等級の 6（粉塵の侵入を完全に防ぐ）、防水は 7（規定の水深・時間の一時的な水没に耐える）を意味します。'
+        ]},
+        { h:'IP67 と IP68 の違い', p:['どちらも防塵は最高等級ですが、防水の条件が異なります。'],
+          list:[
+            'IP67：一定水深・一定時間の「一時的な水没」に耐える。',
+            'IP68：メーカーが規定する、より厳しい「継続的な水没」条件に耐える。',
+            '選定の目安：一時的な水しぶき・水没は IP67、常時水中・より過酷な条件は IP68。'
+          ]},
+        { h:'現場での選定ポイント', p:[
+          '等級だけでなく、嵌合状態が保たれているか（未接続時のキャップの有無）、繰り返し抜き差しに耐える構造か、ケーブル引き出し部のシールなども確認します。洗浄環境では耐薬品性や高圧洗浄への耐性も考慮します。'
+        ],
+          note:{ t:'「接続している状態」での等級に注意', d:'IP 等級は正しく嵌合した状態での性能です。未接続のコネクタや、無理な角度での接続では性能を発揮できません。運用時のキャップや保護カバーの計画も忘れずに。' }
+        }
+      ],
+      faq:[
+        { q:'IP67 なら水中でずっと使えますか？', a:'IP67 は一時的な水没を想定した等級で、継続的な水没には対応しません。常時水中で使う場合は IP68（メーカー規定条件）以上を検討します。' },
+        { q:'IP67 と IP68 は上位互換ですか？', a:'防塵はどちらも最高等級 6 で同等です。防水条件は IP68 の方が厳しい条件に対応しますが、試験条件はメーカー規定によるため、具体的な水深・時間はデータシートで確認します。' }
+      ]
+    },
+    'ta-ethercat': {
+      cat:'ネットワーク', date:'2026.05.20', img:'assets/img/moxa-io.jpg',
+      title:'EtherCAT 導入の勘所',
+      lead:'高速・高同期のモーション制御で使われる EtherCAT について、通信の仕組みと配線の特徴、導入時に押さえたいポイントを解説します。',
+      sections:[
+        { h:'EtherCAT の仕組み', p:[
+          'EtherCAT は、マスタが送出したフレームが各スレーブを通過する際に、その場でデータを読み書きする「オンザフライ処理」が特徴です。これにより多数の軸を短周期・高同期で制御でき、モーション制御に適しています。'
+        ]},
+        { h:'配線とトポロジ', p:['配線のシンプルさも EtherCAT の利点です。'],
+          list:[
+            'ライン型を基本に、分岐やリング（ケーブル冗長）にも対応できる。',
+            'スレーブを数珠つなぎにでき、専用スイッチを必要としない構成が組みやすい。',
+            'リング構成にすることでケーブル断に対する冗長性を持たせられる。'
+          ]},
+        { h:'導入時に確認すること', p:[
+          'マスタ（コントローラ）と各スレーブが EtherCAT に対応していること、必要な制御周期を満たせること、ケーブル・コネクタが仕様を満たすことを確認します。他プロトコルとの接続が必要な場合はゲートウェイを介します。'
+        ],
+          note:{ t:'まずは「軸数」と「制御周期」を整理', d:'必要な軸数と、要求される制御周期（同期精度）を先に整理すると、EtherCAT が適しているか、他方式で足りるかの判断がしやすくなります。' }
+        }
+      ],
+      faq:[
+        { q:'EtherCAT は専用のスイッチが必要ですか？', a:'スレーブを数珠つなぎにできるため、一般的な構成では専用スイッチを必要としません。トポロジや冗長化の要件に応じて分岐機器を使う場合があります。' },
+        { q:'既存の EtherNet/IP 設備とつなげますか？', a:'プロトコルが異なるため直接は接続できません。ゲートウェイを介してデータを受け渡す構成にします。' }
+      ]
+    },
+    'ta-poe': {
+      cat:'給電', date:'2026.05.08', img:'assets/img/moxa-router.jpg',
+      title:'PoE給電の設計',
+      lead:'LAN ケーブル 1 本で通信と給電をまかなう PoE の基礎を解説します。規格ごとの供給電力、電力バジェットの考え方、配線距離の注意点をまとめます。',
+      sections:[
+        { h:'PoE とは', p:[
+          'PoE（Power over Ethernet）は、イーサネットケーブルを通じて通信と電力を同時に供給する技術です。カメラや無線 AP などへ電源配線を別途引く必要がなくなり、設置の自由度が上がり配線工数を減らせます。'
+        ]},
+        { h:'規格と供給電力', p:['規格によって給電できる電力が異なります。'],
+          list:[
+            'IEEE 802.3af（PoE）：ポートあたり最大 15.4W 程度。',
+            'IEEE 802.3at（PoE+）：ポートあたり最大 30W 程度。',
+            'IEEE 802.3bt（PoE++）：さらに大きな電力に対応。',
+            '接続機器の消費電力に対して、規格と給電クラスが足りているかを確認する。'
+          ]},
+        { h:'電力バジェットと配線距離', p:[
+          'スイッチには給電できる合計電力（電力バジェット）の上限があります。接続する PoE 機器の消費電力の合計がバジェットを超えないよう設計します。また PoE を含むイーサネット配線は 100m が基本の上限で、長距離では電圧降下にも注意します。'
+        ],
+          note:{ t:'合計電力で足を掬われないように', d:'ポート単位の給電能力だけでなく、スイッチ全体の電力バジェットを必ず確認します。全ポートに最大負荷の機器をつなぐとバジェットを超えることがあるため、余裕を持った設計が安全です。' }
+        }
+      ],
+      faq:[
+        { q:'PoE 対応機器なら何でも給電できますか？', a:'受電側が要求する規格・電力に、給電側（スイッチ）が対応している必要があります。機器の要求電力とスイッチの規格・電力バジェットを突き合わせて確認します。' },
+        { q:'100m を超えて給電できますか？', a:'標準のイーサネット PoE は 100m が基本の上限です。長距離が必要な場合は PoE エクステンダや光メディアコンバータ＋別給電などの構成を検討します。' }
+      ]
+    },
+    'ta-nport-intro': {
+      cat:'MOXA', date:'2026.04.24', img:'assets/img/moxa-deviceserver.jpg',
+      title:'シリアル-Ethernet変換（NPort）入門',
+      lead:'シリアル機器をネットワークにつなぐ第一歩として、シリアル-Ethernet 変換（デバイスサーバ）の役割と、NPort を使った導入の考え方を入門者向けに解説します。',
+      sections:[
+        { h:'なぜ変換が必要なのか', p:[
+          '古い計測器や PLC の多くは RS-232/422/485 のシリアル出力しか持たず、そのままではイーサネットのネットワークにつながりません。シリアル-Ethernet 変換機（デバイスサーバ）を挟むことで、これらの機器をネットワーク経由でアクセスできるようにします。'
+        ]},
+        { h:'デバイスサーバの基本的な使い方', p:['導入は次のような流れになります。'],
+          list:[
+            'デバイスサーバのシリアルポートに、既設のシリアル機器を接続する。',
+            'イーサネット側を運用ネットワークに接続し、IP を設定する。',
+            '通信パラメータ（ボーレート等）を接続機器に合わせる。',
+            '動作モード（仮想 COM/TCP など）を用途に合わせて選ぶ。'
+          ]},
+        { h:'導入のメリット', p:[
+          '装置本体を改造せずに後付けできるため、保証や安全に影響を与えずにネットワーク化を進められます。既設のシリアル資産を活かしながら、遠隔監視やデータ収集の基盤へ発展させられます。'
+        ],
+          note:{ t:'まずは 1 台から試すのがおすすめ', d:'いきなり全設備を対象にせず、代表的なシリアル機器 1 台をデバイスサーバでネットワーク化してみると、通信パラメータやモードの勘所がつかめ、横展開がスムーズになります。' }
+        }
+      ],
+      faq:[
+        { q:'シリアルデバイスサーバとゲートウェイは何が違いますか？', a:'デバイスサーバはシリアル信号をイーサネットに載せて透過的に伝えるのが主目的です。ゲートウェイは Modbus RTU↔TCP のようにプロトコルを変換する役割を担います。用途に応じて選びます。' },
+        { q:'既存の PC ソフトはそのまま使えますか？', a:'仮想 COM ポートモードを使えば、PC 側からは通常の COM ポートに見えるため、多くの既存ソフトをそのまま利用できます。' }
+      ]
+    },
+    'ta-turboring': {
+      cat:'冗長化', date:'2026.04.10', img:'assets/img/moxa-gateway.jpg',
+      title:'冗長化リング（Turbo Ring）構成例',
+      lead:'MOXA の Turbo Ring を使った冗長化リングの構成例を、基本のシングルリングから、複数リングを連結する構成まで、設計の考え方に沿って紹介します。',
+      sections:[
+        { h:'基本のシングルリング', p:[
+          '最もシンプルな構成は、複数のスイッチをリング状に接続し、そのうち 1 台をリングマスタに設定するシングルリングです。通常時はリングの 1 か所を論理的にブロックしてループを防ぎ、障害時にそのブロックを解放して経路を切り替えます。'
+        ]},
+        { h:'規模が大きくなったら', p:['台数が増える場合は、リングを分けて連結します。'],
+          list:[
+            'リングの分割：1 つの大きなリングを複数の小さなリングに分け、管理性と切替性能を保つ。',
+            'リングカップリング：複数のリングを冗長的に連結し、リング間の経路も二重化する。',
+            'バックボーンとの接続：上位ネットワークへの接続点も冗長化して単一障害点をなくす。'
+          ]},
+        { h:'設計時の確認事項', p:[
+          'リングマスタの割り当て、リング上の台数、各スイッチの電源冗長、切替時間の要求値を確認します。設定後は実際にケーブルを抜いて切替動作と復旧を検証し、想定どおり通信が維持されることを確かめます。'
+        ],
+          note:{ t:'必ず「抜線テスト」で確認する', d:'冗長化は設定して終わりではありません。運用前に実際にケーブルを抜いて切替・復旧を確認しておくことで、いざという時に本当に止まらないことを担保できます。' }
+        }
+      ],
+      faq:[
+        { q:'Turbo Ring と RSTP はどちらを使うべきですか？', a:'同一メーカー機器で高速切替を重視するなら Turbo Ring、異メーカー混在や汎用性を重視するなら RSTP が目安です。詳しくは「冗長化リング設計」の記事もご参照ください。' },
+        { q:'リングは 1 つに何台まで入れられますか？', a:'方式・機種により推奨台数の目安があります。台数が多いほど切替や管理が複雑になるため、大規模時はリング分割・連結を検討します。' }
+      ]
+    }
+  };
+
+  var ORDER = ['tm-switch','tm-nport','tm-awk','ts-modbus','ts-ethernetip','ts-ring',
+    'ta-eds-setup','ta-switch-select','ta-modbus-diff','ta-ip67','ta-ethercat','ta-poe','ta-nport-intro','ta-turboring'];
+
+  var reqId = qs('id');
+  var A = ARTICLES[reqId];
+  var notFound = false;
+  if(!A){
+    if(reqId){ notFound = true; }        // 不正なidは「記事が見つかりません」表示（エラーにはしない）
+    A = ARTICLES[ORDER[0]];              // フォールバック（本文表示用）
+  }
+
+  function catBadge(c){
+    if(c==='MOXA') return '<span class="badge bg-ink text-white">'+c+'</span>';
+    return '<span class="badge border border-[color:var(--line)] text-neutral-500">'+c+'</span>';
+  }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  KMECS.renderUserShell({
+    active:'tech',
+    crumbs:[
+      {label:'トップ',href:'index.html'},
+      {label:'技術情報・コラム',href:'tech.html'},
+      {label: notFound ? '記事が見つかりません' : A.title}
+    ],
+    onReady:function(){
+      var host = document.getElementById('page-body');
+
+      // ---- 記事が見つからない場合の軽い扱い ----
+      if(notFound){
+        host.innerHTML =
+          '<div class="max-w-[720px] mx-auto px-4 xl:px-8 py-20 text-center">'
+          + '<div class="sec-label" style="color:#e60012">NOT FOUND</div>'
+          + '<h1 class="text-2xl font-bold text-ink mt-2">記事が見つかりませんでした</h1>'
+          + '<p class="text-[15px] text-neutral-600 mt-3 leading-relaxed">お探しの記事は移動または削除された可能性があります。技術情報・コラム一覧からお探しください。</p>'
+          + '<div class="mt-7 flex flex-wrap gap-3 justify-center">'
+          + '<a href="tech.html" class="btn-red">技術情報・コラム一覧へ</a>'
+          + '<a href="products.html" class="btn-red-o">製品を探す</a></div></div>';
+        return;
+      }
+
+      // ---- ヒーロー / 記事ヘッダ ----
+      var dd = A.date.split('.');
+      var html =
+        '<section class="relative text-white overflow-hidden" style="background:#0d1024">'
+        + '<img src="'+A.img+'" alt="" class="absolute inset-0 w-full h-full object-cover" style="opacity:.35;object-position:center 45%">'
+        + '<div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(13,16,36,.94),rgba(13,16,36,.55))"></div>'
+        + '<div class="relative max-w-[860px] mx-auto px-4 xl:px-8 py-14 sm:py-16">'
+        + '<a href="tech.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-300 hover:text-white mb-4">‹ 技術情報・コラム一覧へ</a>'
+        + '<div class="flex items-center gap-2 flex-wrap">'
+        + '<span class="badge text-white" style="background:#e60012">'+A.cat+'</span>'
+        + '<span class="font-display text-[14px] tracking-wide text-neutral-300">'+dd[0]+'.<span style="color:#ff5566">'+dd[1]+'.'+dd[2]+'</span></span></div>'
+        + '<h1 class="font-display font-black text-2xl sm:text-4xl leading-snug mt-3">'+A.title+'</h1>'
+        + '<p class="text-[15px] sm:text-[16px] text-neutral-200 leading-relaxed mt-4 max-w-2xl">'+A.lead+'</p>'
+        + '</div></section>';
+
+      // ---- 本文 ----
+      html += '<article class="max-w-[860px] mx-auto px-4 xl:px-8 py-14">';
+      A.sections.forEach(function(s,i){
+        html += '<section class="'+(i>0?'mt-12':'')+'">'
+          + '<div class="border-t-2 border-ink pt-3 mb-4"><h2 class="text-xl sm:text-2xl font-bold text-ink">'+s.h+'</h2></div>';
+        (s.p||[]).forEach(function(par){
+          html += '<p class="text-[16px] text-neutral-700 leading-loose mb-4">'+par+'</p>';
+        });
+        if(s.list && s.list.length){
+          html += '<ul class="card p-5 space-y-2.5 my-5" style="background:var(--paper)">'
+            + s.list.map(function(li){
+                return '<li class="flex gap-3 text-[15px] text-neutral-700 leading-relaxed">'
+                  + '<span class="w-5 h-5 mt-0.5 rounded-full flex items-center justify-center text-white shrink-0" style="background:#e60012"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span>'
+                  + '<span>'+li+'</span></li>';
+              }).join('')
+            + '</ul>';
+        }
+        if(s.note){
+          html += '<div class="card p-5 my-5 border-l-4" style="border-color:#e60012;background:var(--lav)">'
+            + '<div class="flex items-center gap-2 mb-1.5">'
+            + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+            + '<div class="text-[15px] font-bold text-ink">'+s.note.t+'</div></div>'
+            + '<p class="text-[14px] text-neutral-600 leading-relaxed pl-[26px]">'+s.note.d+'</p></div>';
+        }
+        html += '</section>';
+      });
+      html += '</article>';
+
+      // ---- FAQ アコーディオン ----
+      if(A.faq && A.faq.length){
+        html += '<div class="max-w-[860px] mx-auto px-4 xl:px-8 pb-14">'
+          + '<div class="border-t-2 border-ink pt-3 mb-5"><div class="sec-label" style="color:#e60012">FAQ</div>'
+          + '<h2 class="text-xl font-bold text-ink mt-0.5">よくある質問</h2></div>'
+          + '<div id="sfaq" class="divide-y divide-[color:var(--line)] border-y border-[color:var(--line)]">'
+          + A.faq.map(function(x,i){
+              return '<div><button type="button" class="sq w-full flex items-start gap-3 text-left py-4" data-i="'+i+'">'
+                + '<span class="font-display font-bold shrink-0" style="color:#e60012">Q</span>'
+                + '<span class="flex-1 text-[16px] font-bold text-ink">'+x.q+'</span>'
+                + '<span class="si shrink-0 text-neutral-400 transition-transform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></button>'
+                + '<div class="sa hidden pb-4 pl-7"><p class="text-[15px] text-neutral-600 leading-relaxed">'+x.a+'</p></div></div>';
+            }).join('')
+          + '</div></div>';
+      }
+
+      // ---- 関連記事 ----
+      var pos = ORDER.indexOf(reqId in ARTICLES ? reqId : ORDER[0]);
+      var related = [];
+      for(var k=1; related.length<3 && k<ORDER.length; k++){
+        related.push(ORDER[(pos+k)%ORDER.length]);
+      }
+      html += '<div class="max-w-[1000px] mx-auto px-4 xl:px-8 pb-4">'
+        + '<div class="border-t-2 border-ink pt-3 mb-5"><div class="sec-label">RELATED</div>'
+        + '<h2 class="text-lg font-bold text-ink mt-0.5">関連する技術情報・コラム</h2></div>'
+        + '<div class="grid sm:grid-cols-3 gap-5">'
+        + related.map(function(rid){
+            var r = ARTICLES[rid];
+            return '<a href="tech-detail.html?id='+rid+'" class="card card-h sweep overflow-hidden flex flex-col">'
+              + '<div class="h-32 overflow-hidden border-b border-[color:var(--line)]"><img src="'+r.img+'" alt="" class="w-full h-full object-cover sweep-img"></div>'
+              + '<div class="p-4 flex-1 flex flex-col">'
+              + '<div class="flex items-center gap-2 mb-1.5"><span class="text-[13px] text-neutral-400 font-display">'+r.date+'</span>'+catBadge(r.cat)+'</div>'
+              + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+r.title+'</div>'
+              + '<div class="mt-3 text-[14px] font-bold" style="color:#e60012">続きを読む ›</div></div></a>';
+          }).join('')
+        + '</div></div>';
+
+      // ---- 導線（一覧・製品・問い合わせ）----
+      html += '<div class="max-w-[1000px] mx-auto px-4 xl:px-8 pb-16">'
+        + '<div class="card p-8 mt-10 flex flex-wrap items-center justify-between gap-4" style="background:#22243a">'
+        + '<div><h3 class="text-lg font-bold text-white">仕様の検討・型番選定でお困りですか？</h3>'
+        + '<p class="text-[15px] text-neutral-300 mt-1.5">記事の内容に沿った製品選定・構成のご相談は、認定エンジニアがご対応します。</p></div>'
+        + '<div class="flex flex-wrap gap-3">'
+        + '<a href="tech.html" class="btn-ink whitespace-nowrap !bg-white !text-ink">コラム一覧へ</a>'
+        + '<a href="products.html" class="btn-ink whitespace-nowrap !bg-white/10 !text-white">製品を探す</a>'
+        + '<a href="contact.html" class="btn-red whitespace-nowrap">お問い合わせ</a></div></div></div>';
+
+      host.innerHTML = html;
+
+      // FAQ アコーディオン（event-detail の sq/sa 実装を踏襲）
+      document.querySelectorAll('#sfaq .sq').forEach(function(b){
+        b.addEventListener('click', function(){
+          var box=b.parentNode.querySelector('.sa'); var ic=b.querySelector('.si');
+          var open=box.classList.toggle('hidden'); ic.style.transform = open ? '' : 'rotate(180deg)';
+        });
+      });
+    }
+  });
+</script>
+</body>
+</html>

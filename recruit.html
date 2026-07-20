@@ -40,6 +40,22 @@
   /* 職種アコーディオン */
   .pos-item{ transition:border-color .2s ease; }
   .pos-item.open{ border-color:#e60012; }
+  .pos-q{ cursor:pointer; padding-left:14px; padding-right:14px; margin-left:-14px; margin-right:-14px; transition:background-color .2s ease; }
+  .pos-q:hover{ background:#faf3f3; }
+  .pos-q:hover .pos-ico{ border-color:#e60012; color:#e60012; }
+  /* インタビュー：1日のスケジュール（時間軸） */
+  .rc-timeline{ position:relative; padding-left:6px; }
+  .rc-tl-item{ position:relative; display:grid; grid-template-columns:76px 1fr; gap:20px; padding-bottom:26px; }
+  .rc-tl-item::before{ content:""; position:absolute; left:88px; top:9px; width:11px; height:11px; border-radius:9999px; background:#fff; border:3px solid #e60012; transform:translateX(-50%); z-index:1; }
+  .rc-tl-item::after{ content:""; position:absolute; left:88px; top:9px; bottom:-9px; width:2px; background:var(--line); transform:translateX(-50%); }
+  .rc-tl-item.rc-tl-end{ padding-bottom:0; }
+  .rc-tl-item.rc-tl-end::after{ display:none; }
+  .rc-tl-time{ font-family:"Roboto",sans-serif; font-weight:900; font-size:19px; color:#e60012; text-align:right; padding-right:6px; }
+  .rc-tl-title{ font-weight:700; color:#000; font-size:15px; }
+  .rc-tl-desc{ color:#525252; font-size:13.5px; line-height:1.85; margin-top:3px; }
+  .rc-msg{ background:#fff; border:1px solid var(--line); border-top:3px solid #e60012; }
+  .rc-episode{ box-shadow:0 10px 30px -24px rgba(0,0,0,.5); }
+  @media (max-width:640px){ .rc-tl-item{ grid-template-columns:58px 1fr; gap:14px; } .rc-tl-item::before,.rc-tl-item::after{ left:64px; } .rc-tl-time{ font-size:16px; } }
   @media (prefers-reduced-motion: reduce){ .rc-scroll::after{ animation:none } }
 </style>
 </head>
@@ -131,13 +147,13 @@
           </div>
         </div>
 
-        <!-- 正規代理店 -->
+        <!-- 平均年齢 -->
         <div class="relative overflow-hidden rounded-xl bg-white border border-[color:var(--line)] shadow-sm p-5 flex flex-col">
-          <svg class="absolute right-2 top-1/2 -translate-y-1/2" width="82" height="90" viewBox="0 0 24 26" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.05"><path d="M12 2l9 3v6c0 5.5-3.8 9.7-9 11-5.2-1.3-9-5.5-9-11V5z"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+          <svg class="absolute right-2 top-1/2 -translate-y-1/2" width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.05"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
           <div class="relative z-10">
-            <div class="text-[14px] font-bold text-ink">正規代理店</div>
-            <div class="text-[11px] text-neutral-400">MOXA／ODU／POSITAL</div>
-            <div class="mt-6 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">3</span><span class="text-[13px] font-bold text-neutral-500">社</span></div>
+            <div class="text-[14px] font-bold text-ink">平均年齢</div>
+            <div class="text-[11px] text-neutral-400">若手〜ベテランが活躍</div>
+            <div class="mt-6 flex items-baseline gap-1"><span class="font-display font-black text-4xl" style="color:#e60012">38.5</span><span class="text-[13px] font-bold text-neutral-500">歳</span></div>
           </div>
         </div>
 
@@ -445,78 +461,146 @@
         <h2 class="text-3xl sm:text-5xl font-bold text-ink mt-6 leading-tight">社員インタビュー</h2>
       </div>
 
-      <!-- INTERVIEW 01：法人営業（画像 左） -->
-      <div class="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center mb-16">
-        <div class="relative">
-          <img src="assets/img/recruit-interview1.jpg"
-               onerror="this.onerror=null;this.src='assets/img/biz-handshake.jpg'"
-               alt="法人営業インタビュー" class="w-full aspect-[4/3] object-cover"
-               style="box-shadow:0 24px 48px -22px rgba(0,0,0,.4)">
-          <div class="absolute -bottom-4 -right-3 bg-white px-5 py-3" style="box-shadow:0 10px 24px -12px rgba(0,0,0,.3)">
-            <span class="font-display font-black text-[15px]" style="color:#e60012">INTERVIEW 01</span>
+      <!-- INTERVIEW 01：法人営業 -->
+      <div class="mb-8">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+          <div class="relative">
+            <img src="assets/img/recruit-interview1.jpg"
+                 onerror="this.onerror=null;this.src='assets/img/biz-handshake.jpg'"
+                 alt="法人営業インタビュー" class="w-full aspect-[4/3] object-cover"
+                 style="box-shadow:0 24px 48px -22px rgba(0,0,0,.4)">
+            <div class="absolute -bottom-4 -right-3 bg-white px-5 py-3" style="box-shadow:0 10px 24px -12px rgba(0,0,0,.3)">
+              <span class="font-display font-black text-[15px]" style="color:#e60012">INTERVIEW 01</span>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="text-[13px] font-bold tracking-wide text-neutral-500">法人営業 ／ 2019年入社</div>
-          <p class="rc-quote text-2xl sm:text-3xl font-bold text-ink mt-4 leading-[1.35]">
-            「型番の先」にある<br>現場の困りごとに応えたい。
-          </p>
-          <dl class="mt-7 space-y-4 text-[14px] leading-loose">
-            <div>
-              <dt class="font-bold text-ink">入社の動機</dt>
-              <dd class="text-neutral-600 mt-1">世界の一流部品を扱えること、そして若手にも担当を任せる社風に惹かれました。</dd>
-            </div>
-            <div>
-              <dt class="font-bold text-ink">仕事のやりがい</dt>
-              <dd class="text-neutral-600 mt-1">お客様の装置課題を技術と一緒に解き、採用が決まった瞬間が何よりの喜びです。</dd>
-            </div>
-            <div>
-              <dt class="font-bold text-ink">1日の流れ</dt>
-              <dd class="text-neutral-600 mt-1">午前は見積・納期回答、午後は客先訪問やメーカーとの調整。オンオフの切替がしやすい環境です。</dd>
-            </div>
-            <div>
-              <dt class="font-bold text-ink">これからの人へ</dt>
-              <dd class="text-neutral-600 mt-1">正解のない相談ほど面白い。一緒に悩んで、一緒に喜べる人と働きたいです。</dd>
-            </div>
-          </dl>
+          <div>
+            <div class="inline-flex items-center gap-2 text-[12px] font-bold tracking-wide text-white px-3 py-1" style="background:#e60012">営業部 法人営業</div>
+            <div class="text-[13px] font-bold tracking-wide text-neutral-500 mt-3">2019年 新卒入社 ／ K.T</div>
+            <p class="rc-quote text-2xl sm:text-3xl font-bold text-ink mt-4 leading-[1.35]">
+              「型番の先」にある<br>現場の困りごとに応えたい。
+            </p>
+            <p class="text-[14px] text-neutral-600 mt-5 leading-loose">
+              前職では別業界の営業をしていましたが、「モノを右から左へ流すだけの営業」に物足りなさを感じていました。ケーメックスONEは、世界の一流メーカーの産業用部品を扱いながら、<b class="text-ink">お客様の装置の課題そのものに踏み込める</b>点が決め手でした。入社1年目から自分の担当先を任せてもらえる社風にも惹かれました。
+            </p>
+          </div>
         </div>
       </div>
 
-      <!-- INTERVIEW 02：技術サポート（画像 右） -->
-      <div class="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
-        <div class="lg:order-2 relative">
-          <img src="assets/img/recruit-interview2.jpg"
-               onerror="this.onerror=null;this.src='assets/img/support2.jpg'"
-               alt="技術サポートインタビュー" class="w-full aspect-[4/3] object-cover"
-               style="box-shadow:0 24px 48px -22px rgba(0,0,0,.4)">
-          <div class="absolute -bottom-4 -left-3 bg-white px-5 py-3" style="box-shadow:0 10px 24px -12px rgba(0,0,0,.3)">
-            <span class="font-display font-black text-[15px]" style="color:#e60012">INTERVIEW 02</span>
+      <!-- 01 Q&A -->
+      <div class="grid md:grid-cols-2 gap-x-10 gap-y-7 mb-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">現在の仕事内容は？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">関東エリアの装置メーカー・SIer様を中心に、MOXA の産業用ネットワーク機器や ODU コネクタ、POSITAL エンコーダの提案・見積・納期調整を担当しています。単なる部材供給ではなく、技術部と組んで「どの構成が最適か」から一緒に考えるのが私たちの営業スタイルです。</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">仕事のやりがいは？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">お客様が抱える「装置が止まる」「配線が複雑」といった課題を、技術部と一緒に解いていく過程が一番の面白さです。提案した構成が採用され、量産ラインに載った瞬間は何ものにも代えがたい達成感があります。長く伴走するほど信頼が積み重なるのも商社営業の醍醐味です。</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">職場の雰囲気は？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">営業と技術の距離が近く、分からないことはすぐ相談できます。「一人で抱えない」文化が根づいていて、若手の提案にも先輩がしっかり付き合ってくれます。創業70年の商社でありながら、風通しはとてもフラットです。</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">休日の過ごし方は？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">週末はキャンプやロードバイクでリフレッシュしています。担当エリアの出張ついでに各地の名物を食べ歩くのも密かな楽しみ。オンとオフの切り替えがしやすく、有給も取りやすい環境です。</p>
+        </div>
+      </div>
+
+      <!-- 01 印象に残っているエピソード -->
+      <div class="rc-episode p-7 sm:p-9 mb-10" style="background:var(--paper);border-left:4px solid #e60012">
+        <div class="sec-label" style="color:#e60012">EPISODE</div>
+        <h3 class="text-lg font-bold text-ink mt-1.5 mb-3">「無理かも」を技術部と覆した、ある装置の冗長化案件</h3>
+        <p class="text-[14px] text-neutral-600 leading-loose">ある搬送装置メーカー様から「ラインを止めずにネットワークを二重化したい。ただし盤内スペースがほとんどない」という難しい相談を受けました。当初は他社品で検討されていましたが、私は技術部の FAE と何度も現地に足を運び、MOXA のリング冗長（Turbo Ring）とコンパクトなDINレール型スイッチを組み合わせた構成を提案。<b class="text-ink">既存配線を活かしながら無停止で切り替える設計</b>にまとめ上げました。導入後「ダウンタイムがゼロになった」と感謝の言葉をいただいたときは、営業と技術がひとつのチームだからこそ出せた答えだと実感しました。この案件以降、同社からは新規ライン全てでご指名いただいています。</p>
+      </div>
+
+      <!-- 01 1日のスケジュール（時間軸） -->
+      <div class="mb-6">
+        <div class="sec-label">A DAY SCHEDULE</div>
+        <h3 class="text-lg font-bold text-ink mt-1 mb-5">1日のスケジュール</h3>
+        <ol class="rc-timeline">
+          <li class="rc-tl-item"><div class="rc-tl-time">8:30</div><div class="rc-tl-body"><div class="rc-tl-title">出社・朝の情報チェック</div><p class="rc-tl-desc">メールと在庫・納期状況を確認し、その日の訪問先ごとに優先順位を整理します。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">9:30</div><div class="rc-tl-body"><div class="rc-tl-title">見積作成・メーカー折衝</div><p class="rc-tl-desc">お客様からの引き合いに対して見積を作成。海外メーカーへ価格・納期を確認し、最適な提案をまとめます。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">12:00</div><div class="rc-tl-body"><div class="rc-tl-title">昼食・休憩</div><p class="rc-tl-desc">外出先では担当エリアの飲食店を開拓するのが楽しみ。社内では同僚と情報交換をしながら。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">13:00</div><div class="rc-tl-body"><div class="rc-tl-title">客先訪問（2〜3件）</div><p class="rc-tl-desc">装置の課題ヒアリングや新製品のご提案。必要に応じて技術部の FAE に同行してもらい、その場で技術的な疑問にお答えします。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">16:30</div><div class="rc-tl-body"><div class="rc-tl-title">帰社・フォロー対応</div><p class="rc-tl-desc">訪問内容を整理し、見積フォローや技術部への連携依頼。翌日の準備を進めます。</p></div></li>
+          <li class="rc-tl-item rc-tl-end"><div class="rc-tl-time">18:00</div><div class="rc-tl-body"><div class="rc-tl-title">退社</div><p class="rc-tl-desc">残業は少なめ。プライベートの予定もしっかり確保できます。</p></div></li>
+        </ol>
+      </div>
+
+      <div class="rc-msg p-6 mb-16">
+        <div class="sec-label" style="color:#e60012">MESSAGE</div>
+        <p class="text-[15px] text-ink font-bold leading-relaxed mt-1.5">正解のない相談ほど面白い。一緒に悩んで、一緒に喜べる人と働きたいです。技術が好きでも、人と話すのが好きでも、どちらの入口からでも活躍できる仕事です。</p>
+      </div>
+
+      <!-- INTERVIEW 02：技術サポート -->
+      <div class="mb-8">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+          <div class="lg:order-2 relative">
+            <img src="assets/img/recruit-interview2.jpg"
+                 onerror="this.onerror=null;this.src='assets/img/support2.jpg'"
+                 alt="技術サポートインタビュー" class="w-full aspect-[4/3] object-cover"
+                 style="box-shadow:0 24px 48px -22px rgba(0,0,0,.4)">
+            <div class="absolute -bottom-4 -left-3 bg-white px-5 py-3" style="box-shadow:0 10px 24px -12px rgba(0,0,0,.3)">
+              <span class="font-display font-black text-[15px]" style="color:#e60012">INTERVIEW 02</span>
+            </div>
+          </div>
+          <div class="lg:order-1">
+            <div class="inline-flex items-center gap-2 text-[12px] font-bold tracking-wide text-white px-3 py-1" style="background:#393b56">技術部 FAEグループ</div>
+            <div class="text-[13px] font-bold tracking-wide text-neutral-500 mt-3">2021年 中途入社 ／ M.S</div>
+            <p class="rc-quote text-2xl sm:text-3xl font-bold text-ink mt-4 leading-[1.35]">
+              「困った」を「動いた」に<br>変える手応え。
+            </p>
+            <p class="text-[14px] text-neutral-600 mt-5 leading-loose">
+              前職は制御機器メーカーのサービス部門で、装置トラブルの現場対応をしていました。ケーメックスONEを選んだのは、<b class="text-ink">商社でありながら“技術で戦える”</b>点。MOXA をはじめとする各メーカーの認定資格を取りながら、幅広い製品の専門性を深められることに惹かれました。今では営業に同行して、お客様の前で直接技術提案をする機会も増えています。
+            </p>
           </div>
         </div>
-        <div class="lg:order-1">
-          <div class="text-[13px] font-bold tracking-wide text-neutral-500">技術サポート ／ 2021年入社</div>
-          <p class="rc-quote text-2xl sm:text-3xl font-bold text-ink mt-4 leading-[1.35]">
-            「困った」を「動いた」に<br>変える手応え。
-          </p>
-          <dl class="mt-7 space-y-4 text-[14px] leading-loose">
-            <div>
-              <dt class="font-bold text-ink">入社の動機</dt>
-              <dd class="text-neutral-600 mt-1">メーカー認定を取りながら専門性を深められる点。商社なのに“技術”で戦えるのが魅力でした。</dd>
-            </div>
-            <div>
-              <dt class="font-bold text-ink">仕事のやりがい</dt>
-              <dd class="text-neutral-600 mt-1">産業用スイッチの初期設定やトラブルを解決し、現場が動き出す瞬間に立ち会えること。</dd>
-            </div>
-            <div>
-              <dt class="font-bold text-ink">1日の流れ</dt>
-              <dd class="text-neutral-600 mt-1">問い合わせ一次対応、検証、営業への技術フィードバック。チームで知見を共有しています。</dd>
-            </div>
-            <div>
-              <dt class="font-bold text-ink">これからの人へ</dt>
-              <dd class="text-neutral-600 mt-1">最初は知識ゼロでも大丈夫。研修と認定制度で、着実にプロになれます。</dd>
-            </div>
-          </dl>
+      </div>
+
+      <!-- 02 Q&A -->
+      <div class="grid md:grid-cols-2 gap-x-10 gap-y-7 mb-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">現在の仕事内容は？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">MOXA 製産業用スイッチ・シリアルデバイスサーバー（NPort）・無線AP（AWK）などの技術サポートが中心です。お客様からの問い合わせ対応、初期設定・冗長化構成の検証、営業同行でのプリセールス提案まで担当。社内向けの技術勉強会の講師を務めることもあります。</p>
         </div>
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">仕事のやりがいは？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">「設定が分からず装置が動かない」というお客様の状況を、切り分けと検証で解決し、現場が動き出す瞬間に立ち会えること。自分の技術知識が、そのままお客様の生産ラインの安定につながっている——その実感がモチベーションです。</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">職場の雰囲気は？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">技術部はチームで知見を共有する文化があります。一人で悩まず、Slack や朝会で「こんな事例があった」と気軽に相談できる。メーカーのトレーニングにも会社が積極的に送り出してくれるので、学び続けられる環境です。</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 mb-2"><span class="font-display font-black text-lg" style="color:#e60012">Q.</span><span class="font-bold text-ink text-[15px]">休日の過ごし方は？</span></div>
+          <p class="text-[14px] text-neutral-600 leading-loose">自宅にラボ環境を組んで、新しいネットワーク機器を触るのが趣味兼勉強です。とはいえ休日はしっかり休むのがモットー。子どもと公園に行ったり、カメラを持って出かけたりして気分を切り替えています。</p>
+        </div>
+      </div>
+
+      <!-- 02 印象に残っているエピソード -->
+      <div class="rc-episode p-7 sm:p-9 mb-10" style="background:var(--paper);border-left:4px solid #393b56">
+        <div class="sec-label" style="color:#393b56">EPISODE</div>
+        <h3 class="text-lg font-bold text-ink mt-1.5 mb-3">深夜のライン停止トラブルを、リモートで復旧させた一件</h3>
+        <p class="text-[14px] text-neutral-600 leading-loose">ある工場様で、稼働中のラインのネットワークが突然不通になったと緊急連絡が入りました。現場に急行できない時間帯でしたが、事前に MOXA のスイッチへリモート管理（MXview One）を導入いただいていたため、<b class="text-ink">遠隔でログを解析し、リング冗長の切り替わりが起きていた原因の断線ポートを特定</b>。応急の構成変更を電話でご案内し、ラインを止めずに朝までしのぐことができました。後日訪問して恒久対策を実施。「あの夜がなければ大きな損失だった」と言っていただき、日頃の“転ばぬ先の設計提案”の大切さを改めて実感した案件です。</p>
+      </div>
+
+      <!-- 02 1日のスケジュール（時間軸） -->
+      <div class="mb-6">
+        <div class="sec-label">A DAY SCHEDULE</div>
+        <h3 class="text-lg font-bold text-ink mt-1 mb-5">1日のスケジュール</h3>
+        <ol class="rc-timeline">
+          <li class="rc-tl-item"><div class="rc-tl-time">9:00</div><div class="rc-tl-body"><div class="rc-tl-title">出社・問い合わせ確認</div><p class="rc-tl-desc">メールや電話で寄せられた技術問い合わせを確認し、緊急度に応じて対応順を決めます。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">10:00</div><div class="rc-tl-body"><div class="rc-tl-title">一次対応・切り分け</div><p class="rc-tl-desc">お客様の環境をヒアリングし、設定・配線・機器いずれの問題かを切り分け。過去事例も参照して回答をまとめます。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">12:00</div><div class="rc-tl-body"><div class="rc-tl-title">昼食・休憩</div><p class="rc-tl-desc">技術部メンバーと最近のトラブル事例や新製品の話で盛り上がることも。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">13:00</div><div class="rc-tl-body"><div class="rc-tl-title">実機検証・設定サポート</div><p class="rc-tl-desc">社内のラボで実機を使い、冗長化やVLAN構成を再現して検証。お客様に手順書を添えて回答します。</p></div></li>
+          <li class="rc-tl-item"><div class="rc-tl-time">15:30</div><div class="rc-tl-body"><div class="rc-tl-title">営業同行・技術提案</div><p class="rc-tl-desc">営業とともにお客様先へ。装置構成のご提案や、その場での技術的な疑問に回答します。</p></div></li>
+          <li class="rc-tl-item rc-tl-end"><div class="rc-tl-time">18:00</div><div class="rc-tl-body"><div class="rc-tl-title">退社</div><p class="rc-tl-desc">対応記録をナレッジに残し、翌日の検証準備を整えてから退社します。</p></div></li>
+        </ol>
+      </div>
+
+      <div class="rc-msg p-6 mb-4">
+        <div class="sec-label" style="color:#e60012">MESSAGE</div>
+        <p class="text-[15px] text-ink font-bold leading-relaxed mt-1.5">最初は知識ゼロでも大丈夫。研修とメーカー認定制度で、着実にプロになれます。「なぜ動くのか」を突き詰めるのが好きな人なら、きっと夢中になれる仕事です。</p>
       </div>
     </div>
   </section>
@@ -628,7 +712,7 @@
           <div class="rc-eyebrow">Positions</div>
         </div>
         <h2 class="text-3xl sm:text-5xl font-bold text-ink mt-6 leading-tight">募集要項</h2>
-        <p class="text-[15px] text-neutral-600 mt-5 max-w-2xl leading-loose">職種名をクリックすると詳細が開きます。各職種からそのままエントリーできます。</p>
+        <p class="text-[15px] text-neutral-600 mt-5 max-w-2xl leading-loose">各行をクリックすると詳細が開閉します（アコーディオン）。冒頭の「法人営業」は開いた状態で表示しています。各職種からそのままエントリーできます。</p>
       </div>
       <div id="posList" class="max-w-4xl"></div>
     </div>
@@ -731,8 +815,21 @@
     }
   ];
 
-  var FLOW_NEW = ['エントリー','会社説明会','書類選考','一次面接','最終面接','内定'];
-  var FLOW_MID = ['エントリー','書類選考','一次面接','最終面接','内定'];
+  var FLOW_NEW = [
+    { t:'エントリー',   d:'当サイトの応募フォーム、または各求人媒体からエントリー。この時点で志望動機を練り込む必要はありません。まずは気軽にご連絡ください。', note:'所要 約5分' },
+    { t:'会社説明会',   d:'事業内容・扱うメーカー（MOXA / ODU / POSITAL 等）・働き方をご説明します。オンライン／来社を選べ、来社の場合はテクニカルセンターの見学も可能です。', note:'オンライン可' },
+    { t:'書類選考',     d:'エントリーシート・履歴書をもとに選考します。結果は数日以内にメールでご連絡。通過の可否にかかわらず必ずご連絡します。', note:'結果 数日以内' },
+    { t:'一次面接',     d:'現場の先輩社員と人事によるカジュアル面談。合否を決める場というより、相互理解が目的です。仕事のリアルを知る逆質問も歓迎します。', note:'面接官 現場＋人事' },
+    { t:'最終面接',     d:'役員との面接。入社後にやってみたいこと・配属希望をすり合わせます。働くうえでの不安や条件面の疑問もこの場で解消できます。', note:'役員面接' },
+    { t:'内定',         d:'労働条件を書面でご提示します。内定後も面談・職場見学の機会を設け、納得して入社いただけるようフォローします。', note:'条件提示・入社サポート' }
+  ];
+  var FLOW_MID = [
+    { t:'エントリー',       d:'応募フォーム・求人媒体・社員紹介（リファラル）からエントリー。職務経歴書を添付いただくと選考がスムーズです。', note:'職務経歴書を添付' },
+    { t:'書類選考',         d:'これまでのご経験・スキルと募集ポジションのマッチ度を確認します。結果は1週間以内にご連絡します。', note:'結果 1週間以内' },
+    { t:'一次面接',         d:'配属予定部署の責任者との実務ベースの面談。これまでの経験をどう活かせるか、具体的な業務イメージをすり合わせます。', note:'配属部署の責任者' },
+    { t:'最終面接',         d:'役員面接と条件面談を実施。入社時期・待遇・勤務地などの条件を確認し、疑問点をクリアにします。', note:'役員面接＋条件面談' },
+    { t:'内定',             d:'オファーを提示します。現職の状況に合わせて入社日を調整し、受け入れ準備を進めます。', note:'入社日調整' }
+  ];
 
   KMECS.renderUserShell({
     active:'recruit',
@@ -743,16 +840,22 @@
       posEl.innerHTML =
         '<div class="border-t-2 border-ink">'
         + POSITIONS.map(function(p,i){
-          return '<div class="pos-item border-b border-[color:var(--line)]">'
+          var isOpen = (i===0);
+          return '<div class="pos-item border-b border-[color:var(--line)]'+(isOpen?' open':'')+'">'
             + '<button type="button" class="pos-q w-full flex items-center gap-4 text-left py-6" data-i="'+i+'">'
             + '<span class="font-display font-black text-3xl sm:text-4xl shrink-0" style="color:#e60012;min-width:56px">'+('0'+(i+1))+'</span>'
             + '<span class="flex-1">'
             +   '<span class="block text-[19px] sm:text-[21px] font-bold text-ink">'+p.title+'</span>'
             +   '<span class="block font-display text-[12px] tracking-wide text-neutral-400 mt-0.5">'+p.en+' ／ '+p.type+'</span>'
             + '</span>'
-            + '<span class="pos-ico shrink-0 text-neutral-400 transition-transform"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>'
+            + '<span class="pos-state hidden sm:inline-flex items-center gap-1 text-[12px] font-bold shrink-0" style="color:#e60012">'
+            +   '<span class="pos-state-open'+(isOpen?' hidden':'')+'">開く</span><span class="pos-state-close'+(isOpen?'':' hidden')+'">閉じる</span>'
+            + '</span>'
+            + '<span class="pos-ico shrink-0 w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all"'
+            +   ' style="'+(isOpen?'border-color:#e60012;color:#e60012;transform:rotate(180deg)':'border-color:var(--line);color:#9ca3af')+'">'
+            +   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></span>'
             + '</button>'
-            + '<div class="pos-a hidden pb-8 pl-0 sm:pl-[72px]">'
+            + '<div class="pos-a '+(isOpen?'':'hidden')+' pb-8 pl-0 sm:pl-[72px]">'
             +   '<p class="text-[15px] text-neutral-700 leading-loose">'+p.lead+'</p>'
             +   '<div class="grid sm:grid-cols-2 gap-6 mt-5">'
             +     '<div><div class="text-[13px] font-bold text-ink border-l-4 pl-3 mb-2" style="border-color:#e60012">主な仕事</div>'
@@ -771,22 +874,32 @@
         var item = btn.parentNode;
         var ans = item.querySelector('.pos-a');
         var ico = btn.querySelector('.pos-ico');
+        var st = btn.querySelector('.pos-state');
         var open = !ans.classList.contains('hidden');
         ans.classList.toggle('hidden', open);
         item.classList.toggle('open', !open);
         ico.style.transform = open ? '' : 'rotate(180deg)';
+        ico.style.borderColor = open ? 'var(--line)' : '#e60012';
+        ico.style.color = open ? '#9ca3af' : '#e60012';
+        if(st){
+          st.querySelector('.pos-state-open').classList.toggle('hidden', !open);
+          st.querySelector('.pos-state-close').classList.toggle('hidden', open);
+        }
       });
 
       // ---- 選考フロー（新卒・中途）----
       function renderFlow(el, steps){
         document.getElementById(el).innerHTML = steps.map(function(s,i){
           var last = (i === steps.length-1);
-          return '<li class="pl-7 relative">'
-            + '<span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center font-display font-black text-[10px] text-white" style="background:'+(last?'#e60012':'#22243a')+'">'+(i+1)+'</span>'
-            + '<div class="flex items-baseline gap-3">'
-            +   '<span class="font-display font-black text-[13px] text-neutral-400" style="min-width:44px">STEP'+(i+1)+'</span>'
-            +   '<span class="text-[16px] '+(last?'font-bold text-[color:var(--brand)]':'font-bold text-ink')+'">'+s+'</span>'
-            + '</div></li>';
+          return '<li class="pl-8 relative pb-1">'
+            + '<span class="absolute -left-[13px] top-0.5 w-6 h-6 rounded-full flex items-center justify-center font-display font-black text-[11px] text-white" style="background:'+(last?'#e60012':'#22243a')+'">'+(i+1)+'</span>'
+            + '<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">'
+            +   '<span class="font-display font-black text-[12px] text-neutral-400 tracking-wide">STEP '+(i+1)+'</span>'
+            +   '<span class="text-[17px] '+(last?'font-bold text-[color:var(--brand)]':'font-bold text-ink')+'">'+s.t+'</span>'
+            +   (s.note?'<span class="badge text-[11px] '+(last?'text-white" style="background:#e60012':'text-neutral-500" style="background:var(--paper)')+'">'+s.note+'</span>':'')
+            + '</div>'
+            + '<p class="text-[13.5px] text-neutral-600 leading-loose mt-2">'+s.d+'</p>'
+            + '</li>';
         }).join('');
       }
       renderFlow('flowNew', FLOW_NEW);

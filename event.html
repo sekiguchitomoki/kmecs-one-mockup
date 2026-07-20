@@ -99,10 +99,10 @@
     crumbs:[{label:'トップ',href:'index.html'},{label:'セミナー・イベント'}],
     onReady:function(){
       var UP = [
-        { id:'moxa-device', date:'2026.07.09', time:'11:00〜', mode:'オンライン', img:'moxa-switch.jpg', title:'止まりにくく、保守しやすい装置づくりのための通信構成', desc:'スイッチ・コンバータ・I/O製品の実例で、装置内接続・工場ネットワーク接続・リモート保守のポイントを解説。主催：Moxa Japan。産業装置メーカーの開発・設計担当／SIer／代理店・商社向け。' },
-        { id:'encoder', date:'2026.07.02', time:'14:00〜', mode:'オンライン', img:'cat-measure.jpg', title:'アプリケーション別に学ぶ ロータリエンコーダの使い分け（POSITAL）', desc:'POSITAL のアブソリュート／インクリメンタルエンコーダの使い分けを、搬送・建機・再エネ分野の実例を交えて解説します。' },
-        { id:'moxa-e26design', date:'2026.06.23', time:'11:00〜', mode:'オンライン', img:'case-ship.jpg', title:'IACS UR E26 対応におけるネットワーク設計の課題と未来', desc:'海事のサイバーリスク、E26とは、現場課題とMoxaのソリューション、日本海事業界におけるE26の未来を初心者向けに解説。主催：Moxa Japan（当社は正規代理店）。' },
-        { id:'cra', date:'2026.05.12', time:'—', mode:'オンライン', img:'moxa-router.jpg', title:'EUサイバーレジリエンス法（CRA）最新動向 解説セミナー', desc:'CRA法の概要とMoxa産業用ネットワークデバイスの紹介に加え、三菱電機をゲストにIEC 62443-4-1認証取得支援の経験・現場のOTセキュリティ対策を紹介。' }
+        { id:'moxa-device', date:'2026.07.09', time:'11:00〜', mode:'オンライン', img:'biz-summit.jpg', title:'止まりにくく、保守しやすい装置づくりのための通信構成', desc:'スイッチ・コンバータ・I/O製品の実例で、装置内接続・工場ネットワーク接続・リモート保守のポイントを解説。主催：Moxa Japan。産業装置メーカーの開発・設計担当／SIer／代理店・商社向け。' },
+        { id:'encoder', date:'2026.07.02', time:'14:00〜', mode:'オンライン', img:'biz-global.jpg', title:'アプリケーション別に学ぶ ロータリエンコーダの使い分け（POSITAL）', desc:'POSITAL のアブソリュート／インクリメンタルエンコーダの使い分けを、搬送・建機・再エネ分野の実例を交えて解説します。' },
+        { id:'moxa-e26design', date:'2026.06.23', time:'11:00〜', mode:'オンライン', img:'event-hero.jpg', title:'IACS UR E26 対応におけるネットワーク設計の課題と未来', desc:'海事のサイバーリスク、E26とは、現場課題とMoxaのソリューション、日本海事業界におけるE26の未来を初心者向けに解説。主催：Moxa Japan（当社は正規代理店）。' },
+        { id:'cra', date:'2026.05.12', time:'—', mode:'オンライン', img:'biz-handshake.jpg', title:'EUサイバーレジリエンス法（CRA）最新動向 解説セミナー', desc:'CRA法の概要とMoxa産業用ネットワークデバイスの紹介に加え、三菱電機をゲストにIEC 62443-4-1認証取得支援の経験・現場のOTセキュリティ対策を紹介。' }
       ];
       function modeBadge(m){
         return m==='オンライン'
@@ -121,21 +121,50 @@
       }).join('');
 
       var AR = [
-        { img:'moxa-switch.jpg',     tag:'動画', title:'産業用スイッチ 冗長化設計 実演', date:'2026.05' },
-        { img:'cat-connector.jpg',   tag:'スライド', title:'コネクタ選定 実践ワークショップ', date:'2026.04' },
-        { img:'moxa-wireless.jpg',   tag:'動画', title:'産業用無線AWK 導入事例セミナー', date:'2026.03' },
-        { img:'moxa-serialconv.jpg', tag:'スライド', title:'レガシー設備のIoT化 入門', date:'2026.02' },
-        { img:'cat-ipc.jpg',         tag:'動画', title:'ファンレス組込PCの選び方', date:'2026.01' },
-        { img:'cat-sensor.jpg',      tag:'スライド', title:'エンコーダ・センサ基礎講座', date:'2025.12' }
+        { img:'biz-summit.jpg',    tag:'動画',   dur:'32分', title:'産業用スイッチ 冗長化設計 実演', date:'2026.05' },
+        { img:'biz-global.jpg',    tag:'資料',   dur:'PDF 3.4MB', title:'コネクタ選定 実践ワークショップ', date:'2026.04' },
+        { img:'biz-handshake.jpg', tag:'動画',   dur:'45分', title:'産業用無線AWK 導入事例セミナー', date:'2026.03' },
+        { img:'biz-challenge.jpg', tag:'資料',   dur:'PDF 2.1MB', title:'レガシー設備のIoT化 入門', date:'2026.02' },
+        { img:'event-hero.jpg',    tag:'動画',   dur:'28分', title:'ファンレス組込PCの選び方', date:'2026.01' },
+        { img:'biz-summit.jpg',    tag:'資料',   dur:'PDF 5.0MB', title:'エンコーダ・センサ基礎講座', date:'2025.12' }
       ];
+      function arThumb(a){
+        if(a.tag==='動画'){
+          // 動画：写真＋暗幕＋大きな再生ボタン＋尺
+          return '<div class="h-40 relative overflow-hidden border-b border-[color:var(--line)]" style="background:#0d1024">'
+            + '<img src="assets/img/'+a.img+'" alt="" class="w-full h-full object-cover sweep-img" style="opacity:.62">'
+            + '<div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(13,16,36,.15),rgba(13,16,36,.72))"></div>'
+            + '<span class="absolute top-2.5 left-2.5 badge text-white flex items-center gap-1" style="background:#e60012"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>動画</span>'
+            + '<span class="absolute bottom-2.5 right-2.5 text-[12px] font-display font-bold text-white px-2 py-0.5 rounded" style="background:rgba(0,0,0,.6)">'+a.dur+'</span>'
+            + '<span class="absolute inset-0 flex items-center justify-center"><span class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center" style="box-shadow:0 8px 22px -6px rgba(0,0,0,.5)"><svg width="24" height="24" viewBox="0 0 24 24" fill="#e60012"><path d="M8 5v14l11-7z"/></svg></span></span>'
+            + '</div>';
+        }
+        // 資料：スライド／PDFに見える紙面グラフィック
+        return '<div class="h-40 relative overflow-hidden border-b border-[color:var(--line)] flex items-center justify-center" style="background:linear-gradient(135deg,#eef0f6,#dfe3ee)">'
+          + '<span class="absolute top-2.5 left-2.5 badge text-white flex items-center gap-1" style="background:#393b56"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M4 5h16M4 10h16M4 15h10"/></svg>資料</span>'
+          + '<span class="absolute bottom-2.5 right-2.5 text-[11px] font-display font-bold text-white px-2 py-0.5 rounded" style="background:#e60012">PDF</span>'
+          + '<div class="relative w-[92px] h-[116px] bg-white rotate-[-4deg]" style="box-shadow:0 12px 26px -12px rgba(0,0,0,.4)">'
+          +   '<div class="absolute left-3 right-3 top-4 h-2 rounded-sm" style="background:#e60012"></div>'
+          +   '<div class="absolute left-3 right-6 top-8 h-1.5 rounded-sm bg-neutral-300"></div>'
+          +   '<div class="absolute left-3 right-4 top-[42px] h-1.5 rounded-sm bg-neutral-200"></div>'
+          +   '<div class="absolute left-3 right-8 top-[54px] h-1.5 rounded-sm bg-neutral-200"></div>'
+          +   '<div class="absolute left-3 bottom-3 w-9 h-9 rounded-sm" style="background:#e6e9f2"></div>'
+          +   '<div class="absolute right-3 bottom-3 w-10 h-6 rounded-sm" style="background:#eef0f6;border:1px solid #dfe3ee"></div>'
+          + '</div>'
+          + '<div class="relative w-[92px] h-[116px] bg-white rotate-[5deg] -ml-8 mt-6" style="box-shadow:0 12px 26px -12px rgba(0,0,0,.35)">'
+          +   '<div class="absolute left-3 right-4 top-4 h-1.5 rounded-sm bg-neutral-300"></div>'
+          +   '<div class="absolute left-3 right-6 top-7 h-1.5 rounded-sm bg-neutral-200"></div>'
+          +   '<div class="absolute left-3 right-3 bottom-4 h-8 rounded-sm" style="background:#e6e9f2"></div>'
+          + '</div>'
+          + '</div>';
+      }
       document.getElementById('arGrid').innerHTML = AR.map(function(a){
-        return '<a href="javascript:void(0)" onclick="alert(\'アーカイブ資料を表示しました。（'+a.tag+'・モックのため実データはありません）\')" class="card card-h sweep overflow-hidden flex flex-col cursor-pointer">'
-          + '<div class="h-36 relative overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/'+a.img+'" alt="" class="w-full h-full object-cover sweep-img">'
-          + '<span class="absolute inset-0 flex items-center justify-center"><span class="w-12 h-12 rounded-full bg-white/85 flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#e60012"><path d="M8 5v14l11-7z"/></svg></span></span></div>'
+        return '<a href="javascript:void(0)" onclick="alert(\''+(a.tag==='動画'?'アーカイブ動画を再生':'アーカイブ資料を表示')+'しました。（モックのため実データはありません）\')" class="card card-h sweep overflow-hidden flex flex-col cursor-pointer">'
+          + arThumb(a)
           + '<div class="p-4 flex-1 flex flex-col">'
-          + '<div class="flex items-center gap-2 mb-1"><span class="badge border border-[color:var(--line)] text-neutral-500">'+a.tag+'</span><span class="text-[13px] text-neutral-400 font-display">'+a.date+'</span></div>'
+          + '<div class="flex items-center gap-2 mb-1"><span class="text-[13px] text-neutral-400 font-display">'+a.date+'</span><span class="text-neutral-300">/</span><span class="text-[13px] text-neutral-400">'+a.dur+'</span></div>'
           + '<div class="text-[15px] font-bold text-ink leading-snug flex-1">'+a.title+'</div>'
-          + '<div class="mt-3 text-[14px] font-bold" style="color:#e60012">資料を見る ›</div></div></a>';
+          + '<div class="mt-3 text-[14px] font-bold flex items-center gap-1" style="color:#e60012">'+(a.tag==='動画'?'動画を見る':'資料を見る')+' ›</div></div></a>';
       }).join('');
     }
   });
