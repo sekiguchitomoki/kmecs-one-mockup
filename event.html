@@ -62,7 +62,7 @@
           <div class="flex gap-2"><span class="font-bold text-ink shrink-0 w-16">登壇</span><span class="text-neutral-600">栗山 裕行（営業部）／ 片岡 浩一朗（技術部 FAEグループ）<br><span class="text-neutral-400 text-[13px]">MXview One・EDRシリーズの実機デモンストレーション</span></span></div>
         </div>
         <div class="mt-5 flex flex-wrap items-center gap-3">
-          <a href="contact.html" class="btn-red !px-8">申し込む（無料）</a>
+          <a href="event-detail.html?id=iacs-e26" class="btn-red !px-8">詳細・お申し込み ›</a>
           <span class="text-[13px] text-neutral-400">主催：株式会社ケーメックスONE</span>
         </div>
       </div>
@@ -99,10 +99,10 @@
     crumbs:[{label:'トップ',href:'index.html'},{label:'セミナー・イベント'}],
     onReady:function(){
       var UP = [
-        { date:'2026.07.09', time:'11:00〜', mode:'オンライン', img:'moxa-switch.jpg', title:'止まりにくく、保守しやすい装置づくりのための通信構成', desc:'スイッチ・コンバータ・I/O製品の実例で、装置内接続・工場ネットワーク接続・リモート保守のポイントを解説。主催：Moxa Japan。産業装置メーカーの開発・設計担当／SIer／代理店・商社向け。' },
-        { date:'2026.07.02', time:'14:00〜', mode:'オンライン', img:'cat-measure.jpg', title:'アプリケーション別に学ぶ ロータリエンコーダの使い分け（POSITAL）', desc:'POSITAL のアブソリュート／インクリメンタルエンコーダの使い分けを、搬送・建機・再エネ分野の実例を交えて解説します。' },
-        { date:'2026.06.23', time:'11:00〜', mode:'オンライン', img:'case-ship.jpg', title:'IACS UR E26 対応におけるネットワーク設計の課題と未来', desc:'海事のサイバーリスク、E26とは、現場課題とMoxaのソリューション、日本海事業界におけるE26の未来を初心者向けに解説。主催：Moxa Japan（当社は正規代理店）。' },
-        { date:'2026.05.12', time:'—', mode:'オンライン', img:'moxa-router.jpg', title:'EUサイバーレジリエンス法（CRA）最新動向 解説セミナー', desc:'CRA法の概要とMoxa産業用ネットワークデバイスの紹介に加え、三菱電機をゲストにIEC 62443-4-1認証取得支援の経験・現場のOTセキュリティ対策を紹介。' }
+        { id:'moxa-device', date:'2026.07.09', time:'11:00〜', mode:'オンライン', img:'moxa-switch.jpg', title:'止まりにくく、保守しやすい装置づくりのための通信構成', desc:'スイッチ・コンバータ・I/O製品の実例で、装置内接続・工場ネットワーク接続・リモート保守のポイントを解説。主催：Moxa Japan。産業装置メーカーの開発・設計担当／SIer／代理店・商社向け。' },
+        { id:'encoder', date:'2026.07.02', time:'14:00〜', mode:'オンライン', img:'cat-measure.jpg', title:'アプリケーション別に学ぶ ロータリエンコーダの使い分け（POSITAL）', desc:'POSITAL のアブソリュート／インクリメンタルエンコーダの使い分けを、搬送・建機・再エネ分野の実例を交えて解説します。' },
+        { id:'moxa-e26design', date:'2026.06.23', time:'11:00〜', mode:'オンライン', img:'case-ship.jpg', title:'IACS UR E26 対応におけるネットワーク設計の課題と未来', desc:'海事のサイバーリスク、E26とは、現場課題とMoxaのソリューション、日本海事業界におけるE26の未来を初心者向けに解説。主催：Moxa Japan（当社は正規代理店）。' },
+        { id:'cra', date:'2026.05.12', time:'—', mode:'オンライン', img:'moxa-router.jpg', title:'EUサイバーレジリエンス法（CRA）最新動向 解説セミナー', desc:'CRA法の概要とMoxa産業用ネットワークデバイスの紹介に加え、三菱電機をゲストにIEC 62443-4-1認証取得支援の経験・現場のOTセキュリティ対策を紹介。' }
       ];
       function modeBadge(m){
         return m==='オンライン'
@@ -117,7 +117,7 @@
           + '<div class="text-[13px] text-neutral-400 font-display">'+e.time+'</div>'
           + '<div class="text-[16px] font-bold text-ink leading-snug mt-1">'+e.title+'</div>'
           + '<p class="text-[14px] text-neutral-500 mt-1.5 leading-relaxed flex-1">'+e.desc+'</p>'
-          + '<a href="contact.html" class="btn-red-o mt-3 self-start !py-2.5 !px-6 !text-[14px]">申し込む</a></div></div>';
+          + '<a href="event-detail.html?id='+e.id+'" class="btn-red-o mt-3 self-start !py-2.5 !px-6 !text-[14px]">詳細・申し込み ›</a></div></div>';
       }).join('');
 
       var AR = [

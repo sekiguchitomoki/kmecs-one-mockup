@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content"><div id="page-body"></div></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  // セミナー・ウェビナー詳細データ（実サイトの告知内容を反映）
+  var SEMINARS = {
+    'iacs-e26': {
+      tag:'造船メーカー向け', mode:'オンライン', tool:'Microsoft Teams', fee:'無料', img:'assets/img/case-ship.jpg',
+      date:'2026.07.23', dow:'木', time:'14:00〜14:45', span:'45分',
+      title:'造船メーカー向け IACS UR E26 の主要要素と Moxa ソリューション',
+      sub:'船舶のデジタル化における新基準「IACS UR E26」',
+      lead:'2024年施行の IACS UR E26 は、船舶のサイバーセキュリティに関する新しい統一規則です。本ウェビナーでは、E26 が定義する5つの主要要素のうち「識別」「防御」にフォーカスし、造船現場の課題と、Moxa 製 産業用ネットワーク機器による解決策を実機デモを交えて解説します。',
+      target:['造船メーカーをはじめとした IACS UR E26 対象者の方','船上ネットワークの設計・保守に携わる方','セキュアな船舶ネットワーク構築を検討中の方'],
+      goals:['IACS UR E26 の5つの主要要素のうち「識別」「防御」の要点が分かる','規格適合への具体的な道筋が理解できる','「止まらない・守れる」船舶ネットワークの構築手法が学べる'],
+      program:[
+        {t:'IACS UR E26「識別・防御」の現場課題', d:'海事業界のサイバーリスクと、E26 が求める「識別・防御」の要件を、造船現場の視点で解説します。'},
+        {t:'Moxa ソリューションの実機デモ', d:'ネットワーク可視化「MXview One」と、産業用セキュアルータ／ファイアウォール「EDRシリーズ」の実機デモンストレーションをご覧いただきます。'}
+      ],
+      solutions:[
+        {n:'MXview One', d:'産業用ネットワークの可視化・監視プラットフォーム。機器・トポロジを把握し、異常を早期に検知します。'},
+        {n:'EDRシリーズ', d:'産業用セキュアルータ／ファイアウォール。OT/IT の分離・VPN・侵入防御でネットワークを守ります。'}
+      ],
+      speakers:[
+        {name:'栗山 裕行', org:'株式会社ケーメックスONE 営業部', role:'IACS UR E26「識別・防御」について解説'},
+        {name:'片岡 浩一朗', org:'株式会社ケーメックスONE 技術部 FAEグループ', role:'MXview One・EDRシリーズの実機デモンストレーション'}
+      ],
+      host:'株式会社ケーメックスONE',
+      faq:[
+        {q:'参加費はかかりますか？', a:'無料でご参加いただけます。'},
+        {q:'当日参加できない場合、資料はもらえますか？', a:'ご登録いただいた方には、セミナー終了後に講義資料をメールでお送りします。'},
+        {q:'視聴に必要なものは？', a:'インターネット環境と、Microsoft Teams を視聴できる端末（PC 推奨）をご用意ください。登録後に視聴用URLをメールでお送りします。'},
+        {q:'個別に相談することはできますか？', a:'はい。セミナー後の個別相談も承っております。お問い合わせください。'},
+        {q:'同業者でも参加できますか？', a:'恐れ入りますが、同業者様のお申し込みはお断りする場合がございます。'},
+        {q:'途中からの参加や退出は可能ですか？', a:'可能です。ご都合の良い範囲でご視聴ください。'}
+      ]
+    },
+    'moxa-device': {
+      tag:'装置メーカー向け', mode:'オンライン', tool:'GoToWebinar', fee:'無料', img:'assets/img/moxa-switch.jpg',
+      date:'2026.07.09', dow:'木', time:'11:00〜', span:'—', title:'止まりにくく、保守しやすい装置づくりのための通信構成',
+      sub:'スイッチ・コンバータ・I/O製品を活用した実例紹介',
+      lead:'装置内の機器同士を安定してつなぐ方法、装置と工場ネットワークを安全につなぐ方法、リモート監視・保守を効率化するポイントを、実際の導入事例を交えて解説します。主催：Moxa Japan。',
+      target:['産業装置メーカーの開発・設計担当者','装置立ち上げ工数・保守コストに課題を持つ部門','スマートファクトリー化を支援する SIer','提案力を高めたい代理店・商社'],
+      goals:['装置内機器を安定してつなぐ通信構成が分かる','装置と工場ネットワークを安全につなぐ方法が分かる','リモート監視・保守で効率化するポイントが分かる'],
+      program:[{t:'装置内接続の実例', d:'スイッチ・コンバータ・I/O製品を活用した安定接続の実例を紹介します。'},{t:'工場ネットワークとの安全な接続', d:'OT/IT 境界の考え方と、安全に外部とつなぐ構成を解説します。'},{t:'リモート監視・保守', d:'保守効率を高める監視・遠隔対応のポイントを紹介します。'}],
+      solutions:[], speakers:[], host:'Moxa Japan 合同会社（当社は正規代理店）',
+      faq:[{q:'参加費はかかりますか？', a:'無料でご参加いただけます。'},{q:'資料はもらえますか？', a:'ご登録いただいた方に、後日資料をご案内する場合があります。'}]
+    },
+    'moxa-e26design': {
+      tag:'海事業界向け', mode:'オンライン', tool:'GoToWebinar', fee:'無料', img:'assets/img/case-ship.jpg',
+      date:'2026.06.23', dow:'火', time:'11:00〜', span:'—', title:'IACS UR E26 対応におけるネットワーク設計の課題と未来',
+      sub:'セキュアな船上ネットワーク構築の要件を初心者向けに',
+      lead:'海事業界におけるサイバーリスク、「IACS UR E26 とは」、現場の課題と Moxa のソリューション、日本海事業界における E26 の未来を、初心者の方にも分かりやすく解説します。主催：Moxa Japan。',
+      target:['船主・オペレーター','造船所・設計会社','コンサルタント・システムインテグレーター'],
+      goals:['IACS UR E26/27 の概要が分かる','セキュアな船上ネットワーク設計の要件が理解できる','現場課題への Moxa のアプローチが分かる'],
+      program:[{t:'海事業界のサイバーリスク', d:'船舶を取り巻くサイバーセキュリティの動向を整理します。'},{t:'IACS UR E26 とは', d:'2024年施行の規則の要点を初心者向けに解説します。'},{t:'現場課題と Moxa ソリューション', d:'設計上の課題と対応策を紹介します。'}],
+      solutions:[], speakers:[], host:'Moxa Japan 合同会社（当社は正規代理店）',
+      faq:[{q:'初心者でも大丈夫ですか？', a:'はい。初めての方にも分かりやすい内容です。'},{q:'参加費は？', a:'無料です。'}]
+    },
+    'encoder': {
+      tag:'POSITAL', mode:'オンライン', tool:'—', fee:'無料', img:'assets/img/cat-measure.jpg',
+      date:'2026.07.02', dow:'木', time:'14:00〜', span:'—', title:'アプリケーション別に学ぶ ロータリエンコーダの使い分け',
+      sub:'POSITAL アブソリュート／インクリメンタルエンコーダ 実例紹介',
+      lead:'POSITAL のアブソリュートエンコーダとインクリメンタルエンコーダの使い分けを、アプリケーション別に実例を交えて解説します。搬送・建機・再生可能エネルギー分野などでの選定ポイントを整理します。',
+      target:['エンコーダの選定に迷っている方','搬送・建機・再エネ分野の設計担当者','モーション制御・位置決めに携わる方'],
+      goals:['アブソリュート／インクリメンタルの違いと使い分けが分かる','アプリケーション別の選定ポイントが分かる'],
+      program:[{t:'エンコーダの基礎', d:'方式ごとの特性を整理します。'},{t:'アプリ別の使い分け', d:'実例を交えて選定の考え方を解説します。'}],
+      solutions:[], speakers:[], host:'株式会社ケーメックスONE',
+      faq:[{q:'参加費は？', a:'無料です。'}]
+    },
+    'cra': {
+      tag:'製造業向け', mode:'オンライン', tool:'—', fee:'無料', img:'assets/img/moxa-router.jpg',
+      date:'2026.05.12', dow:'', time:'—', span:'—', title:'EU サイバーレジリエンス法（CRA）最新動向 解説セミナー',
+      sub:'OTセキュリティ対策と Moxa 製品の活用',
+      lead:'OTネットワークのサイバーセキュリティ対策が注目される中、欧州で施行された CRA 法への対策を扱うスペシャルセミナー。CRA の概要解説、対策に役立つ Moxa の産業用ネットワークデバイスの紹介に加え、三菱電機をゲストに迎え IEC 62443-4-1 認証取得支援での経験や現場の OT セキュリティ対策状況を紹介します。',
+      target:['CRA 対策が必要な装置メーカーの設計・担当者','関連商材を探す商社担当者'],
+      goals:['CRA 法の概要と影響が分かる','対策に役立つ産業用ネットワークデバイスが分かる','IEC 62443-4-1 認証取得支援の実際が分かる'],
+      program:[{t:'CRA 法の概要', d:'欧州 CRA 法の要点と製造業への影響を解説します。'},{t:'Moxa 製品による対策', d:'対策に役立つデバイスを紹介します。'},{t:'ゲスト講演（三菱電機）', d:'IEC 62443-4-1 認証取得支援の経験・現場の OT セキュリティ対策を紹介します。'}],
+      solutions:[], speakers:[{name:'ゲスト：三菱電機株式会社', org:'', role:'IEC 62443-4-1 認証取得支援の経験を紹介'}], host:'株式会社ケーメックスONE',
+      faq:[{q:'参加費は？', a:'無料です。'}]
+    }
+  };
+
+  var E = SEMINARS[qs('id')] || SEMINARS['iacs-e26'];
+
+  KMECS.renderUserShell({
+    active:'event',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'セミナー・イベント',href:'event.html'},{label:E.title}],
+    onReady:function(){
+      function modeBadge(){ return E.mode==='オンライン'
+        ? '<span class="badge text-white" style="background:#393b56">'+E.mode+(E.tool&&E.tool!=='—'?'（'+E.tool+'）':'')+'</span>'
+        : '<span class="badge bg-ink text-white">'+E.mode+'</span>'; }
+      var dd = E.date.split('.');
+      var applyBtn = '<a href="contact.html?seminar='+encodeURIComponent(E.title)+'" class="btn-red !px-9 !py-3.5 !text-[16px]">無料で参加登録する</a>';
+
+      var html =
+        // ヒーロー
+        '<section class="relative text-white overflow-hidden" style="background:#0d1024">'
+        + '<img src="'+E.img+'" alt="" class="absolute inset-0 w-full h-full object-cover" style="opacity:.4;object-position:center 40%">'
+        + '<div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(13,16,36,.92),rgba(13,16,36,.5))"></div>'
+        + '<div class="relative max-w-[1000px] mx-auto px-4 xl:px-8 py-14 sm:py-16">'
+        + '<a href="event.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-300 hover:text-white mb-4">‹ セミナー・イベント一覧へ</a>'
+        + '<div class="flex items-center gap-2 flex-wrap"><span class="badge text-white" style="background:#e60012">'+E.tag+'</span>'+modeBadge()+'<span class="badge bg-white/90 text-ink">参加費 '+E.fee+'</span></div>'
+        + '<div class="sec-label text-neutral-300 mt-5">'+E.sub+'</div>'
+        + '<h1 class="text-2xl sm:text-4xl font-bold mt-2 leading-snug">'+E.title+'</h1>'
+        + '<div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px]">'
+        + '<span class="font-display font-black text-2xl">'+dd[0]+'.<span style="color:#ff5566">'+dd[1]+'.'+dd[2]+'</span>'+(E.dow?' <span class="text-base">'+E.dow+'</span>':'')+'</span>'
+        + '<span class="text-neutral-200">'+E.time+(E.span&&E.span!=='—'?'（'+E.span+'）':'')+'</span></div>'
+        + '<div class="mt-6">'+applyBtn+'</div></div></section>'
+
+        + '<div class="max-w-[1000px] mx-auto px-4 xl:px-8 py-14">'
+        + '<p class="text-[16px] text-neutral-700 leading-loose mb-12">'+E.lead+'</p>';
+
+      // このセミナーで分かること
+      if(E.goals && E.goals.length){
+        html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">GOAL</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">このセミナーで分かること</h2>'
+          + '<div class="grid sm:grid-cols-2 gap-3">'
+          + E.goals.map(function(g){ return '<div class="card p-4 flex gap-3"><span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[13px] shrink-0" style="background:#e60012"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-[15px] text-neutral-700 leading-relaxed">'+g+'</span></div>'; }).join('')
+          + '</div></section>';
+      }
+      // 対象
+      if(E.target && E.target.length){
+        html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">TARGET</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">こんな方におすすめ</h2>'
+          + '<ul class="space-y-2 text-[15px] text-neutral-700">'
+          + E.target.map(function(t){ return '<li class="flex gap-2"><span style="color:#e60012">●</span><span>'+t+'</span></li>'; }).join('')
+          + '</ul></section>';
+      }
+      // プログラム
+      if(E.program && E.program.length){
+        html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">PROGRAM</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">プログラム・内容</h2>'
+          + '<ol class="relative border-l-2 border-[color:var(--line)] ml-2 space-y-5">'
+          + E.program.map(function(p,i){ return '<li class="pl-6 relative"><span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full text-white text-[10px] flex items-center justify-center font-bold" style="background:#e60012">'+(i+1)+'</span>'
+            + '<div class="text-[16px] font-bold text-ink">'+p.t+'</div><p class="text-[14px] text-neutral-600 mt-1 leading-relaxed">'+p.d+'</p></li>'; }).join('')
+          + '</ol></section>';
+      }
+      // ソリューション紹介
+      if(E.solutions && E.solutions.length){
+        html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">SOLUTION</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">ご紹介するソリューション</h2>'
+          + '<div class="grid sm:grid-cols-2 gap-4">'
+          + E.solutions.map(function(s){ return '<div class="card p-5"><div class="text-[16px] font-bold text-ink">'+s.n+'</div><p class="text-[14px] text-neutral-600 mt-1.5 leading-relaxed">'+s.d+'</p></div>'; }).join('')
+          + '</div></section>';
+      }
+      // 登壇者
+      if(E.speakers && E.speakers.length){
+        html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">SPEAKER</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">登壇者</h2>'
+          + '<div class="grid sm:grid-cols-2 gap-4">'
+          + E.speakers.map(function(s){ return '<div class="card p-5 flex gap-4 items-start">'
+            + '<span class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0" style="background:#22243a">'+(s.name.replace(/^ゲスト：/,'').charAt(0))+'</span>'
+            + '<div><div class="text-[16px] font-bold text-ink">'+s.name+'</div>'+(s.org?'<div class="text-[13px] text-neutral-500 mt-0.5">'+s.org+'</div>':'')+'<p class="text-[13px] text-neutral-600 mt-1.5 leading-relaxed">'+s.role+'</p></div></div>'; }).join('')
+          + '</div></section>';
+      }
+      // 参加フロー
+      html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">FLOW</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">お申し込みの流れ</h2>'
+        + '<div class="grid sm:grid-cols-3 gap-4">'
+        + [['1','フォームから参加登録','必要事項をご入力ください。'],['2','視聴用URLを受け取る','登録後、視聴用URLをメールでお送りします。'],['3','当日ご視聴','当日、URLからアクセスしてご視聴ください。']].map(function(f){
+            return '<div class="card p-5 text-center"><div class="font-display font-black text-3xl" style="color:#e60012">'+f[0]+'</div><div class="text-[15px] font-bold text-ink mt-2">'+f[1]+'</div><p class="text-[13px] text-neutral-500 mt-1.5 leading-relaxed">'+f[2]+'</p></div>'; }).join('')
+        + '</div></section>';
+      // FAQ
+      if(E.faq && E.faq.length){
+        html += '<section class="mb-12"><div class="sec-label" style="color:#e60012">FAQ</div><h2 class="text-xl font-bold text-ink mt-1 mb-4">よくあるご質問</h2>'
+          + '<div id="sfaq" class="divide-y divide-[color:var(--line)] border-y border-[color:var(--line)]">'
+          + E.faq.map(function(x,i){ return '<div><button class="sq w-full flex items-start gap-3 text-left py-4" data-i="'+i+'"><span class="font-display font-bold shrink-0" style="color:#e60012">Q</span><span class="flex-1 text-[16px] font-bold text-ink">'+x.q+'</span><span class="si shrink-0 text-neutral-400 transition-transform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></button><div class="sa hidden pb-4 pl-7"><p class="text-[15px] text-neutral-600 leading-relaxed">'+x.a+'</p></div></div>'; }).join('')
+          + '</div></section>';
+      }
+      // 申込CTA
+      html += '<section class="text-white text-center p-10" style="background:#e60012">'
+        + '<h2 class="text-2xl font-bold">'+E.title+'</h2>'
+        + '<p class="text-[15px] opacity-90 mt-2">'+E.date.replace(/\./g,'/')+(E.dow?'（'+E.dow+'）':'')+'　'+E.time+'　'+E.mode+'　参加費 '+E.fee+'　主催：'+E.host+'</p>'
+        + '<div class="mt-5"><a href="contact.html?seminar='+encodeURIComponent(E.title)+'" class="inline-flex items-center gap-2 bg-white font-bold text-[16px] px-9 py-3.5" style="color:#e60012">無料ウェビナーに申し込む ›</a></div>'
+        + '<p class="text-[12px] opacity-80 mt-4">※ 本ページはモックのため、実際の申し込み・配信は行われません。同業者様のお申し込みはお断りする場合がございます。</p>'
+        + '</section>'
+        + '</div>';
+
+      document.getElementById('page-body').innerHTML = html;
+
+      // FAQ アコーディオン
+      document.querySelectorAll('#sfaq .sq').forEach(function(b){
+        b.addEventListener('click', function(){
+          var box=b.parentNode.querySelector('.sa'); var ic=b.querySelector('.si');
+          var open=box.classList.toggle('hidden'); ic.style.transform = open ? '' : 'rotate(180deg)';
+        });
+      });
+    }
+  });
+</script>
+</body>
+</html>
