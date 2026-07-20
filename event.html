@@ -129,7 +129,7 @@
         { img:'cat-sensor.jpg',      tag:'スライド', title:'エンコーダ・センサ基礎講座', date:'2025.12' }
       ];
       document.getElementById('arGrid').innerHTML = AR.map(function(a){
-        return '<a href="#" class="card card-h sweep overflow-hidden flex flex-col">'
+        return '<a href="javascript:void(0)" onclick="alert(\'アーカイブ資料を表示しました。（'+a.tag+'・モックのため実データはありません）\')" class="card card-h sweep overflow-hidden flex flex-col cursor-pointer">'
           + '<div class="h-36 relative overflow-hidden border-b border-[color:var(--line)]"><img src="assets/img/'+a.img+'" alt="" class="w-full h-full object-cover sweep-img">'
           + '<span class="absolute inset-0 flex items-center justify-center"><span class="w-12 h-12 rounded-full bg-white/85 flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#e60012"><path d="M8 5v14l11-7z"/></svg></span></span></div>'
           + '<div class="p-4 flex-1 flex flex-col">'
