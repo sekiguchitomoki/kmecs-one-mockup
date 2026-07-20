@@ -36,8 +36,28 @@
         <button class="tab-head text-left" data-tab="t3"><div class="sec-label">PCN / EOL</div><div class="text-sm font-bold text-ink mt-1">製品変更履歴</div></button>
       </div>
       <div class="card p-6 mt-6 text-sm">
-        <div class="tab t1"><table class="w-full text-neutral-700"><tbody class="divide-y divide-[color:var(--line)]" id="specTable"></tbody></table></div>
+        <div class="tab t1">
+          <!-- 特長 -->
+          <div id="featWrap" class="hidden mb-7">
+            <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">特長</div>
+            <ul id="featList" class="space-y-1.5 text-[15px] text-neutral-700"></ul>
+          </div>
+          <!-- 用途 -->
+          <div id="appWrap" class="hidden mb-7">
+            <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">主な用途・アプリケーション</div>
+            <div id="appList" class="flex flex-wrap gap-2"></div>
+          </div>
+          <!-- 主な仕様 -->
+          <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">主な仕様</div>
+          <table class="w-full text-neutral-700"><tbody class="divide-y divide-[color:var(--line)]" id="specTable"></tbody></table>
+          <!-- 対応プロトコル・規格・認証 -->
+          <div id="protoWrap" class="hidden mt-7 grid sm:grid-cols-2 gap-6"></div>
+        </div>
         <div class="tab t2 hidden">
+          <!-- Q&A（AIO対策・アコーディオン） -->
+          <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">よくあるご質問（Q&amp;A）</div>
+          <div id="qaList" class="divide-y divide-[color:var(--line)] border-y border-[color:var(--line)] mb-8"></div>
+          <div class="text-[15px] font-bold text-ink border-l-4 pl-3 mb-3" style="border-color:#e60012">関連資料・ダウンロード <span class="text-[12px] font-normal text-neutral-400">（会員限定）</span></div>
           <div class="grid sm:grid-cols-2 gap-3">
             <a href="#" class="flex items-center gap-3 border border-[color:var(--line)] p-4 hover:border-[color:var(--brand)] group">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e60012" stroke-width="1.7"><path d="M14 2H6v20h12V6z"/><path d="M14 2v4h4"/></svg>
@@ -143,6 +163,89 @@
         '<tr><td class="py-2.5 text-neutral-500 w-44 text-[16px]">メーカー</td><td class="text-[16px]">'+M.name+'（'+M.country+'）</td></tr>'
         + '<tr><td class="py-2.5 text-neutral-500 text-[16px]">型番</td><td class="font-display text-[16px]">'+P.code+'</td></tr>'
         + P.spec.map(function(s){ return '<tr><td class="py-2.5 text-neutral-500 text-[16px]">'+s[0]+'</td><td class="text-[16px]">'+s[1]+'</td></tr>'; }).join('');
+
+      // ===== 特長・用途・対応プロトコル/規格/認証・Q&A（カテゴリに応じて生成／実製品ページの構成を踏襲） =====
+      (function(){
+        var cj = (P.catJa||'') + ' ' + (P.cat||'');
+        var isNet = /ネットワーク|スイッチ|変換|計測|スマート|コントローラ|ゲートウェイ|無線/.test(cj);
+        var isConn = /コネクタ|ケーブル/.test(cj);
+        var isSensor = /センサ|エンコーダ/.test(cj);
+        var isIpc = /パソコン|PC|IPC|カメラ/.test(cj);
+        var META;
+        if(isConn){
+          META = {
+            feat:['高い接点信頼性と繰り返し挿抜耐久性','防塵・防水（IP67 等）や耐環境に配慮した設計','プッシュプル／ブレークアウェイ等の確実な嵌合機構','カスタムAssy・特注ケーブルのご相談に対応'],
+            apps:['医療機器・手術支援ロボット','計測機器・産業機械','鉄道・防衛・船舶・海洋'],
+            proto:[], certs:['RoHS 対応','用途に応じた各種規格に準拠']
+          };
+        } else if(isSensor){
+          META = {
+            feat:['高分解能・高精度な位置／回転検出','バッテリーフリー（エネルギーハーベスト）方式に対応する機種','広動作温度・堅牢設計で過酷環境に対応','多彩なインターフェース（SSI／CANopen／IO-Link 等）'],
+            apps:['搬送・建設機械・再生可能エネルギー','モーション制御・位置決め','FA・生産設備'],
+            proto:['SSI／BiSS／CANopen／IO-Link（機種による）'], certs:['CE','RoHS 対応']
+          };
+        } else if(isIpc){
+          META = {
+            feat:['ファンレス・広動作温度の堅牢設計','長期供給・組込用途に適した構成','豊富なI/O・拡張スロット（機種による）','エッジ処理に適した省電力設計'],
+            apps:['エッジコンピューティング','装置組込・現場制御','マシンビジョン'],
+            proto:['TCP/IP・各種フィールドバス（構成による）'], certs:['CE','UL / cUL','FCC Part 15B Class A']
+          };
+        } else { // ネットワーク機器（既定）
+          META = {
+            feat:['産業用の堅牢設計（広動作温度 -40〜75℃対応モデルあり）','リング／RSTP 等の冗長化に対応し通信断を最小化','DINレール取付・冗長DC電源入力に対応','IEC 62443 準拠のセキュアバイデザイン設計（対応機種）'],
+            apps:['ファクトリーオートメーション（生産ライン・搬送）','電力・上下水道・プラント等のインフラ','鉄道・交通／船舶などの過酷環境','遠隔監視・IoTゲートウェイ'],
+            proto:['Modbus RTU/ASCII/TCP','EtherNet/IP・PROFINET（機種による）','SNMP v1/v2c/v3・HTTPS(TLS)'],
+            certs:['CE（EMC）','UL / cUL','EN 61000-6-2 / -6-4','FCC Part 15B Class A']
+          };
+        }
+        // 特長
+        if(META.feat && META.feat.length){
+          document.getElementById('featList').innerHTML = META.feat.map(function(f){
+            return '<li class="flex gap-2"><span style="color:#e60012" class="shrink-0">●</span><span>'+f+'</span></li>'; }).join('');
+          document.getElementById('featWrap').classList.remove('hidden');
+        }
+        // 用途
+        if(META.apps && META.apps.length){
+          document.getElementById('appList').innerHTML = META.apps.map(function(a){
+            return '<span class="badge text-ink" style="background:var(--paper)">'+a+'</span>'; }).join('');
+          document.getElementById('appWrap').classList.remove('hidden');
+        }
+        // 対応プロトコル・規格／認証
+        var pw = document.getElementById('protoWrap'); var html='';
+        if(META.proto && META.proto.length){
+          html += '<div><div class="text-[14px] font-bold text-ink mb-2">対応プロトコル</div><ul class="space-y-1 text-[15px] text-neutral-700">'
+            + META.proto.map(function(x){return '<li class="flex gap-2"><span class="text-neutral-300">▸</span><span>'+x+'</span></li>';}).join('')+'</ul></div>';
+        }
+        if(META.certs && META.certs.length){
+          html += '<div><div class="text-[14px] font-bold text-ink mb-2">規格・認証</div><div class="flex flex-wrap gap-2">'
+            + META.certs.map(function(x){return '<span class="badge border border-[color:var(--line)] text-neutral-600">'+x+'</span>';}).join('')+'</div></div>';
+        }
+        if(html){ pw.innerHTML=html; pw.classList.remove('hidden'); }
+
+        // Q&A（AIO対策）
+        var QA = [
+          {q:'動作温度範囲は？', a:'標準品と広温度品（-40〜75℃対応モデル）をご用意している場合があります。設置環境に合わせてお選びください。詳しくは仕様をご確認ください。'},
+          isNet ? {q:'冗長化には対応していますか？', a:'対応機種では、リング（Turbo Ring 等）／RSTP／STP などの冗長プロトコルに対応し、ケーブル断線時も通信断を最小化できます。'} : null,
+          {q:'保証期間はどのくらいですか？', a:'メーカー標準保証に準じます（Moxa 製品では5年保証の機種があります）。詳細は担当営業までお問い合わせください。'},
+          {q:'データシートや取扱説明書は入手できますか？', a:'会員限定で各種資料（データシート・マニュアル等）をダウンロードいただけます。ログインのうえご利用ください。'},
+          {q:'後継品や仕様変更（PCN/EOL）の情報はどこで確認できますか？', a:'本ページの「製品変更履歴（PCN/EOL）」タブ、および会員メニューの「製品変更情報」ページでご確認いただけます。'}
+        ].filter(Boolean);
+        document.getElementById('qaList').innerHTML = QA.map(function(x,i){
+          return '<div class="qa">'
+            + '<button class="qq w-full flex items-start gap-3 text-left py-4" data-i="'+i+'">'
+            + '<span class="font-display font-bold shrink-0" style="color:#e60012">Q</span>'
+            + '<span class="flex-1 text-[16px] font-bold text-ink">'+x.q+'</span>'
+            + '<span class="qi shrink-0 text-neutral-400 transition-transform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></button>'
+            + '<div class="qa-a hidden pb-4 pl-7"><p class="text-[15px] text-neutral-600 leading-relaxed">'+x.a+'</p></div></div>';
+        }).join('');
+        document.querySelectorAll('#qaList .qq').forEach(function(b){
+          b.addEventListener('click', function(){
+            var box=b.parentNode.querySelector('.qa-a'); var ic=b.querySelector('.qi');
+            var open=box.classList.toggle('hidden');
+            ic.style.transform = open ? '' : 'rotate(180deg)';
+          });
+        });
+      })();
 
       document.getElementById('pcnList').innerHTML = P.tag==='EOL予定'
         ? '<li class="flex gap-2"><span class="badge text-white h-fit" style="background:#e60012">EOL</span><span>2026/07 生産終了のご案内（最終受注 2026/09・後継 IPC-3050-i5）</span></li>'
