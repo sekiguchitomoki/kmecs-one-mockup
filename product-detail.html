@@ -150,9 +150,30 @@
       var net = netPrice(P.price);
 
       // 実画像を適用
-      document.getElementById('mainImg').src = prodImg(P);
-      document.getElementById('thumbs').innerHTML = [prodImg(P), catImg('ipc'), catImg('wired'), catImg('sensor')]
-        .map(function(src){ return '<div class="h-20 border border-[color:var(--line)] overflow-hidden bg-white flex items-center justify-center p-1.5"><img src="'+src+'" alt="" class="max-w-full max-h-full object-contain"></div>'; }).join('');
+      var mainImg = document.getElementById('mainImg');
+      mainImg.src = prodImg(P);
+      mainImg.classList.add('cursor-zoom-in');
+      var gallery = [prodImg(P), catImg('ipc'), catImg('wired'), catImg('sensor')];
+      document.getElementById('thumbs').innerHTML = gallery
+        .map(function(src,i){ return '<button type="button" class="thumb h-20 border overflow-hidden bg-white flex items-center justify-center p-1.5 transition '+(i===0?'border-[color:var(--brand)]':'border-[color:var(--line)] hover:border-neutral-400')+'" data-src="'+src+'"><img src="'+src+'" alt="" class="max-w-full max-h-full object-contain"></button>'; }).join('');
+      // サムネイルクリックでメイン画像を切替
+      document.querySelectorAll('#thumbs .thumb').forEach(function(t){
+        t.addEventListener('click', function(){
+          mainImg.src = t.getAttribute('data-src');
+          document.querySelectorAll('#thumbs .thumb').forEach(function(x){ x.className = x.className.replace('border-[color:var(--brand)]','border-[color:var(--line)] hover:border-neutral-400'); });
+          t.className = t.className.replace('border-[color:var(--line)] hover:border-neutral-400','border-[color:var(--brand)]');
+        });
+      });
+      // メイン画像クリックで拡大（ライトボックス）
+      mainImg.addEventListener('click', function(){
+        var lb = document.createElement('div');
+        lb.className = 'fixed inset-0 z-[100] flex items-center justify-center p-6 cursor-zoom-out';
+        lb.style.background = 'rgba(5,6,15,.88)';
+        lb.innerHTML = '<img src="'+mainImg.src+'" alt="" style="max-width:92vw;max-height:90vh;object-fit:contain">'
+          + '<button aria-label="閉じる" class="absolute top-5 right-6 text-white/80 hover:text-white" style="font-size:34px;line-height:1">×</button>';
+        lb.addEventListener('click', function(){ lb.remove(); });
+        document.body.appendChild(lb);
+      });
 
       var priceBlock;
       if(a){

@@ -130,14 +130,13 @@
           <span class="w-14 h-9 bg-white border border-[color:var(--line)] flex items-center justify-center p-1 shrink-0"><img src="${MK[k].logo}" alt="${MK[k].name}" class="max-w-full max-h-full object-contain"></span>
           <span><span class="block text-[14px] font-bold text-ink">${MK[k].name}</span><span class="block text-[12px] text-neutral-400 leading-none">${MK[k].country}</span></span></a>`).join('');
       const inds = INDS.slice(0, 6).map(s => `<a href="leading.html?ind=${s.key}" class="text-[13px] text-ink hover:text-[color:var(--brand)] py-1 block">${s.ja} ›</a>`).join('');
-      return `<a href="products.html" class="group/top flex items-center gap-3 mb-5 p-3 rounded-md transition hover:bg-[color:var(--paper)]" style="border:1px solid var(--line)">
-        <span class="w-10 h-10 rounded-md flex items-center justify-center text-white shrink-0" style="background:#e60012">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg></span>
-        <span class="flex-1 min-w-0">
-          <span class="block text-[15px] font-bold text-ink group-hover/top:text-[color:var(--brand)]">取扱製品トップ <span class="font-display text-[11px] text-neutral-400 tracking-wide">PRODUCTS TOP</span></span>
-          <span class="block text-[12px] text-neutral-500">カテゴリ・メーカー・型番から、すべての取扱製品を探す</span></span>
-        <span class="font-bold text-[18px] shrink-0" style="color:#e60012">›</span>
-      </a>
+      return `<div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b-2 border-ink">
+        <div>
+          <div class="text-[19px] font-bold text-ink">取扱製品を探す</div>
+          <div class="text-[13px] text-neutral-500 mt-1">カテゴリ・メーカー・型番の3つの入口から、すべての取扱製品を探せます。</div>
+        </div>
+        <a href="products.html" class="inline-flex items-center gap-2 text-white text-[14px] font-bold px-5 py-2.5 whitespace-nowrap shrink-0 transition hover:opacity-90" style="background:#e60012">取扱製品トップへ <span class="text-[16px]">›</span></a>
+      </div>
       <div class="grid grid-cols-12 gap-8">
         <div class="col-span-5">${megaCol('CATEGORY ／ カテゴリから', `<div class="grid grid-cols-2 gap-x-6 gap-y-0.5">${cats}</div>`)}</div>
         <div class="col-span-3">${megaCol('MAKER ／ メーカーから', makers + `<a href="makers.html" class="text-[13px] font-bold mt-1 inline-block" style="color:#e60012">取扱メーカー一覧 ›</a>`)}</div>
