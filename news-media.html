@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <section class="text-white relative overflow-hidden" style="background:#0d1024">
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-16">
+      <div class="sec-label text-neutral-300">MEDIA</div>
+      <h1 class="font-display font-black text-4xl sm:text-5xl mt-3 leading-none">メディア掲載</h1>
+      <p class="text-[15px] text-neutral-300 mt-4 max-w-2xl leading-relaxed">新聞・専門誌・Webメディア等での当社および取扱製品の掲載情報をご紹介します。第三者メディアでの掲載は、産業用部品の輸入商社としての実績と信頼の証です。</p>
+    </div>
+  </section>
+
+  <div class="max-w-[1000px] mx-auto px-4 xl:px-8 py-14">
+    <div class="flex flex-wrap items-center gap-2 mb-8 text-[14px]">
+      <a href="news.html" class="px-4 py-1.5 rounded-full border border-[color:var(--line)] text-neutral-500 hover:text-ink">ニュース</a>
+      <a href="news.html" class="px-4 py-1.5 rounded-full border border-[color:var(--line)] text-neutral-500 hover:text-ink">新製品情報</a>
+      <a href="news.html" class="px-4 py-1.5 rounded-full border border-[color:var(--line)] text-neutral-500 hover:text-ink">お知らせ</a>
+      <span class="px-4 py-1.5 rounded-full text-white font-bold" style="background:#e60012">メディア掲載</span>
+    </div>
+
+    <div id="mediaList" class="border-t-2 border-ink"></div>
+
+    <div class="card p-6 mt-10 flex flex-wrap items-center justify-between gap-4" style="background:var(--paper)">
+      <div>
+        <h3 class="text-base font-bold text-ink">取材・掲載のお問い合わせ</h3>
+        <p class="text-[15px] text-neutral-500 mt-1.5">製品・技術に関する取材、寄稿のご相談は広報窓口までお気軽にどうぞ。</p>
+      </div>
+      <a href="contact.html" class="btn-ink whitespace-nowrap">お問い合わせ</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'news',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'ニュース',href:'news.html'},{label:'メディア掲載'}],
+    onReady:function(){
+      var M = [
+        { date:'2026.06.30', media:'日刊工業新聞', type:'新聞', title:'産業用ネットワークのサイバーセキュリティ規格「IACS UR E26」対応で造船向け提案を強化', tag:'IACS UR E26' },
+        { date:'2026.05.20', media:'電波新聞', type:'新聞', title:'Moxa 産業用無線 AWK シリーズが JC-STAR 認定を取得、当社が国内正規代理店として供給', tag:'Moxa / 無線' },
+        { date:'2026.04.15', media:'月刊 FA機器', type:'専門誌', title:'ODU コネクタ正規代理店として高密度モジュラーコネクタ AMC の採用事例を紹介', tag:'ODU / コネクタ' },
+        { date:'2026.03.10', media:'MONOist（Webメディア）', type:'Web', title:'レガシー設備の IoT 化を支える産業用ゲートウェイの選び方を解説', tag:'IoT / ネットワーク' },
+        { date:'2026.02.02', media:'産業オートメーション', type:'専門誌', title:'POSITAL エンコーダの用途別使い分け ― 搬送・建機・再エネ分野での選定ポイント', tag:'POSITAL / センサ' },
+        { date:'2025.12.05', media:'日経ものづくり', type:'専門誌', title:'産業用部品の輸入商社が担う「調達 × 技術サポート」の役割', tag:'企業' }
+      ];
+      function typeBadge(t){
+        var bg = t==='新聞' ? '#e60012' : (t==='専門誌' ? '#393b56' : '#6b7280');
+        return '<span class="badge text-white" style="background:'+bg+'">'+t+'</span>';
+      }
+      document.getElementById('mediaList').innerHTML = M.map(function(m){
+        return '<div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 py-5 border-b border-[color:var(--line)]">'
+          + '<span class="text-[15px] text-neutral-400 font-display w-24 shrink-0">'+m.date+'</span>'
+          + typeBadge(m.type)
+          + '<span class="text-[14px] font-bold text-ink shrink-0">'+m.media+'</span>'
+          + '<span class="text-[16px] text-neutral-700 flex-1 min-w-[240px] leading-snug">'+m.title+'</span>'
+          + '<span class="badge border border-[color:var(--line)] text-neutral-500">'+m.tag+'</span></div>';
+      }).join('');
+    }
+  });
+</script>
+</body>
+</html>

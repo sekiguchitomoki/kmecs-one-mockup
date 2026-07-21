@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <!-- HERO -->
+  <section class="text-white relative overflow-hidden" style="background:#05060f">
+    <div class="kv-bg" style="background-image:url(assets/img/biz-global.jpg);opacity:.4"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,rgba(5,6,15,.92),rgba(5,6,15,.5))"></div>
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-20 sm:py-24">
+      <div class="sec-label text-neutral-300">CSR</div>
+      <h1 class="font-display font-black text-4xl sm:text-6xl mt-3 leading-none">CSR・社会貢献活動</h1>
+      <p class="text-[15px] text-neutral-300 mt-5 max-w-2xl leading-loose">世界と、ものづくりの現場をつなぐ商社として、事業を通じた社会への還元と、次世代・国際社会への支援に継続的に取り組んでいます。</p>
+    </div>
+  </section>
+
+  <!-- 考え方 -->
+  <section class="bg-white">
+    <div class="max-w-[1000px] mx-auto px-4 xl:px-8 py-16 sm:py-20">
+      <div class="sec-label">OUR APPROACH</div>
+      <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-3 leading-snug">私たちの社会貢献の考え方</h2>
+      <p class="text-[15px] text-neutral-600 mt-5 leading-loose max-w-3xl">創業1955年以来、私たちは世界中のメーカーとお客様をつなぐことで日本のものづくりを支えてきました。国境を越えて事業を営む企業として、国際社会・地域・次世代への責任を果たすことも、私たちの大切な役割だと考えています。無理なく、長く続けられる支援を、社員一人ひとりの参加とともに進めています。</p>
+    </div>
+  </section>
+
+  <!-- 主な活動 -->
+  <section style="background:var(--paper)">
+    <div class="max-w-[1100px] mx-auto px-4 xl:px-8 py-16 sm:py-20">
+      <div class="mb-10">
+        <div class="sec-label">ACTIVITIES</div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-3">主な取り組み</h2>
+      </div>
+
+      <div class="space-y-6">
+        <!-- ウクライナ -->
+        <div class="card grid md:grid-cols-3 overflow-hidden">
+          <div class="relative min-h-[180px] md:col-span-1" style="background:#22243a">
+            <img src="assets/img/biz-handshake.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" style="opacity:.7">
+          </div>
+          <div class="md:col-span-2 p-7">
+            <span class="badge text-white" style="background:#e60012">国際支援</span>
+            <h3 class="text-xl font-bold text-ink mt-3">ウクライナ人道支援</h3>
+            <p class="text-[15px] text-neutral-600 mt-3 leading-loose">紛争により困難な状況にある方々へ、人道支援団体を通じた寄付を継続的に行っています。ビジネスパートナーや従業員とともに、平和と復興を願う支援活動に取り組んでいます。</p>
+          </div>
+        </div>
+        <!-- ラオス -->
+        <div class="card grid md:grid-cols-3 overflow-hidden">
+          <div class="relative min-h-[180px] md:col-span-1 md:order-2" style="background:#22243a">
+            <img src="assets/img/biz-challenge.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" style="opacity:.7">
+          </div>
+          <div class="md:col-span-2 p-7 md:order-1">
+            <span class="badge text-white" style="background:#393b56">教育支援</span>
+            <h3 class="text-xl font-bold text-ink mt-3">ラオス 幼稚園支援</h3>
+            <p class="text-[15px] text-neutral-600 mt-3 leading-loose">教育環境の整備が十分でない地域の子どもたちのため、ラオスの幼稚園への支援を行っています。次世代を担う子どもたちが安心して学べる環境づくりを、長期的な視点で応援しています。</p>
+          </div>
+        </div>
+        <!-- 環境 -->
+        <div class="card grid md:grid-cols-3 overflow-hidden">
+          <div class="relative min-h-[180px] md:col-span-1" style="background:#22243a">
+            <img src="assets/img/case-energy.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" style="opacity:.7">
+          </div>
+          <div class="md:col-span-2 p-7">
+            <span class="badge border border-[color:var(--line)] text-neutral-500">環境</span>
+            <h3 class="text-xl font-bold text-ink mt-3">環境にやさしい製品の提供</h3>
+            <p class="text-[15px] text-neutral-600 mt-3 leading-loose">RoHS 対応をはじめ、環境負荷の少ない産業用部品のご提案を通じて、お客様の“ものづくり”のサステナビリティに貢献します。省エネ・長寿命な製品の普及を後押しします。</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[13px] text-neutral-400 mt-8">※ 掲載内容はモックアップ用のイメージです。実際の活動内容・実績は会社案内をご確認ください。</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bg-white">
+    <div class="max-w-[1000px] mx-auto px-4 xl:px-8 py-14 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h3 class="text-lg font-bold text-ink">会社情報を見る</h3>
+        <p class="text-[15px] text-neutral-500 mt-1.5">沿革・拠点・企業理念など、ケーメックスONEの詳細はこちら。</p>
+      </div>
+      <a href="company.html" class="btn-red whitespace-nowrap">会社情報へ</a>
+    </div>
+  </section>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'company',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'会社情報',href:'company.html'},{label:'CSR・社会貢献活動'}]
+  });
+</script>
+</body>
+</html>
