@@ -105,31 +105,31 @@
       // ===== モック資料データ（20件） =====
       // t=種別 / mk=メーカー / cat=カテゴリ / img=サムネ（assets/img内の実在画像）
       var DOCS = [
-        { t:'カタログ',          mk:'MOXA',     cat:'ネットワーク', title:'MOXA 総合カタログ 2026',                 img:'moxa-switch.jpg',      meta:'PDF・18.4 MB・全320ページ', desc:'産業用イーサネットスイッチ／ルータ／ゲートウェイ／無線を網羅した最新総合カタログ。' },
-        { t:'カタログ',          mk:'ODU',      cat:'コネクタ',     title:'ODU MEDI-SNAP 総合カタログ',             img:'cat-connector.jpg',    meta:'PDF・6.1 MB・医療/産業コネクタ', desc:'プッシュプル式の防塵防水コネクタMEDI-SNAP / AMCシリーズのラインナップと仕様。' },
-        { t:'カタログ',          mk:'POSITAL',  cat:'センサ',       title:'POSITAL エンコーダ総合カタログ',         img:'cat-sensor.jpg',       meta:'PDF・9.7 MB・回転/直動', desc:'IXARC 絶対値／インクリメンタルエンコーダ、傾斜センサの選定情報を収録。' },
-        { t:'カタログ',          mk:'AXIOMTEK', cat:'組込PC',       title:'AXIOMTEK 組込PC カタログ',               img:'cat-ipc.jpg',          meta:'PDF・12.2 MB・ファンレスIPC', desc:'ファンレス組込ボックスPC／産業用パネルPCの製品群と拡張性を一覧化。' },
-        { t:'カタログ',          mk:'IEI',      cat:'組込PC',       title:'IEI 産業用パネルPC カタログ',            img:'moxa-ipc.jpg',         meta:'PDF・8.9 MB・HMI/パネルPC', desc:'タッチパネル一体型の産業用HMI・パネルPCシリーズのサイズ／インターフェース一覧。' },
+        { t:'カタログ',          mk:'MOXA',     cat:'ネットワーク', title:'MOXA 総合カタログ 2026',                 img:'dl_moxa_net.jpg',      meta:'PDF・18.4 MB・全320ページ', desc:'産業用イーサネットスイッチ／ルータ／ゲートウェイ／無線を網羅した最新総合カタログ。' },
+        { t:'カタログ',          mk:'ODU',      cat:'コネクタ',     title:'ODU MEDI-SNAP 総合カタログ',             img:'dl_odu_connector.jpg',    meta:'PDF・6.1 MB・医療/産業コネクタ', desc:'プッシュプル式の防塵防水コネクタMEDI-SNAP / AMCシリーズのラインナップと仕様。' },
+        { t:'カタログ',          mk:'POSITAL',  cat:'センサ',       title:'POSITAL エンコーダ総合カタログ',         img:'dl_posital.jpg',       meta:'PDF・9.7 MB・回転/直動', desc:'IXARC 絶対値／インクリメンタルエンコーダ、傾斜センサの選定情報を収録。' },
+        { t:'カタログ',          mk:'AXIOMTEK', cat:'組込PC',       title:'AXIOMTEK 組込PC カタログ',               img:'dl_axiomtek.jpg',          meta:'PDF・12.2 MB・ファンレスIPC', desc:'ファンレス組込ボックスPC／産業用パネルPCの製品群と拡張性を一覧化。' },
+        { t:'カタログ',          mk:'IEI',      cat:'組込PC',       title:'IEI 産業用パネルPC カタログ',            img:'dl_gigaipc.jpg',         meta:'PDF・8.9 MB・HMI/パネルPC', desc:'タッチパネル一体型の産業用HMI・パネルPCシリーズのサイズ／インターフェース一覧。' },
         { t:'カタログ',          mk:'VIVOTEK',  cat:'カメラ',       title:'VIVOTEK 産業用IPカメラ カタログ',        img:'cat-camera.jpg',       meta:'PDF・7.3 MB・監視/画像', desc:'屋外対応ドーム／バレット型ネットワークカメラの解像度・耐環境仕様をまとめて掲載。' },
         { t:'カタログ',          mk:'',         cat:'共通',         title:'ケーメックスONE 会社案内',               img:'kmecs-company_01.jpg', meta:'PDF・3.0 MB・取扱メーカー一覧', desc:'取扱メーカー・サポート体制・拠点情報をまとめた会社案内パンフレット。' },
 
-        { t:'セレクションガイド', mk:'MOXA',     cat:'ネットワーク', title:'産業用イーサネットスイッチ 選定ガイド',  img:'moxa-media.jpg',       meta:'PDF・2.4 MB・選定チャート付', desc:'ポート数・冗長化・PoE・使用温度から最適なスイッチを絞り込む選定フローチャート。' },
-        { t:'セレクションガイド', mk:'POSITAL',  cat:'センサ',       title:'エンコーダ 出力インターフェース選定ガイド', img:'cat-measure.jpg',   meta:'PDF・1.8 MB・IF比較表', desc:'SSI／CANopen／PROFINET／IO-Linkなど出力方式ごとの適用条件を比較。' },
+        { t:'セレクションガイド', mk:'MOXA',     cat:'ネットワーク', title:'産業用イーサネットスイッチ 選定ガイド',  img:'dl_moxa_net.jpg',       meta:'PDF・2.4 MB・選定チャート付', desc:'ポート数・冗長化・PoE・使用温度から最適なスイッチを絞り込む選定フローチャート。' },
+        { t:'セレクションガイド', mk:'POSITAL',  cat:'センサ',       title:'エンコーダ 出力インターフェース選定ガイド', img:'dl_posital.jpg',   meta:'PDF・1.8 MB・IF比較表', desc:'SSI／CANopen／PROFINET／IO-Linkなど出力方式ごとの適用条件を比較。' },
 
-        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'EDS-408A 8ポート マネージドスイッチ',    img:'moxa-switch.jpg',      meta:'DS・PDF・型番別', desc:'Turbo Ring 冗長化対応の8ポート マネージド型産業用イーサネットスイッチ。' },
-        { t:'データシート',      mk:'ODU',      cat:'コネクタ',     title:'ODU AMC 高密度モジュラーコネクタ',       img:'cat-connector.jpg',    meta:'DS・PDF・型番別', desc:'信号・電源・同軸・光を1つのハウジングに集約する高密度モジュラーコネクタ。' },
-        { t:'データシート',      mk:'POSITAL',  cat:'センサ',       title:'POSITAL IXARC 絶対値エンコーダ',         img:'cat-sensor.jpg',       meta:'DS・PDF・型番別', desc:'マグネット式の多回転アブソリュートエンコーダ。IP69K・広温度範囲対応。' },
-        { t:'データシート',      mk:'AXIOMTEK', cat:'組込PC',       title:'AXIOMTEK eBOX ファンレス組込PC',         img:'cat-ipc.jpg',          meta:'DS・PDF・型番別', desc:'Core i5搭載のファンレス・ワイドレンジ電源対応 産業用ボックスPC。' },
-        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'MGate MB3180 Modbusゲートウェイ',        img:'moxa-gateway.jpg',     meta:'DS・PDF・型番別', desc:'Modbus TCP ⇔ Modbus RTU/ASCII を変換する1ポート プロトコルゲートウェイ。' },
-        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'NPort 5150 シリアルデバイスサーバ',      img:'moxa-deviceserver.jpg',meta:'DS・PDF・型番別', desc:'RS-232/422/485機器をEthernet化する1ポート シリアルデバイスサーバ。' },
-        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'AWK-1137C 産業用無線アクセスポイント',   img:'moxa-wireless.jpg',    meta:'DS・PDF・型番別', desc:'IEEE 802.11a/b/g/n対応、AGV・移動体向けローミングに対応した無線AP/クライアント。' },
-        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'ioLogik E1200 リモートI/Oモジュール',    img:'moxa-io.jpg',          meta:'DS・PDF・型番別', desc:'Active OPC/ Modbus TCP 対応のイーサネット リモートI/O。デイジーチェーン配線可。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'EDS-408A 8ポート マネージドスイッチ',    img:'dl_moxa_net.jpg',      meta:'DS・PDF・型番別', desc:'Turbo Ring 冗長化対応の8ポート マネージド型産業用イーサネットスイッチ。' },
+        { t:'データシート',      mk:'ODU',      cat:'コネクタ',     title:'ODU AMC 高密度モジュラーコネクタ',       img:'dl_odu_mac.jpg',    meta:'DS・PDF・型番別', desc:'信号・電源・同軸・光を1つのハウジングに集約する高密度モジュラーコネクタ。' },
+        { t:'データシート',      mk:'POSITAL',  cat:'センサ',       title:'POSITAL IXARC 絶対値エンコーダ',         img:'dl_posital.jpg',       meta:'DS・PDF・型番別', desc:'マグネット式の多回転アブソリュートエンコーダ。IP69K・広温度範囲対応。' },
+        { t:'データシート',      mk:'AXIOMTEK', cat:'組込PC',       title:'AXIOMTEK eBOX ファンレス組込PC',         img:'dl_axiomtek.jpg',          meta:'DS・PDF・型番別', desc:'Core i5搭載のファンレス・ワイドレンジ電源対応 産業用ボックスPC。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'MGate MB3180 Modbusゲートウェイ',        img:'dl_moxa_ec.jpg',     meta:'DS・PDF・型番別', desc:'Modbus TCP ⇔ Modbus RTU/ASCII を変換する1ポート プロトコルゲートウェイ。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'NPort 5150 シリアルデバイスサーバ',      img:'dl_moxa_ec.jpg',meta:'DS・PDF・型番別', desc:'RS-232/422/485機器をEthernet化する1ポート シリアルデバイスサーバ。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'AWK-1137C 産業用無線アクセスポイント',   img:'dl_moxa_wifi.jpg',    meta:'DS・PDF・型番別', desc:'IEEE 802.11a/b/g/n対応、AGV・移動体向けローミングに対応した無線AP/クライアント。' },
+        { t:'データシート',      mk:'MOXA',     cat:'ネットワーク', title:'ioLogik E1200 リモートI/Oモジュール',    img:'dl_moxa_ec.jpg',          meta:'DS・PDF・型番別', desc:'Active OPC/ Modbus TCP 対応のイーサネット リモートI/O。デイジーチェーン配線可。' },
 
-        { t:'ホワイトペーパー',  mk:'MOXA',     cat:'ネットワーク', title:'スマート工場の産業ネットワーク設計指針', img:'cat-smart.jpg',        meta:'技術WP・PDF', desc:'冗長化・ネットワーク分離・帯域設計まで、止まらない工場ネットワークの考え方を解説。' },
-        { t:'ホワイトペーパー',  mk:'ODU',      cat:'コネクタ',     title:'過酷環境における防塵防水コネクタの選定', img:'cat-connector.jpg',    meta:'技術WP・PDF', desc:'IP67/IP68・嵌合回数・耐振動など、屋外・可動部で失敗しないコネクタ選定の勘所。' },
-        { t:'ホワイトペーパー',  mk:'',         cat:'ネットワーク', title:'IEC 62443で考えるOTセキュリティ入門',    img:'cat-wired.jpg',        meta:'技術WP・PDF', desc:'制御システム(OT)のサイバーセキュリティ規格IEC 62443の基本と現場での適用ステップ。' },
+        { t:'ホワイトペーパー',  mk:'MOXA',     cat:'ネットワーク', title:'スマート工場の産業ネットワーク設計指針', img:'dl_moxa_net.jpg',        meta:'技術WP・PDF', desc:'冗長化・ネットワーク分離・帯域設計まで、止まらない工場ネットワークの考え方を解説。' },
+        { t:'ホワイトペーパー',  mk:'ODU',      cat:'コネクタ',     title:'過酷環境における防塵防水コネクタの選定', img:'dl_odu_connector.jpg',    meta:'技術WP・PDF', desc:'IP67/IP68・嵌合回数・耐振動など、屋外・可動部で失敗しないコネクタ選定の勘所。' },
+        { t:'ホワイトペーパー',  mk:'',         cat:'ネットワーク', title:'IEC 62443で考えるOTセキュリティ入門',    img:'dl_moxa_net.jpg',        meta:'技術WP・PDF', desc:'制御システム(OT)のサイバーセキュリティ規格IEC 62443の基本と現場での適用ステップ。' },
 
-        { t:'マニュアル',        mk:'MOXA',     cat:'ネットワーク', title:'EDS-408A 設定・Turbo Ring 冗長化マニュアル', img:'moxa-switch.jpg',  meta:'マニュアル・PDF', desc:'IPアドレス設定・VLAN・Turbo Ring による冗長リング構成までの初期設定手順書。' }
+        { t:'マニュアル',        mk:'MOXA',     cat:'ネットワーク', title:'EDS-408A 設定・Turbo Ring 冗長化マニュアル', img:'dl_moxa_net.jpg',  meta:'マニュアル・PDF', desc:'IPアドレス設定・VLAN・Turbo Ring による冗長リング構成までの初期設定手順書。' }
       ];
 
       // メーカー表示名／ロゴ（assets/img内の実在ロゴのみ）
