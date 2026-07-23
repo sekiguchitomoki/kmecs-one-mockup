@@ -83,14 +83,14 @@
     sub:'K.MECS ONE 業務コンソール ・ 受注 / 出荷 / 経理 / 貿易 を一元管理',
     onReady:function(){
       // フロー
-      // c=要対応件数、lbl=その件数が何を指すか（現場が一目で分かる表記）
+      // c=要対応件数（累計・遷移先の一覧と同じ件数）、lbl=その件数が何を指すか
       var STEPS=[
         {n:'①',t:'見積',href:'admin-quotes.html',c:3,lbl:'見積依頼'},
         {n:'②',t:'受発注',href:'admin-orders.html',c:3,lbl:'要チェック'},
         {n:'③',t:'問合せ',href:'admin-inquiries.html',c:2,lbl:'未対応'},
-        {n:'④',t:'出荷',href:'admin-shipping.html',c:3,lbl:'出荷待ち'},
-        {n:'⑤',t:'請求',href:'admin-invoice.html',c:3,lbl:'未発行'},
-        {n:'⑥',t:'入金',href:'admin-payment.html',c:2,lbl:'未消込'},
+        {n:'④',t:'出荷',href:'admin-shipping.html',c:5,lbl:'送り状未発行'},
+        {n:'⑤',t:'請求',href:'admin-invoice.html',c:4,lbl:'未発行'},
+        {n:'⑥',t:'入金',href:'admin-payment.html',c:2,lbl:'要確認'},
       ];
       document.getElementById('flow').innerHTML = STEPS.map(function(s,i){
         return '<a href="'+s.href+'" class="flex-1 min-w-[120px] border border-[#dcdce6] p-3 hover:border-[color:var(--brand)] bg-white relative">'
@@ -102,13 +102,13 @@
           + '</a>'+(i<STEPS.length-1?'<span class="self-center text-neutral-300">›</span>':'');
       }).join('');
 
-      // KPI（各カードをクリックで該当の管理画面へ遷移）
+      // KPI（累計。件数は遷移先の一覧・KPIと同じ数字）
       var KPI=[
-        {l:'本日の受注',v:'18',u:'件',c:'text-ink',h:'admin-orders.html'},
-        {l:'IBM自動連携済',v:'14',u:'件',c:'text-emerald-600',h:'admin-orders.html?f=auto'},
+        {l:'受注（累計）',v:'9',u:'件',c:'text-ink',h:'admin-orders.html'},
+        {l:'IBM自動連携済',v:'5',u:'件',c:'text-emerald-600',h:'admin-orders.html?f=auto'},
         {l:'要チェック受注',v:'3',u:'件',c:'text-amber-600',h:'admin-orders.html?f=check'},
-        {l:'出荷待ち',v:'3',u:'件',c:'text-ink',h:'admin-shipping.html'},
-        {l:'未入金',v:'¥862,400',u:'',c:'text-[color:var(--brand)]',h:'admin-invoice.html?f=unpaid'},
+        {l:'送り状未発行',v:'5',u:'件',c:'text-ink',h:'admin-shipping.html'},
+        {l:'未入金',v:'¥1,477,564',u:'',c:'text-[color:var(--brand)]',h:'admin-invoice.html?f=unpaid'},
         {l:'見積依頼(未処理)',v:'3',u:'件',c:'text-[color:var(--brand)]',h:'admin-quotes.html'},
       ];
       document.getElementById('kpi').innerHTML = KPI.map(function(k){
@@ -123,7 +123,8 @@
         {t:'受注 3件 が「要チェック」— CS承認待ち',sub:'受注管理',href:'admin-orders.html',lv:'warn'},
         {t:'問合せ 2件 が未対応（納期前倒し / FW指定）',sub:'問合せ管理',href:'admin-inquiries.html',lv:'warn'},
         {t:'入金 2件 が要確認（手数料相殺 / 顧客コード）',sub:'入金消込',href:'admin-payment.html',lv:'warn'},
-        {t:'請求書 3件 が未発行（締め処理済・ドラフト）',sub:'請求書発行',href:'admin-invoice.html',lv:'warn'},
+        {t:'出荷 5件 が送り状未発行（出荷待ち）',sub:'出荷・送り状発行',href:'admin-shipping.html',lv:'warn'},
+        {t:'請求書 4件 が未発行（締め処理済・ドラフト）',sub:'請求書発行',href:'admin-invoice.html',lv:'warn'},
         {t:'見積依頼 1件 が技術部の構成チェック待ち',sub:'見積管理',href:'admin-quotes.html',lv:'info'},
         {t:'未入金 IV-2607-002 が支払期日を5日超過',sub:'請求書発行',href:'admin-invoice-detail.html?no=IV-2607-002',lv:'err'},
       ];
