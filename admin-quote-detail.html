@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <a href="admin-quotes.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 見積管理に戻る</a>
+  <div id="body"></div>
+
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var no = qs('no') || (QUOTES[0] && QUOTES[0].no);
+  var q = getQuote(no);
+  var a = ACCOUNTS[q.acc];
+  var c = getCustomer(a.custCode) || {company:a.company, rep:q.staff};
+  var expired = q.status==='期限切れ';
+
+  KMECS.renderAdminShell({
+    active:'admin-quotes',
+    title:'見積詳細 '+q.no,
+    sub:'社内向けの見積内容 ・ 得値と仕入原価・粗利を確認（顧客画面には粗利・掛率は表示されません）',
+    onReady:function(){
+      // 明細（得値・仕入原価・粗利は社内のみ表示）
+      var sub=0, cost=0;
+      var rows=q.lines.map(function(l){
+        var net = l.custom ? l.price : Math.round(getProduct(l.code).price * a.rate/10)*10;
+        var ct  = Math.round(net*(100-a.margin)/100);
+        var amt=net*l.qty;
+        sub+=amt; cost+=ct*l.qty;
+        return '<tr><td class="px-4 py-3"><div class="text-neutral-700">'+quoteLineName(l)+'</div>'
+          + '<div class="text-[12px] text-neutral-400 font-display">'+(quoteLineCode(l)||'')+(l.custom?'（取扱外・特注）':'')+'</div></td>'
+          + '<td class="py-3 text-right font-display">'+l.qty+'</td>'
+          + '<td class="py-3 text-right font-display">'+yen(net)+'</td>'
+          + '<td class="py-3 text-right font-display text-neutral-500">'+yen(ct)+'</td>'
+          + '<td class="px-4 py-3 text-right font-display font-bold text-ink">'+yen(amt)+'</td></tr>';
+      }).join('');
+      var profit=sub-cost;
+
+      document.getElementById('body').innerHTML=
+        // ヘッダー
+        '<div class="adm-card p-5 mb-4 flex flex-wrap items-center justify-between gap-3">'
+        + '<div><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="font-display font-black text-2xl text-ink">'+q.no+'</span>'
+        + (expired?'<span class="badge bg-neutral-200 text-neutral-600">期限切れ</span>':'<span class="badge bg-emerald-100 text-emerald-700">有効</span>')
+        + '<span class="badge bg-neutral-100 text-neutral-600">'+q.type+'</span>'
+        + (q.techCheck?'<span class="badge bg-amber-100 text-amber-700">技術部 構成チェック要</span>':'')+'</div>'
+        + '<div class="text-[13px] text-neutral-500">'+q.title+' ・ 見積日 '+q.date+' ・ 有効期限 '+q.due+(expired?'':'（あと'+q.left+'日）')+' ・ 担当 '+q.staff+'</div></div>'
+        + '<div class="text-right"><div class="text-[12px] text-neutral-400">見積金額（税別・得値）</div>'
+        + '<div class="font-display text-2xl font-black text-ink">'+yen(sub)+'</div></div></div>'
+
+        + '<div class="grid lg:grid-cols-3 gap-4">'
+        // 明細
+        + '<div class="lg:col-span-2 space-y-4">'
+        + '<div class="adm-card overflow-hidden"><div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">見積明細（社内表示：仕入原価つき）</div>'
+        + '<div class="overflow-x-auto"><table class="w-full adm-table min-w-[560px]"><thead><tr>'
+        + '<th class="text-left px-4 py-2.5">品目 / 型番</th><th class="text-right py-2.5">数量</th>'
+        + '<th class="text-right py-2.5">得値単価</th><th class="text-right py-2.5">仕入原価</th><th class="text-right px-4 py-2.5">金額</th></tr></thead>'
+        + '<tbody>'+rows
+        + '<tr style="border-top:2px solid #333"><td class="px-4 py-2 text-right font-bold text-ink" colspan="4">合計（税別）</td><td class="px-4 py-2 text-right font-display font-black text-ink">'+yen(sub)+'</td></tr>'
+        + '</tbody></table></div>'
+        + '<div class="px-4 py-2.5 text-[12px] text-neutral-400 border-t border-[#eceef5]">※ 仕入原価・粗利は社内のみの表示です。顧客ポータルの見積には得値のみ掲載されます。</div></div>'
+        + '</div>'
+        // 右
+        + '<div class="space-y-4">'
+        + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">採算（社内のみ）</div>'
+        + '<ul class="space-y-1.5 text-[13px]">'
+        + '<li class="flex justify-between"><span class="text-neutral-500">売価（得値合計）</span><span class="font-display font-bold text-ink">'+yen(sub)+'</span></li>'
+        + '<li class="flex justify-between"><span class="text-neutral-500">仕入原価 合計</span><span class="font-display">'+yen(cost)+'</span></li>'
+        + '<li class="flex justify-between pt-1.5 border-t border-[#eee]"><span class="text-neutral-600 font-bold">粗利</span><span class="font-display font-black" style="color:#14887b">'+yen(profit)+'（'+a.margin+'%）</span></li>'
+        + '</ul></div>'
+        + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">顧客情報</div>'
+        + '<div class="text-[15px] font-bold text-ink">'+a.company+'</div>'
+        + '<div class="text-[13px] text-neutral-500 mt-1 leading-relaxed">'+a.custCode+' ・ '+a.rankLabel+'（掛率 '+Math.round(a.rate*100)+'%）<br>ご担当：'+a.user+' 様<br>担当営業：'+q.staff+'</div>'
+        + '<a href="admin-customer-detail.html?code='+a.custCode+'" class="mt-3 inline-block text-[13px]" style="color:#e60012">顧客詳細を開く ›</a></div>'
+        + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">操作</div>'
+        + '<div class="space-y-2">'
+        + (expired
+          ? '<a href="admin-quote-request.html?requote='+q.no+'" class="block text-center text-[13px] text-white px-3 py-2 font-bold" style="background:#e60012">再見積へ（②メーカー見積取得）</a>'
+          : '<button onclick="alert(\'見積 '+q.no+' を顧客ポータルへ再送信しました。（モック）\')" class="w-full text-[13px] text-white px-3 py-2 font-bold" style="background:#e60012">顧客へ再送信</button>')
+        + '<button onclick="alert(\'見積書PDFを出力しました。（モック）\')" class="w-full text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-2">見積書PDFを出力</button>'
+        + '<a href="quote-order.html?no='+q.no+'" target="_blank" class="block text-center text-[13px] border border-[#dcdce6] bg-white text-neutral-600 px-3 py-2">顧客側の表示を確認（別タブ）</a>'
+        + '</div></div>'
+        + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">関連</div>'
+        + '<div class="space-y-1.5 text-[13px]"><a href="admin-quotes.html" class="block hover:underline" style="color:#e60012">見積管理・作成 ›</a>'
+        + '<a href="admin-quote-request.html" class="block hover:underline" style="color:#e60012">見積依頼→メーカー見積取得 ›</a>'
+        + '<a href="admin-rfq.html" class="block hover:underline" style="color:#e60012">メーカー見積依頼（RFQ） ›</a></div></div>'
+        + '</div></div>';
+    }
+  });
+</script>
+</body>
+</html>

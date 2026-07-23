@@ -257,6 +257,8 @@ window.ORDER_STATUS = {
   billed:   { ja:'請求済',   bg:'#fef3c7', cls:'text-amber-700' },
   unpaid:   { ja:'未入金',   bg:'#111111', cls:'text-white' },
   paid:     { ja:'入金済',   bg:'#e5e7eb', cls:'text-neutral-700' },
+  canceled: { ja:'キャンセル', bg:'#6b7280', cls:'text-white' },
+  returned: { ja:'返品受付',   bg:'#393b56', cls:'text-white' },
 };
 
 /* ===== メーカー（MOXA がメイン＝先頭）===== */

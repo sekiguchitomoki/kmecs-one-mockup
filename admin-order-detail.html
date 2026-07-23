@@ -29,60 +29,147 @@
   var no = qs('no') || (ADMIN_ORDERS[0] && ADMIN_ORDERS[0].no);
   var o = ADMIN_ORDERS.filter(function(x){return x.no===no;})[0] || ADMIN_ORDERS[0];
 
+  // IBMインプット状況・納期・出荷（受注管理一覧と同じ値）
+  var IBM_MAP={'WO-24072':'check','WO-24071':'check','WO-24068':'check','WO-24070':'error'};
+  var LEAD_MAP={'WO-24074':'2026/07/20','WO-24073':'2026/07/17','WO-24071':'2026/07/18','WO-24069':'2026/07/16'};
+  var SHIP_MAP={'WO-24073':'出荷準備中','WO-24069':'出荷済'};
+  // 受注管理一覧に載っている9件は一覧と同じ納期・出荷を表示（それ以前の受注は完了扱い）
+  var LISTED=['WO-24076','WO-24075','WO-24074','WO-24073','WO-24072','WO-24071','WO-24070','WO-24069','WO-24068'];
+  var inList = LISTED.indexOf(o.no)>=0;
+  var done = !inList && o.status!=='arranging';   // 一覧より前の出荷済以降の受注
+  var S={
+    status:o.status,
+    ibm: IBM_MAP[o.no] || 'auto',
+    lead: LEAD_MAP[o.no] || (done ? o.date : ''),
+    ship: SHIP_MAP[o.no] || (done ? '出荷済' : ''),
+    lines:[{name:o.items, qty:'一式', price:Math.round(o.amount/1.1)}],
+    edit:false,
+    history:[{d:o.date+' 09:40', u:'受注登録（'+o.route+'）', by:'システム'}]
+  };
+
   KMECS.renderAdminShell({
     active:'admin-orders',
     title:'受注詳細 '+o.no,
     sub:'受注の工程・顧客・金額・IBM連携状況',
-    onReady:function(){
+    onReady:function(){ draw(); }
+  });
+
+  function subtotal(){ return S.lines.reduce(function(s,l){ return s + (l.qty==='一式'? l.price : l.price*l.qty); },0); }
+
+  function draw(){
       var c=getCustomer(o.cust)||{company:o.cust,rep:'—',rank:'-',terms:'-',addr:'-',contact:'-'};
-      var st=ORDER_STATUS[o.status];
-      // 工程マップ（① 見積→②受発注→③問合せ→④出荷→⑤請求→⑥入金）
-      var STEPS=['見積','受発注','問合せ','出荷','請求','入金'];
-      var stepIdx={arranging:2, shipped:4, billed:5, unpaid:5, paid:6};
-      var cur=stepIdx[o.status]!==undefined?stepIdx[o.status]:2;
+
+      // 工程（出荷は「出荷連絡→出荷準備中→出荷」に細分化）
+      var STEPS=['見積','受発注','納期連絡','出荷連絡','出荷準備中','出荷','請求','入金'];
+      var cur;
+      if(!S.lead) cur=2;
+      else if(!S.ship) cur=3;
+      else if(S.ship==='出荷準備中') cur=4;
+      else cur=({shipped:6, billed:7, unpaid:7, paid:8})[S.status]||6;
+      var stopped = (S.status==='canceled'||S.status==='returned');
       var stepper='';
       for(var i=0;i<STEPS.length;i++){
         var cls=i<cur?'step-done':(i===cur?'step-current':'step-todo');
         var lb=i<cur?'✓':(i+1);
         stepper+='<div class="flex flex-col items-center"><div class="step-dot '+cls+'">'+lb+'</div>'
-          +'<div class="text-[11px] mt-1.5 '+(i<=cur?'text-ink font-bold':'text-neutral-300')+'">'+STEPS[i]+'</div></div>';
+          +'<div class="text-[11px] mt-1.5 whitespace-nowrap '+(i<=cur?'text-ink font-bold':'text-neutral-300')+'">'+STEPS[i]+'</div></div>';
         if(i<STEPS.length-1) stepper+='<div class="step-line '+(i<cur?'on':'')+' mb-5"></div>';
       }
 
-      // IBM連携（ダミー）
-      var ibm = o.status==='arranging'?'auto':(o.no==='WO-24070'?'error':'auto');
-      var ibmBadge = ibm==='error'
-        ? '<span class="badge text-white" style="background:#e60012">連携エラー</span><span class="text-[12px] text-neutral-400 ml-1">在庫マスタ不整合</span>'
-        : '<span class="badge bg-emerald-100 text-emerald-700">● 自動IP済</span><span class="text-[12px] text-neutral-400 ml-1">受注IP / 発注IP 完了</span>';
+      // タグは「経路」と「IBMインプット状況」の2種（＋キャンセル/返品時のみ状態）
+      var ibmBadge = S.ibm==='error'
+        ? '<span class="badge text-white" style="background:#e60012">連携エラー</span>'
+        : S.ibm==='check'
+        ? '<span class="badge bg-amber-100 text-amber-700">要チェック</span>'
+        : '<span class="badge bg-emerald-100 text-emerald-700">● 自動IP済</span>';
+      var stBadge = stopped ? '<span class="badge '+ORDER_STATUS[S.status].cls+'" style="background:'+ORDER_STATUS[S.status].bg+'">'+ORDER_STATUS[S.status].ja+'</span>' : '';
+
+      // 明細（表示 / 編集）
+      var lineRows;
+      if(!S.edit){
+        lineRows = S.lines.map(function(l){
+          var amt = l.qty==='一式'? l.price : l.price*l.qty;
+          return '<tr><td class="px-4 py-3 text-neutral-700">'+l.name+'</td><td class="py-3 text-right font-display">'+l.qty+'</td>'
+            + '<td class="py-3 text-right font-display">'+yen(l.price)+'</td><td class="px-4 py-3 text-right font-display font-bold text-ink">'+yen(amt)+'</td></tr>';
+        }).join('');
+      }else{
+        lineRows = S.lines.map(function(l,i){
+          return '<tr style="background:#fffdf5"><td class="px-4 py-2"><input data-i="'+i+'" data-k="name" class="ed w-full border border-[#dcdce6] px-2 py-1.5 text-[13px]" value="'+String(l.name).replace(/"/g,'&quot;')+'"></td>'
+            + '<td class="py-2 text-right"><input data-i="'+i+'" data-k="qty" class="ed w-16 border border-[#dcdce6] px-2 py-1.5 text-[13px] text-right font-display" value="'+l.qty+'"></td>'
+            + '<td class="py-2 text-right"><input data-i="'+i+'" data-k="price" type="number" class="ed w-28 border border-[#dcdce6] px-2 py-1.5 text-[13px] text-right font-display" value="'+l.price+'"></td>'
+            + '<td class="px-4 py-2 text-right"><button class="delLine text-[12px] border px-2 py-1" data-i="'+i+'" style="border-color:#e60012;color:#e60012">行をキャンセル</button></td></tr>';
+        }).join('');
+      }
+      var sub=subtotal();
+
+      // 納期・出荷UI
+      var shipUi;
+      if(stopped){
+        shipUi='<div class="text-[13px] text-neutral-500">この受注は「'+ORDER_STATUS[S.status].ja+'」のため、納期・出荷の操作はできません。</div>';
+      }else{
+        shipUi=
+          '<div class="grid sm:grid-cols-2 gap-4">'
+          + '<div><label class="text-[13px] font-bold text-neutral-600">回答納期（メーカー回答）</label>'
+          + '<div class="flex gap-1 mt-1"><input id="leadIn" type="date" value="'+(S.lead?S.lead.replace(/\//g,'-'):'')+'" class="flex-1 border border-[#dcdce6] px-3 py-2 text-sm">'
+          + '<button id="leadSave" class="text-[13px] text-white px-3 whitespace-nowrap" style="background:#393b56">'+(S.lead?'納期を変更':'納期を保存')+'</button></div>'
+          + '<div class="text-[12px] text-neutral-400 mt-1">保存するとIBMへ納期インプットし、顧客ポータル・進捗メールに反映されます。</div></div>'
+          + '<div><label class="text-[13px] font-bold text-neutral-600">出荷状況</label>'
+          + '<div class="mt-1.5 flex items-center gap-2 flex-wrap">'
+          + (S.ship==='出荷済' ? '<span class="badge bg-emerald-100 text-emerald-700">出荷済</span><span class="text-[12px] text-neutral-400">送り状発行済・顧客へ反映済み</span>'
+            : S.ship==='出荷準備中' ? '<span class="badge bg-amber-100 text-amber-700">出荷準備中</span><button id="shipDone" class="text-[13px] text-white px-3 py-1.5" style="background:#14887b">出荷済にする</button>'
+            : (S.lead ? '<button id="shipStart" class="text-[13px] text-white px-3 py-1.5" style="background:#e60012">出荷連絡・出荷入力（出荷準備中へ）</button>'
+                      : '<span class="text-[13px] text-neutral-400">先に回答納期を入力してください</span>'))
+          + '</div>'
+          + '<div class="text-[12px] text-neutral-400 mt-1.5">出荷連絡 → 出荷準備中 → 送り状発行後に「出荷済」で確定します。</div></div>'
+          + '</div>';
+      }
 
       document.getElementById('body').innerHTML=
         // ヘッダー
         '<div class="adm-card p-5 mb-4 flex flex-wrap items-center justify-between gap-3">'
-        + '<div><div class="flex items-center gap-2 mb-1"><span class="font-display font-black text-2xl text-ink">'+o.no+'</span>'
-        + '<span class="badge '+st.cls+'" style="background:'+st.bg+'">'+st.ja+'</span>'
-        + '<span class="badge bg-neutral-100 text-neutral-600">'+o.route+'</span></div>'
+        + '<div><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="font-display font-black text-2xl text-ink">'+o.no+'</span>'
+        + '<span class="badge bg-neutral-100 text-neutral-600">'+o.route+'</span>'
+        + ibmBadge + stBadge + '</div>'
         + '<div class="text-[13px] text-neutral-500">受注日 '+o.date+' ・ 担当営業 '+c.rep+'</div></div>'
         + '<div class="text-right"><div class="text-[12px] text-neutral-400">受注金額（税込）</div>'
-        + '<div class="font-display text-2xl font-black text-ink">'+yen(o.amount)+'</div></div></div>'
+        + '<div class="font-display text-2xl font-black text-ink">'+yen(Math.round(sub*1.1))+'</div></div></div>'
 
         // 工程
-        + '<div class="adm-card p-5 mb-4"><div class="text-[14px] font-bold text-ink mb-4">工程の進行状況</div>'
-        + '<div class="overflow-x-auto"><div class="flex items-center min-w-[560px]">'+stepper+'</div></div></div>'
+        + '<div class="adm-card p-5 mb-4"><div class="flex items-center justify-between mb-4"><div class="text-[14px] font-bold text-ink">工程の進行状況</div>'
+        + (stopped?'<span class="text-[12px]" style="color:#e60012">「'+ORDER_STATUS[S.status].ja+'」のため工程は停止しています</span>':'')+'</div>'
+        + '<div class="overflow-x-auto"><div class="flex items-center min-w-[720px] '+(stopped?'opacity-40':'')+'">'+stepper+'</div></div></div>'
+
+        // 納期・出荷
+        + '<div class="adm-card p-5 mb-4"><div class="text-[14px] font-bold text-ink mb-3">納期・出荷</div>'+shipUi+'</div>'
 
         + '<div class="grid lg:grid-cols-3 gap-4">'
         // 明細
         + '<div class="lg:col-span-2 space-y-4">'
-        + '<div class="adm-card overflow-hidden"><div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">受注明細</div>'
-        + '<div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr><th class="text-left px-4 py-2.5">品目</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">単価</th><th class="text-right px-4 py-2.5">金額</th></tr></thead>'
-        + '<tbody><tr><td class="px-4 py-3 text-neutral-700">'+o.items+'</td><td class="py-3 text-right font-display">一式</td>'
-        + '<td class="py-3 text-right font-display">'+yen(Math.round(o.amount/1.1))+'</td><td class="px-4 py-3 text-right font-display font-bold text-ink">'+yen(Math.round(o.amount/1.1))+'</td></tr>'
-        + '<tr><td class="px-4 py-2 text-right text-neutral-500" colspan="3">消費税(10%)</td><td class="px-4 py-2 text-right font-display">'+yen(o.amount-Math.round(o.amount/1.1))+'</td></tr>'
-        + '<tr style="border-top:2px solid #333"><td class="px-4 py-2 text-right font-bold text-ink" colspan="3">合計（税込）</td><td class="px-4 py-2 text-right font-display font-black text-ink">'+yen(o.amount)+'</td></tr>'
-        + '</tbody></table></div></div>'
+        + '<div class="adm-card overflow-hidden"><div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">'
+        + '<span class="text-[14px] font-bold text-ink">受注明細</span>'
+        + (stopped?'' : (S.edit
+            ? '<span class="flex gap-1"><button id="addLine" class="text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2.5 py-1">＋ 品目を追加</button>'
+              + '<button id="editSave" class="text-[12px] text-white px-2.5 py-1" style="background:#e60012">保存</button>'
+              + '<button id="editCancel" class="text-[12px] border border-[#dcdce6] bg-white text-neutral-500 px-2.5 py-1">やめる</button></span>'
+            : '<button id="editStart" class="text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2.5 py-1">明細を編集</button>'))
+        + '</div>'
+        + '<div class="overflow-x-auto"><table class="w-full adm-table"><thead><tr><th class="text-left px-4 py-2.5">品目</th><th class="text-right py-2.5">数量</th><th class="text-right py-2.5">単価</th><th class="text-right px-4 py-2.5">'+(S.edit?'操作':'金額')+'</th></tr></thead>'
+        + '<tbody>'+lineRows
+        + (S.edit?'':'<tr><td class="px-4 py-2 text-right text-neutral-500" colspan="3">消費税(10%)</td><td class="px-4 py-2 text-right font-display">'+yen(Math.round(sub*0.1))+'</td></tr>'
+        + '<tr style="border-top:2px solid #333"><td class="px-4 py-2 text-right font-bold text-ink" colspan="3">合計（税込）</td><td class="px-4 py-2 text-right font-display font-black text-ink">'+yen(Math.round(sub*1.1))+'</td></tr>')
+        + '</tbody></table></div>'
+        + '<div class="px-4 py-3 border-t border-[#eceef5]" style="background:var(--paper)"><div class="text-[12px] font-bold text-neutral-500 mb-1.5">変更履歴（編集したユーザー・日時が残ります）</div>'
+        + '<ul class="space-y-1 text-[12px] text-neutral-500">'
+        + S.history.map(function(h){ return '<li class="flex gap-2"><span class="font-display shrink-0">'+h.d+'</span><span>'+h.u+'</span><span class="text-neutral-400">／ '+h.by+'</span></li>'; }).join('')
+        + '</ul></div></div>'
         // IBM連携
         + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">IBM基幹 連携状況</div>'
-        + '<div class="text-[14px]">'+ibmBadge+'</div>'
-        + (ibm==='error'?'<button class="mt-3 text-[13px] text-white px-3 py-1.5" style="background:#e60012" onclick="alert(\'IBMへ再送信しました。（モック）\')">再送信</button>':'')
+        + '<div class="text-[14px] flex items-center gap-2 flex-wrap">'+ibmBadge
+        + (S.ibm==='auto'?'<span class="text-[12px] text-neutral-400">受注IP / 発注IP 完了</span>':'')
+        + (S.ibm==='check'?'<span class="text-[12px] text-neutral-400">CS確認待ち — 内容を確認のうえ承認してください</span>':'')
+        + (S.ibm==='error'?'<span class="text-[12px] text-neutral-400">在庫マスタ不整合</span>':'')+'</div>'
+        + (S.ibm==='check'?'<button id="approve" class="mt-3 text-[13px] text-white px-3 py-1.5" style="background:#14887b">承認してIBM連携</button>':'')
+        + (S.ibm==='error'?'<button id="resend" class="mt-3 text-[13px] text-white px-3 py-1.5" style="background:#e60012">再送信</button>':'')
         + '</div>'
         // やりとり
         + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-3">メモ / やりとり</div>'
@@ -91,20 +178,120 @@
         + '<li class="flex gap-3"><span class="text-neutral-400 w-24 shrink-0 font-display">'+o.date+' 11:05</span><span class="text-neutral-600"><b style="color:#e60012">CS 山田</b>：承知しました。手配します。</span></li>'
         + '</ul></div>'
         + '</div>'
-        // 右：顧客
+        // 右：顧客・操作
         + '<div class="space-y-4">'
         + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">顧客情報</div>'
         + '<div class="text-[15px] font-bold text-ink">'+c.company+'</div>'
         + '<div class="text-[13px] text-neutral-500 mt-1 leading-relaxed">'+(c.code||'')+'<br>ご担当：'+c.contact+' 様<br>担当営業：'+c.rep+'<br>'+(c.addr||'')+'</div>'
         + '<div class="mt-2 pt-2 border-t border-[#eee] text-[13px]">支払条件：'+(c.terms||'-')+'</div>'
         + '<a href="admin-customer-detail.html?code='+(c.code||'')+'" class="mt-3 inline-block text-[13px]" style="color:#e60012">顧客詳細を開く ›</a></div>'
+        + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">受注の操作</div>'
+        + '<div class="space-y-2">'
+        + (stopped
+          ? '<div class="text-[13px] text-neutral-500">この受注は「'+ORDER_STATUS[S.status].ja+'」です。IBMへ'+(S.status==='canceled'?'取消':'返品')+'インプット済み（モック）。</div>'
+          : '<button id="cancelOrder" class="w-full text-[13px] border px-3 py-2 text-left" style="border-color:#e60012;color:#e60012">受注をキャンセル</button>'
+            + (S.ship==='出荷済'?'<button id="returnOrder" class="w-full text-[13px] border border-[#dcdce6] text-neutral-600 px-3 py-2 text-left">返品を受け付ける（RMA発行）</button>':'')
+          )
+        + '</div>'
+        + '<div class="text-[12px] text-neutral-400 mt-2">キャンセル・返品はIBMへ取消／返品インプットされ、請求・在庫に反映されます。</div></div>'
         + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">関連</div>'
         + '<div class="space-y-1.5 text-[13px]"><a href="admin-orders.html" class="block hover:underline" style="color:#e60012">受注管理一覧 ›</a>'
         + '<a href="admin-shipping.html" class="block hover:underline" style="color:#e60012">出荷・送り状発行 ›</a>'
         + '<a href="admin-invoice.html" class="block hover:underline" style="color:#e60012">請求書発行 ›</a></div></div>'
         + '</div></div>';
-    }
-  });
+
+      bind();
+  }
+
+  function stamp(){ return '2026/07/23 14:05'; }
+
+  function bind(){
+      var q=function(id){return document.getElementById(id);};
+      if(q('approve')) q('approve').addEventListener('click', function(){
+        S.ibm='auto';
+        S.history.push({d:stamp(), u:'承認してIBMへインプット（受注IP / 発注IP）', by:'CS 山田'});
+        draw();
+        alert(o.no+' を承認し、IBMへインプットしました（受注IP / 発注IP）。（モック）');
+      });
+      if(q('resend')) q('resend').addEventListener('click', function(){
+        S.ibm='auto';
+        S.history.push({d:stamp(), u:'IBMへ再送信（在庫マスタ再照合）', by:'CS 山田'});
+        draw();
+        alert('IBMへ再送信しました。（モック）');
+      });
+      if(q('leadSave')) q('leadSave').addEventListener('click', function(){
+        var v=q('leadIn').value;
+        if(!v){ alert('回答納期を入力してください。'); return; }
+        var changed = !!S.lead;
+        S.lead=v.replace(/-/g,'/');
+        S.history.push({d:stamp(), u:'回答納期を'+(changed?'変更':'入力')+'（'+S.lead+'）', by:'CS 山田'});
+        draw();
+        alert(o.no+' の納期をIBMへインプットし、顧客ポータル・進捗メールへ反映しました。（モック）');
+      });
+      if(q('shipStart')) q('shipStart').addEventListener('click', function(){
+        S.ship='出荷準備中';
+        S.history.push({d:stamp(), u:'出荷連絡を送信・出荷準備中に変更', by:'CS 山田'});
+        draw();
+        alert(o.no+' の出荷連絡を顧客へ送り、「出荷準備中」にしました。送り状発行後に「出荷済にする」で確定してください。（モック）');
+      });
+      if(q('shipDone')) q('shipDone').addEventListener('click', function(){
+        S.ship='出荷済';
+        S.history.push({d:stamp(), u:'出荷済に変更（IBMへ出荷インプット）', by:'CS 山田'});
+        draw();
+        alert(o.no+' を出荷済にしました。IBMへ出荷インプットし、顧客ポータルへ反映しました。（モック）');
+      });
+      if(q('editStart')) q('editStart').addEventListener('click', function(){ S.edit=true; draw(); });
+      if(q('editCancel')) q('editCancel').addEventListener('click', function(){ S.edit=false; draw(); });
+      if(q('addLine')) q('addLine').addEventListener('click', function(){
+        syncEdit();
+        S.lines.push({name:'', qty:1, price:0});
+        draw();
+      });
+      document.querySelectorAll('.delLine').forEach(function(b){
+        b.addEventListener('click', function(){
+          if(S.lines.length<=1){ alert('最後の1行はキャンセルできません。受注全体の取り消しは「受注をキャンセル」から行ってください。'); return; }
+          syncEdit();
+          var i=+b.getAttribute('data-i');
+          var nm=S.lines[i].name||'（無名の品目）';
+          S.lines.splice(i,1);
+          S.history.push({d:stamp(), u:'明細行をキャンセル（'+nm+'）', by:'CS 山田'});
+          draw();
+        });
+      });
+      if(q('editSave')) q('editSave').addEventListener('click', function(){
+        syncEdit();
+        S.lines=S.lines.filter(function(l){return l.name;});
+        if(!S.lines.length) S.lines=[{name:o.items, qty:'一式', price:Math.round(o.amount/1.1)}];
+        S.edit=false;
+        S.history.push({d:stamp(), u:'受注明細を更新（数量・品目の変更）', by:'CS 山田'});
+        draw();
+        alert('明細を更新し、IBMへ変更インプットしました。編集したユーザーと日時を履歴に記録しています。（モック）');
+      });
+      if(q('cancelOrder')) q('cancelOrder').addEventListener('click', function(){
+        if(!confirm(o.no+' をキャンセルしますか？\nIBMへ取消インプットされ、顧客ポータルにも反映されます。')) return;
+        S.status='canceled';
+        S.history.push({d:stamp(), u:'受注をキャンセル（IBMへ取消インプット）', by:'CS 山田'});
+        draw();
+        alert(o.no+' をキャンセルしました。（モック）');
+      });
+      if(q('returnOrder')) q('returnOrder').addEventListener('click', function(){
+        if(!confirm(o.no+' の返品を受け付けますか？\nRMA番号を発行し、IBMへ返品インプットされます。')) return;
+        S.status='returned';
+        S.history.push({d:stamp(), u:'返品受付（RMA-2607-015 発行・IBMへ返品インプット）', by:'CS 山田'});
+        draw();
+        alert(o.no+' の返品を受け付けました。RMA-2607-015 を発行しました。（モック）');
+      });
+  }
+
+  function syncEdit(){
+      document.querySelectorAll('.ed').forEach(function(inp){
+        var i=+inp.getAttribute('data-i'), k=inp.getAttribute('data-k');
+        var v=inp.value;
+        if(k==='price') v=+v||0;
+        if(k==='qty' && v!=='一式') v=+v||1;
+        S.lines[i][k]=v;
+      });
+  }
 </script>
 </body>
 </html>
