@@ -164,8 +164,8 @@
         var list = filter ? RFQS.filter(function(r){return r.st===filter;}) : RFQS;
         document.getElementById('rows').innerHTML = list.map(function(r){
           var op = r.st==='received'
-            ? '<a href="admin-quote-new.html" class="inline-flex items-center justify-center text-[12px] font-bold text-white px-3 py-1.5 whitespace-nowrap" style="background:#e60012">見積作成へ ›</a>'
-            : '<button class="rec inline-flex items-center justify-center text-[12px] font-bold text-white px-3 py-1.5 whitespace-nowrap" data-no="'+r.no+'" style="background:#393b56">回答を記録</button>';
+            ? '<a href="admin-quote-new.html" class="inline-flex items-center justify-center text-[12px] font-bold text-white w-[104px] py-1.5 whitespace-nowrap" style="background:#e60012">見積作成へ ›</a>'
+            : '<button class="rec inline-flex items-center justify-center text-[12px] font-bold text-white w-[104px] py-1.5 whitespace-nowrap" data-no="'+r.no+'" style="background:#393b56">回答を記録</button>';
           return '<tr class="border-b border-[#ececf2] '+(r.st==='overdue'?'bg-red-50':'')+'">'
             + '<td class="py-2.5 font-bold text-ink">'+r.no+'</td>'
             + '<td class="py-2.5">'+r.maker+'</td>'
@@ -174,7 +174,7 @@
             + '<td class="py-2.5 text-neutral-500">'+r.issued+'</td>'
             + '<td class="py-2.5 '+(r.st==='overdue'?'font-bold':'text-neutral-500')+'" '+(r.st==='overdue'?'style="color:#b25000"':'')+'>'+r.due+'</td>'
             + '<td class="py-2.5">'+badge(r.st)+'</td>'
-            + '<td class="py-2.5"><div class="flex items-center justify-end gap-1.5 whitespace-nowrap"><button class="pdf inline-flex items-center justify-center text-[12px] border border-[#dcdce6] bg-white px-3 py-1.5 whitespace-nowrap hover:border-[#e60012] hover:text-[#e60012]" data-no="'+r.no+'">依頼書PDF</button>'+op+'</div></td></tr>';
+            + '<td class="py-2.5"><div class="flex items-center justify-end gap-1.5 whitespace-nowrap"><button class="pdf inline-flex items-center justify-center text-[12px] border border-[#dcdce6] bg-white w-[92px] py-1.5 whitespace-nowrap hover:border-[#e60012] hover:text-[#e60012]" data-no="'+r.no+'">依頼書PDF</button>'+op+'</div></td></tr>';
         }).join('');
         document.getElementById('cnt').textContent='（'+list.length+'件）';
         document.getElementById('kWait').textContent = RFQS.filter(function(r){return r.st==='waiting';}).length+'件';

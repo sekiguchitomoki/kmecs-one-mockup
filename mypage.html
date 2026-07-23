@@ -71,6 +71,15 @@
             <div class="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[color:var(--line)]" id="recent"></div>
           </div>
 
+          <!-- 依頼中の見積（回答待ち） -->
+          <div class="card overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-[color:var(--line)]">
+              <div class="text-[17px] font-bold text-ink">依頼中の見積（回答待ち）</div>
+              <a href="quote-request.html" class="text-[14px] hover:underline" style="color:#e60012">＋ 見積を依頼 ›</a>
+            </div>
+            <div class="divide-y divide-[color:var(--line)]" id="reqList"></div>
+          </div>
+
           <!-- 保存した見積 -->
           <div class="card overflow-hidden">
             <div class="flex items-center justify-between px-5 py-3 border-b border-[color:var(--line)]">
@@ -201,6 +210,27 @@
           + '<div class="text-[14px] text-neutral-400 mt-0.5">一時保存 ・ 有効期限 '+q.due+'（あと'+q.left+'日）</div></div>'
           + '<span class="text-[14px] border border-[color:var(--line)] px-3 py-1.5">続きから発注 ›</span></a>';
       }).join('') || '<div class="px-5 py-8 text-center text-[15px] text-neutral-400">一時保存された見積はありません。</div>';
+
+      // ---- 依頼中の見積（QUOTE_REQUESTS を自社分のみ） ----
+      var QR_ST = {
+        todo:  ['受付済・内容確認中','#6b7280'],
+        maker: ['メーカー見積 取得中','#393b56'],
+        tech:  ['技術部チェック中','#b25000'],
+        ready: ['見積作成中','#1b7f4b']
+      };
+      var myReqs = (window.QUOTE_REQUESTS||[]).filter(function(r){ return r.cust===a.custCode; });
+      document.getElementById('reqList').innerHTML = myReqs.map(function(r){
+        var st = QR_ST[r.status] || QR_ST.todo;
+        var first = r.lines[0] ? (r.lines[0].code || r.lines[0].custom) : '';
+        var sum = first + (r.lines[0]&&r.lines[0].qty ? ' ×'+r.lines[0].qty : '') + (r.lines.length>1 ? ' 他'+(r.lines.length-1)+'点' : '');
+        return '<div class="px-5 py-4 flex flex-wrap items-center gap-x-4 gap-y-1.5">'
+          + '<div class="min-w-0 flex-1">'
+          + '<div class="flex items-center gap-2.5"><span class="font-display font-bold text-ink">'+r.id+'</span>'
+          + '<span class="badge text-white" style="background:'+st[1]+'">'+st[0]+'</span></div>'
+          + '<div class="text-[14px] text-neutral-500 mt-1">'+sum+'　<span class="text-neutral-400 text-[13px]">依頼日 '+r.date+' ・ 担当 '+r.staff+'</span></div>'
+          + '</div>'
+          + '<div class="text-[13px] text-neutral-400">回答見積は「見積一覧」に掲載されます</div></div>';
+      }).join('') || '<div class="px-5 py-8 text-center text-[15px] text-neutral-400">依頼中の見積はありません。<a href="quote-request.html" class="font-bold hover:underline" style="color:#e60012">見積を依頼する ›</a></div>';
     }
   });
 </script>
