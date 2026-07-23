@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <a href="admin-products.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 商品一覧に戻る</a>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <!-- ツリー -->
+    <div class="lg:col-span-2">
+      <div class="adm-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
+          <div class="text-[15px] font-bold text-ink">カテゴリーツリー（親 › 子 › 孫 の3階層）</div>
+          <span class="text-[13px] text-neutral-400"><b id="cnt" class="text-ink">0</b> カテゴリー</span>
+        </div>
+        <div id="tree" class="p-4"></div>
+      </div>
+      <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際のタクソノミー保存は行われません。商品側では「商品編集」画面の親›子›孫セレクトでこのツリーから選択します。</p>
+    </div>
+
+    <!-- 追加フォーム -->
+    <div class="space-y-4">
+      <div class="adm-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">＋ カテゴリーを追加</div>
+        <div class="p-4 space-y-3">
+          <div><label class="text-[13px] font-bold text-neutral-600">カテゴリー名 <span style="color:#e60012">*</span></label>
+            <input id="nName" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="例: PoEスイッチ"></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">親カテゴリー</label>
+            <select id="nParent" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select>
+            <div class="text-[12px] text-neutral-400 mt-1">「なし」を選ぶと親カテゴリー（第1階層）として追加します。孫カテゴリーの下には追加できません（3階層まで）。</div></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">スラッグ（URL）</label>
+            <input id="nSlug" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[14px] font-display outline-none focus:border-[color:var(--brand)]" placeholder="例: poe-switch"></div>
+          <button id="nAdd" class="w-full text-[14px] text-white py-2.5 font-bold" style="background:#e60012">カテゴリーを追加</button>
+        </div>
+      </div>
+      <div class="adm-card p-4" style="background:var(--lav)">
+        <div class="text-[13px] font-bold text-ink mb-1">使い方</div>
+        <ul class="text-[12px] text-neutral-500 space-y-1 leading-relaxed">
+          <li>・親（例：ネットワーク機器）› 子（例：有線ネットワーク）› 孫（例：イーサネットスイッチ）の3階層で管理します。</li>
+          <li>・各行の「＋子を追加」でその直下に、「名称変更」「削除」で編集できます。</li>
+          <li>・商品への紐付けは <a href="admin-product-edit.html" class="underline" style="color:#e60012">商品編集</a> 画面で行います。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  // 親子孫3階層のカテゴリーツリー（admin-product-edit.html と同じ構成）
+  var TREE=[
+    {name:'ネットワーク機器', slug:'network', children:[
+      {name:'有線ネットワーク', slug:'wired', children:[{name:'イーサネットスイッチ',slug:'switch'},{name:'セキュアルータ',slug:'router'},{name:'メディアコンバータ',slug:'mediaconv'},{name:'プロトコルゲートウェイ',slug:'gateway'}]},
+      {name:'無線ネットワーク', slug:'wireless', children:[{name:'産業用無線AP',slug:'wlan-ap'},{name:'セルラーゲートウェイ',slug:'cellular'}]},
+      {name:'シリアル通信', slug:'serial', children:[{name:'シリアルデバイスサーバ',slug:'deviceserver'},{name:'シリアルコンバータ',slug:'serialconv'},{name:'PCIe/シリアルボード',slug:'serialboard'}]},
+    ]},
+    {name:'コンポーネント', slug:'component', children:[
+      {name:'コネクタ', slug:'connector', children:[{name:'丸形コネクタ',slug:'circular'},{name:'ケーブルアッセンブリ',slug:'cable-assy'}]},
+      {name:'センサー', slug:'sensor', children:[{name:'ロータリーエンコーダ',slug:'encoder'},{name:'傾斜センサー',slug:'tilt'}]},
+    ]},
+    {name:'コンピューティング', slug:'computing', children:[
+      {name:'産業用パソコン', slug:'ipc', children:[{name:'ボックスPC',slug:'box-pc'},{name:'パネルPC',slug:'panel-pc'}]},
+      {name:'リモートI/O', slug:'remote-io', children:[{name:'イーサネットI/O',slug:'ethernet-io'}]},
+    ]},
+  ];
+
+  KMECS.renderAdminShell({
+    active:'admin-categories',
+    title:'商品カテゴリー管理',
+    sub:'商品カテゴリーを 親 › 子 › 孫 の階層構造で登録・管理（WordPress タクソノミーのイメージ）',
+    onReady:function(){
+      function count(arr){ return arr.reduce(function(s,c){ return s+1+(c.children?count(c.children):0); },0); }
+
+      function row(c, depth, path){
+        var pad = depth*26;
+        var lvl = depth===0?'親':depth===1?'子':'孫';
+        var lvlColor = depth===0?'#393b56':depth===1?'#5b5e80':'#9a9aa6';
+        return '<div class="flex items-center gap-2 py-2 border-b border-[#f0f0f4]" style="padding-left:'+pad+'px">'
+          + (depth>0?'<span class="text-neutral-300">└</span>':'')
+          + '<span class="badge text-white shrink-0" style="background:'+lvlColor+'">'+lvl+'</span>'
+          + '<span class="text-[14px] '+(depth===0?'font-bold text-ink':'text-neutral-700')+'">'+c.name+'</span>'
+          + '<span class="text-[11px] text-neutral-400 font-display">/'+(c.slug||'')+'/</span>'
+          + '<span class="ml-auto flex gap-1 shrink-0">'
+          + (depth<2?'<button class="addc text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-0.5" data-p="'+path+'">＋子を追加</button>':'')
+          + '<button class="ren text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-0.5" data-p="'+path+'">名称変更</button>'
+          + '<button class="del text-[12px] border px-2 py-0.5" style="border-color:#e60012;color:#e60012" data-p="'+path+'">削除</button>'
+          + '</span></div>';
+      }
+
+      function byPath(path){
+        var idx=path.split('-').map(Number), arr=TREE, node=null, parent=null, at=0;
+        for(var i=0;i<idx.length;i++){ parent=arr; at=idx[i]; node=arr[at]; arr=node.children||[]; }
+        return {node:node, parent:parent, at:at};
+      }
+
+      function render(){
+        var html='';
+        TREE.forEach(function(p,i){
+          html+=row(p,0,''+i);
+          (p.children||[]).forEach(function(c,j){
+            html+=row(c,1,i+'-'+j);
+            (c.children||[]).forEach(function(gc,k){ html+=row(gc,2,i+'-'+j+'-'+k); });
+          });
+        });
+        document.getElementById('tree').innerHTML=html;
+        document.getElementById('cnt').textContent=count(TREE);
+        // 親カテゴリー選択肢（親・子のみ＝3階層まで）
+        var opts='<option value="">なし（親カテゴリーとして追加）</option>';
+        TREE.forEach(function(p,i){
+          opts+='<option value="'+i+'">'+p.name+'</option>';
+          (p.children||[]).forEach(function(c,j){ opts+='<option value="'+i+'-'+j+'">　└ '+c.name+'</option>'; });
+        });
+        document.getElementById('nParent').innerHTML=opts;
+        bind();
+      }
+
+      function bind(){
+        document.querySelectorAll('.addc').forEach(function(b){
+          b.addEventListener('click', function(){
+            var nm=prompt('追加する子カテゴリー名を入力してください');
+            if(!nm) return;
+            var t=byPath(b.getAttribute('data-p'));
+            t.node.children=t.node.children||[];
+            t.node.children.push({name:nm, slug:nm.toLowerCase().replace(/\s+/g,'-')});
+            render();
+          });
+        });
+        document.querySelectorAll('.ren').forEach(function(b){
+          b.addEventListener('click', function(){
+            var t=byPath(b.getAttribute('data-p'));
+            var nm=prompt('新しいカテゴリー名を入力してください', t.node.name);
+            if(!nm) return;
+            t.node.name=nm; render();
+          });
+        });
+        document.querySelectorAll('.del').forEach(function(b){
+          b.addEventListener('click', function(){
+            var t=byPath(b.getAttribute('data-p'));
+            var n=(t.node.children?count(t.node.children):0);
+            if(!confirm('「'+t.node.name+'」を削除しますか？'+(n?'\n配下の'+n+'カテゴリーも削除されます。':''))) return;
+            t.parent.splice(t.at,1); render();
+          });
+        });
+      }
+
+      document.getElementById('nAdd').addEventListener('click', function(){
+        var nm=document.getElementById('nName').value.trim();
+        if(!nm){ alert('カテゴリー名を入力してください。'); return; }
+        var slug=document.getElementById('nSlug').value.trim()||nm.toLowerCase().replace(/\s+/g,'-');
+        var pv=document.getElementById('nParent').value;
+        if(pv===''){ TREE.push({name:nm, slug:slug, children:[]}); }
+        else{
+          var t=byPath(pv);
+          t.node.children=t.node.children||[];
+          t.node.children.push({name:nm, slug:slug});
+        }
+        document.getElementById('nName').value=''; document.getElementById('nSlug').value='';
+        render();
+        alert('カテゴリー「'+nm+'」を追加しました。（モック）');
+      });
+
+      render();
+    }
+  });
+</script>
+</body>
+</html>

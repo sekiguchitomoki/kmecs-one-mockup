@@ -29,32 +29,38 @@
       </div>
       <a href="admin-quote-new.html" class="inline-flex items-center gap-1 text-white px-3 py-1.5 text-[13px] font-bold whitespace-nowrap" style="background:#e60012"><span class="text-[14px] leading-none">＋</span> 新規見積を作成</a>
     </div>
-    <div class="flex items-stretch gap-0 text-[13px]">
+    <div class="flex items-stretch gap-0 text-[13px] flex-wrap">
       <!-- ① -->
-      <div class="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-l" style="background:#f6f6f9">
+      <div class="flex-1 min-w-[150px] flex items-center gap-2 px-3 py-2.5 rounded-l" style="background:#f6f6f9">
         <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">1</span>
         <div class="leading-tight"><div class="text-neutral-700 font-bold">見積依頼</div><div class="text-[11px] text-neutral-400">下のキューで受付</div></div>
       </div>
       <div class="self-center text-neutral-300 px-1">›</div>
+      <!-- RFQ（①と②の間） -->
+      <a href="admin-rfq.html" class="flex-1 min-w-[170px] flex items-center gap-2 px-3 py-2.5 border border-dashed hover:opacity-80" style="background:var(--lav);border-color:#393b56">
+        <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">R</span>
+        <div class="leading-tight"><div class="text-neutral-700 font-bold">メーカー見積依頼（RFQ）</div><div class="text-[11px]" style="color:#393b56">依頼書の発行・期限管理 ›</div></div>
+      </a>
+      <div class="self-center text-neutral-300 px-1">›</div>
       <!-- ② -->
-      <div class="flex-1 flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9">
+      <div class="flex-1 min-w-[150px] flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9">
         <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">2</span>
-        <div class="leading-tight"><div class="text-neutral-700 font-bold">メーカー見積取得</div><div class="text-[11px] text-neutral-400">依頼を開いて処理</div></div>
+        <div class="leading-tight"><div class="text-neutral-700 font-bold">メーカー見積取得</div><div class="text-[11px] text-neutral-400">回答（原価・納期）を記録</div></div>
       </div>
       <div class="self-center text-neutral-300 px-1">›</div>
       <!-- ③ -->
-      <div class="flex-1 flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9">
+      <div class="flex-1 min-w-[130px] flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9">
         <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">3</span>
         <div class="leading-tight"><div class="text-neutral-700 font-bold">見積作成</div><div class="text-[11px] text-neutral-400">＋新規見積を作成</div></div>
       </div>
       <div class="self-center text-neutral-300 px-1">›</div>
       <!-- ④ -->
-      <div class="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-r" style="background:#f6f6f9">
+      <div class="flex-1 min-w-[150px] flex items-center gap-2 px-3 py-2.5 rounded-r" style="background:#f6f6f9">
         <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">4</span>
-        <div class="leading-tight"><div class="text-neutral-700 font-bold">顧客へ送付</div><div class="text-[11px] text-neutral-400">下の見積一覧に掲載</div></div>
+        <div class="leading-tight"><div class="text-neutral-700 font-bold">顧客へ送付</div><div class="text-[11px] text-neutral-400">技術部チェック完了後に掲載</div></div>
       </div>
     </div>
-    <p class="text-[12px] text-neutral-400 mt-2.5">※ この画面は各工程の入口をまとめた管理ハブです（特定の工程が「進行中」という意味ではありません）。①②は下の「見積依頼キュー」の「依頼を開く」、③は「＋新規見積を作成」、④は送付後に下の「作成済 見積一覧」へ反映されます。</p>
+    <p class="text-[12px] text-neutral-400 mt-2.5">※ この画面は各工程の入口をまとめた管理ハブです。メーカー見積依頼（RFQ）は①見積依頼と②メーカー見積取得の間の工程で、このメニューに集約しています。技術部の構成チェックが必要な見積は、④送付の前に下の「作成済 見積一覧」でチェックを完了してください。</p>
   </div>
 
   <!-- KPI -->
@@ -95,10 +101,12 @@
 <script src="assets/shell.js"></script>
 <script>
   var REQS = QUOTE_REQUESTS; // data.js の共有マスタ
+  // 技術部チェックの進行状態（見積作成後・顧客送付前に実施）
+  var TECH = {};   // no → 'done' | 'back'
   function reqStatus(r){
-    if(reqMakerReady(r))      return '<span class="badge bg-emerald-100 text-emerald-700">見積作成待ち</span>';
-    if(r.status==='maker')    return '<span class="badge bg-amber-100 text-amber-700">メーカー見積待ち</span>';
-    if(r.status==='tech')     return '<span class="badge text-white" style="background:#393b56">技術部チェック中</span>';
+    // ①見積依頼までの操作＝未対応 ／ ②メーカー見積取得まで完了＝メーカー見積取得済
+    if(reqMakerReady(r))      return '<span class="badge bg-emerald-100 text-emerald-700">メーカー見積取得済</span>';
+    if(r.status==='maker')    return '<span class="badge bg-amber-100 text-amber-700">メーカー見積 取得中</span>';
     return '<span class="badge text-white" style="background:#e60012">未対応</span>';
   }
   function reqSummary(r){ return r.lines.map(function(l){ return reqLineName(l)+' ×'+l.qty; }).join('、'); }
@@ -108,12 +116,16 @@
     title:'見積管理・作成',
     sub:'①見積 — 見積依頼 → メーカー見積取得 → 見積作成 → 顧客ポータルへ掲載・発注へ',
     onReady:function(){
-      var valid=QUOTES.filter(function(q){return q.status==='有効';}).length;
-      document.getElementById('kpi').innerHTML=
-        '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">見積依頼（未処理）</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+REQS.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">作成済見積</div><div class="font-display text-2xl font-black text-ink mt-1">'+QUOTES.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">有効な見積</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">'+valid+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
-        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">見積→受注 転換率</div><div class="font-display text-2xl font-black text-ink mt-1">62<span class="text-[13px] font-normal text-neutral-400 ml-1">%</span></div></div>';
+      function renderKpi(){
+        var valid=QUOTES.filter(function(q){return q.status==='有効';}).length;
+        var techWait=QUOTES.filter(function(q){return q.status==='有効' && q.techCheck && !TECH[q.no];}).length;
+        document.getElementById('kpi').innerHTML=
+          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">見積依頼（未処理）</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+REQS.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">作成済見積</div><div class="font-display text-2xl font-black text-ink mt-1">'+QUOTES.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">有効な見積</div><div class="font-display text-2xl font-black text-emerald-600 mt-1">'+valid+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">技術部 構成チェック待ち</div><div class="font-display text-2xl font-black mt-1 text-amber-600">'+techWait+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">送付前にチェック完了が必要</div></div>';
+      }
+      renderKpi();
 
       document.getElementById('reqRows').innerHTML = REQS.map(function(r){
         var c=getCustomer(r.cust)||{company:r.cust};
@@ -135,19 +147,52 @@
           var c=getCustomer(code);
           var total=0; q.lines.forEach(function(l){ var pr=l.custom?l.price:Math.round(getProduct(l.code).price*(c?c.rate:0.8)/10)*10; total+=pr*l.qty; });
           var expired=q.status==='期限切れ';
-          return '<tr class="'+(expired?'opacity-60':'')+'">'
+          var techPending = !expired && q.techCheck && !TECH[q.no];
+          var techBack    = !expired && q.techCheck && TECH[q.no]==='back';
+          // 状況：技術部チェックは見積作成後・顧客送付前に実施
+          var st;
+          if(expired)            st='<span class="badge bg-neutral-200 text-neutral-600">期限切れ</span>';
+          else if(techBack)      st='<span class="badge text-white" style="background:#393b56">差し戻し中</span>';
+          else if(techPending)   st='<span class="badge bg-amber-100 text-amber-700">要技術部チェック</span><div class="text-[11px] text-amber-600 mt-0.5">送付前にチェック完了が必要</div>';
+          else                   st='<span class="badge bg-emerald-100 text-emerald-700">有効</span>'+(q.techCheck?'<div class="text-[11px] text-emerald-600 mt-0.5">構成チェック完了</div>':'');
+          var ops;
+          if(expired){
+            ops='<a href="admin-quote-request.html?requote='+q.no+'" class="text-[13px] text-white px-2.5 py-1.5 inline-block" style="background:#e60012">再見積</a>';
+          }else if(techBack){
+            ops='<a href="admin-quote-new.html?from='+q.no+'" class="text-[13px] text-white px-2.5 py-1.5 inline-block" style="background:#393b56">修正して再作成 ›</a>';
+          }else if(techPending){
+            ops='<button class="techOk text-[13px] text-white px-2.5 py-1.5 mr-1" data-no="'+q.no+'" style="background:#14887b">構成チェック完了</button>'
+              + '<button class="techNg text-[13px] border px-2.5 py-1.5" data-no="'+q.no+'" style="border-color:#e60012;color:#e60012">差し戻す</button>';
+          }else{
+            ops='<button class="text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5" onclick="alert(\'見積 '+q.no+' を再送信しました。（モック）\')">再送信</button>';
+          }
+          return '<tr class="'+(expired?'opacity-60':(techPending?'bg-[#fffdf5]':''))+'">'
             + '<td class="px-4 py-3 font-display font-bold text-ink">'+q.no+'</td>'
             + '<td class="py-3 text-neutral-600 text-[14px]">'+(c?c.company:'')+'</td>'
             + '<td class="py-3 text-neutral-600 text-[14px]">'+q.title+(q.techCheck?'<div class="text-[11px] text-amber-600">技術部 構成チェック要</div>':'')+'</td>'
             + '<td class="py-3"><span class="badge '+(q.type==='特殊見積'?'text-white':'bg-neutral-200 text-neutral-700')+'" '+(q.type==='特殊見積'?'style="background:#393b56"':'')+'>'+q.type+'</span></td>'
             + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(total)+'</td>'
             + '<td class="py-3 pl-3 text-[13px] text-neutral-500 font-display">'+q.due+'</td>'
-            + '<td class="py-3">'+(expired?'<span class="badge bg-neutral-200 text-neutral-600">期限切れ</span>':'<span class="badge bg-emerald-100 text-emerald-700">有効</span>')+'</td>'
+            + '<td class="py-3">'+st+'</td>'
             + '<td class="px-4 py-3 text-right whitespace-nowrap">'
             + '<a href="admin-quote-detail.html?no='+q.no+'" class="text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 mr-1 inline-block">内容を見る</a>'
-            + (expired?'<a href="admin-quote-request.html?requote='+q.no+'" class="text-[13px] text-white px-2.5 py-1.5 inline-block" style="background:#e60012">再見積</a>':'<button class="text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5" onclick="alert(\'見積 '+q.no+' を再送信しました。（モック）\')">再送信</button>')
+            + ops
             + '</td></tr>';
         }).join('');
+        document.querySelectorAll('.techOk').forEach(function(b){
+          b.addEventListener('click', function(){
+            TECH[b.getAttribute('data-no')]='done';
+            renderKpi(); renderQuotes();
+            alert('見積 '+b.getAttribute('data-no')+' の構成チェックを完了しました。顧客ポータルへ送付できます。（モック）');
+          });
+        });
+        document.querySelectorAll('.techNg').forEach(function(b){
+          b.addEventListener('click', function(){
+            TECH[b.getAttribute('data-no')]='back';
+            renderKpi(); renderQuotes();
+            alert('見積 '+b.getAttribute('data-no')+' を作成担当へ差し戻しました。修正後に再度チェックを依頼してください。（モック）');
+          });
+        });
       }
       document.getElementById('kw').addEventListener('input', renderQuotes);
       renderQuotes();

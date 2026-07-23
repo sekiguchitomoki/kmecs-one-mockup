@@ -31,17 +31,19 @@
 
   // IBMインプット状況・納期・出荷（受注管理一覧と同じ値）
   var IBM_MAP={'WO-24072':'check','WO-24071':'check','WO-24068':'check','WO-24070':'error'};
-  var LEAD_MAP={'WO-24074':'2026/07/20','WO-24073':'2026/07/17','WO-24071':'2026/07/18','WO-24069':'2026/07/16'};
+  var LEAD_MAP={'WO-24074':'2026/07/20','WO-24073':'2026/07/17','WO-24071':'2026/07/18','WO-24069':'2026/07/16','WO-24067':'2026/07/12'};
   var SHIP_MAP={'WO-24073':'出荷準備中','WO-24069':'出荷済'};
   // 受注管理一覧に載っている9件は一覧と同じ納期・出荷を表示（それ以前の受注は完了扱い）
-  var LISTED=['WO-24076','WO-24075','WO-24074','WO-24073','WO-24072','WO-24071','WO-24070','WO-24069','WO-24068'];
+  var LISTED=['WO-24076','WO-24075','WO-24074','WO-24073','WO-24072','WO-24071','WO-24070','WO-24069','WO-24068','WO-24067'];
   var inList = LISTED.indexOf(o.no)>=0;
   var done = !inList && o.status!=='arranging';   // 一覧より前の出荷済以降の受注
+  var SHIPDATE_MAP={'WO-24073':'2026/07/18','WO-24069':'2026/07/16'};
   var S={
     status:o.status,
     ibm: IBM_MAP[o.no] || 'auto',
     lead: LEAD_MAP[o.no] || (done ? o.date : ''),
     ship: SHIP_MAP[o.no] || (done ? '出荷済' : ''),
+    shipDate: SHIPDATE_MAP[o.no] || (done ? o.date : ''),
     lines:[{name:o.items, qty:'一式', price:Math.round(o.amount/1.1)}],
     edit:false,
     history:[{d:o.date+' 09:40', u:'受注登録（'+o.route+'）', by:'システム'}]
@@ -113,14 +115,21 @@
           + '<div class="flex gap-1 mt-1"><input id="leadIn" type="date" value="'+(S.lead?S.lead.replace(/\//g,'-'):'')+'" class="flex-1 border border-[#dcdce6] px-3 py-2 text-sm">'
           + '<button id="leadSave" class="text-[13px] text-white px-3 whitespace-nowrap" style="background:#393b56">'+(S.lead?'納期を変更':'納期を保存')+'</button></div>'
           + '<div class="text-[12px] text-neutral-400 mt-1">保存するとIBMへ納期インプットし、顧客ポータル・進捗メールに反映されます。</div></div>'
-          + '<div><label class="text-[13px] font-bold text-neutral-600">出荷状況</label>'
-          + '<div class="mt-1.5 flex items-center gap-2 flex-wrap">'
-          + (S.ship==='出荷済' ? '<span class="badge bg-emerald-100 text-emerald-700">出荷済</span><span class="text-[12px] text-neutral-400">送り状発行済・顧客へ反映済み</span>'
-            : S.ship==='出荷準備中' ? '<span class="badge bg-amber-100 text-amber-700">出荷準備中</span><button id="shipDone" class="text-[13px] text-white px-3 py-1.5" style="background:#14887b">出荷済にする</button>'
-            : (S.lead ? '<button id="shipStart" class="text-[13px] text-white px-3 py-1.5" style="background:#e60012">出荷連絡・出荷入力（出荷準備中へ）</button>'
-                      : '<span class="text-[13px] text-neutral-400">先に回答納期を入力してください</span>'))
+          + '<div><label class="text-[13px] font-bold text-neutral-600">出荷状況'
+          + (S.ship ? '　' + (S.ship==='出荷済' ? '<span class="badge bg-emerald-100 text-emerald-700">出荷済</span>' : '<span class="badge bg-amber-100 text-amber-700">出荷準備中</span>') : '')
+          + '</label>'
+          + '<div class="flex gap-1 mt-1"><input id="shipIn" type="date" value="'+(S.shipDate?S.shipDate.replace(/\//g,'-'):'2026-07-23')+'" class="flex-1 border border-[#dcdce6] px-3 py-2 text-sm"'+(S.lead?'':' disabled')+'>'
+          + (S.ship==='出荷済'
+              ? '<button id="shipEdit" class="text-[13px] text-white px-3 whitespace-nowrap" style="background:#393b56">出荷日を変更</button>'
+            : S.ship==='出荷準備中'
+              ? '<button id="shipEdit" class="text-[13px] text-white px-3 whitespace-nowrap" style="background:#393b56">出荷日を変更</button><button id="shipDone" class="text-[13px] text-white px-3 whitespace-nowrap" style="background:#14887b">出荷済にする</button>'
+              : '<button id="shipStart" class="text-[13px] text-white px-3 whitespace-nowrap" style="background:#e60012"'+(S.lead?'':' disabled')+'>出荷連絡・出荷入力（出荷準備中へ）</button>')
           + '</div>'
-          + '<div class="text-[12px] text-neutral-400 mt-1.5">出荷連絡 → 出荷準備中 → 送り状発行後に「出荷済」で確定します。</div></div>'
+          + (S.ship==='出荷済' ? '<div class="mt-1.5"><button id="shipBack" class="text-[12px] border px-2 py-1" style="border-color:#f0a500;color:#b25000">出荷準備中に戻す（修正）</button></div>' : '')
+          + '<div class="text-[12px] text-neutral-400 mt-1.5">'
+          + (S.lead ? '出荷日を入れて出荷連絡 → 出荷準備中 → 送り状発行後に「出荷済」で確定します。出荷日は納期と同様にあとから編集できます。'
+                    : '先に回答納期を入力してください。')
+          + '</div></div>'
           + '</div>';
       }
 
@@ -229,16 +238,35 @@
         alert(o.no+' の納期をIBMへインプットし、顧客ポータル・進捗メールへ反映しました。（モック）');
       });
       if(q('shipStart')) q('shipStart').addEventListener('click', function(){
+        var v=q('shipIn').value;
+        if(!v){ alert('出荷日を入力してください。'); return; }
+        S.shipDate=v.replace(/-/g,'/');
         S.ship='出荷準備中';
-        S.history.push({d:stamp(), u:'出荷連絡を送信・出荷準備中に変更', by:'CS 山田'});
+        S.history.push({d:stamp(), u:'出荷連絡を送信・出荷準備中に変更（出荷日 '+S.shipDate+'）', by:'CS 山田'});
         draw();
-        alert(o.no+' の出荷連絡を顧客へ送り、「出荷準備中」にしました。送り状発行後に「出荷済にする」で確定してください。（モック）');
+        alert(o.no+' の出荷連絡（出荷日 '+S.shipDate+'）を顧客へ送り、「出荷準備中」にしました。送り状発行後に「出荷済にする」で確定してください。（モック）');
+      });
+      if(q('shipEdit')) q('shipEdit').addEventListener('click', function(){
+        var v=q('shipIn').value;
+        if(!v){ alert('出荷日を入力してください。'); return; }
+        S.shipDate=v.replace(/-/g,'/');
+        S.history.push({d:stamp(), u:'出荷日を変更（'+S.shipDate+'）', by:'CS 山田'});
+        draw();
+        alert(o.no+' の出荷日を '+S.shipDate+' に変更し、IBM・顧客ポータルへ反映しました。（モック）');
       });
       if(q('shipDone')) q('shipDone').addEventListener('click', function(){
+        var v=q('shipIn').value; if(v) S.shipDate=v.replace(/-/g,'/');
         S.ship='出荷済';
-        S.history.push({d:stamp(), u:'出荷済に変更（IBMへ出荷インプット）', by:'CS 山田'});
+        S.history.push({d:stamp(), u:'出荷済に変更（IBMへ出荷インプット・出荷日 '+S.shipDate+'）', by:'CS 山田'});
         draw();
         alert(o.no+' を出荷済にしました。IBMへ出荷インプットし、顧客ポータルへ反映しました。（モック）');
+      });
+      if(q('shipBack')) q('shipBack').addEventListener('click', function(){
+        if(!confirm(o.no+' を「出荷準備中」に戻しますか？（出荷の修正用）')) return;
+        S.ship='出荷準備中';
+        S.history.push({d:stamp(), u:'出荷準備中に戻す（出荷修正）', by:'CS 山田'});
+        draw();
+        alert(o.no+' を「出荷準備中」に戻しました。（モック）');
       });
       if(q('editStart')) q('editStart').addEventListener('click', function(){ S.edit=true; draw(); });
       if(q('editCancel')) q('editCancel').addEventListener('click', function(){ S.edit=false; draw(); });

@@ -19,10 +19,10 @@
 <body>
 <div id="content">
 
-  <!-- タブ：一覧 / 新規登録 -->
-  <div class="flex items-center gap-2 mb-4">
-    <button id="tabList" class="px-4 py-2 text-[14px] font-bold text-white" style="background:#393b56">商品一覧</button>
-    <button id="tabNew" class="px-4 py-2 text-[14px] font-bold border border-[#dcdce6] bg-white text-neutral-600">＋ 新規商品を追加</button>
+  <!-- ヘッダー操作（商品詳細の編集・カテゴリー管理は別画面） -->
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <a href="admin-product-edit.html" class="px-4 py-2 text-[14px] font-bold text-white inline-block" style="background:#e60012">＋ 新規商品を追加</a>
+    <a href="admin-categories.html" class="px-4 py-2 text-[14px] font-bold border border-[#dcdce6] bg-white text-neutral-600 inline-block hover:border-[color:var(--brand)]">商品カテゴリー管理 ›</a>
     <div class="ml-auto text-[13px] text-neutral-400">WordPress カスタム投稿タイプ「product」への投稿イメージ</div>
   </div>
 
@@ -31,7 +31,7 @@
     <div class="adm-card p-4 mb-4 flex flex-wrap items-center gap-3">
       <input id="kw" class="flex-1 min-w-[200px] border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="商品名・型番で検索">
       <select id="fMaker" class="border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"></select>
-      <select id="fStatus" class="border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"><option value="">すべての状態</option><option value="publish">公開</option><option value="draft">下書き</option></select>
+      <select id="fStatus" class="border border-[#dcdce6] px-3 py-2 text-[14px] bg-white"><option value="">すべての状態</option><option value="publish">公開</option><option value="draft">非公開（下書き）</option><option value="oos">在庫切れ</option></select>
     </div>
     <div class="adm-card overflow-hidden">
       <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
@@ -52,126 +52,49 @@
     </div>
   </div>
 
-  <!-- ================= 新規/編集 エディタ ================= -->
-  <div id="editView" class="hidden grid lg:grid-cols-3 gap-4">
-    <!-- 本文 -->
-    <div class="lg:col-span-2 space-y-4">
-      <div class="adm-card p-5">
-        <input id="p_name" class="w-full border-0 border-b-2 border-[#dcdce6] focus:border-[color:var(--brand)] outline-none text-[22px] font-bold py-2" placeholder="商品名を入力（投稿タイトル）">
-        <div class="text-[12px] text-neutral-400 mt-2">パーマリンク：https://kmecsone.jp/products/<span id="p_slug" class="text-[color:var(--brand)]">new-product</span>/</div>
-      </div>
-
-      <div class="adm-card p-5">
-        <div class="text-[14px] font-bold text-ink mb-2">本文（商品説明）</div>
-        <textarea id="p_desc" rows="4" class="w-full border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="製品の説明・特長を入力"></textarea>
-      </div>
-
-      <!-- カスタムフィールド -->
-      <div class="adm-card overflow-hidden">
-        <div class="px-5 py-3 border-b border-[#dcdce6] flex items-center gap-2">
-          <span class="w-6 h-6 flex items-center justify-center text-white text-[12px]" style="background:#393b56">CF</span>
-          <span class="text-[14px] font-bold text-ink">カスタムフィールド（製品情報）</span>
-        </div>
-        <div class="p-5 grid sm:grid-cols-2 gap-4">
-          <div><label class="text-[13px] font-bold text-neutral-600">型番 / SKU <span style="color:#e60012">*</span></label>
-            <input id="p_code" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] font-display outline-none focus:border-[color:var(--brand)]" placeholder="例: EDS-408A"></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">メーカー</label>
-            <select id="p_maker" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"></select></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">カテゴリ</label>
-            <select id="p_cat" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"></select></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">カテゴリ表示名（サブ）</label>
-            <input id="p_catja" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="例: イーサネットスイッチ"></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">標準価格（税別）</label>
-            <input id="p_price" type="number" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] font-display outline-none focus:border-[color:var(--brand)]" placeholder="48000"></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">在庫数</label>
-            <input id="p_stock" type="number" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] font-display outline-none focus:border-[color:var(--brand)]" placeholder="24"></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">標準納期</label>
-            <input id="p_lead" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="例: 即納 / 2営業日"></div>
-          <div><label class="text-[13px] font-bold text-neutral-600">ラベル</label>
-            <select id="p_tag" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"><option value="">なし</option><option>定番</option><option>上位</option><option>長納期</option><option>EOL予定</option></select></div>
-        </div>
-        <!-- 仕様（繰り返しフィールド） -->
-        <div class="px-5 pb-5">
-          <div class="flex items-center justify-between mb-2">
-            <label class="text-[13px] font-bold text-neutral-600">仕様（繰り返しフィールド）</label>
-            <button id="addSpec" class="text-[12px] text-white px-2.5 py-1" style="background:#393b56">＋ 行を追加</button>
-          </div>
-          <div id="specRows" class="space-y-2"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 公開＋アイキャッチ＋プレビュー -->
-    <div class="space-y-4">
-      <div class="adm-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">公開</div>
-        <div class="p-4 text-[14px] space-y-2">
-          <div class="flex justify-between"><span class="text-neutral-500">ステータス</span>
-            <select id="p_status" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"><option value="draft">下書き</option><option value="publish">公開</option></select></div>
-          <div class="flex justify-between"><span class="text-neutral-500">表示先</span><span class="text-ink">商品検索・メーカーページ</span></div>
-          <div class="flex justify-between"><span class="text-neutral-500">価格表示</span><span class="text-ink">ログイン後（得値）</span></div>
-        </div>
-        <div class="flex gap-2 px-4 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
-          <button id="saveDraft" class="flex-1 text-[13px] border border-[#dcdce6] bg-white text-neutral-600 py-2">下書き保存</button>
-          <button id="publish" class="flex-1 text-[13px] text-white py-2 font-bold" style="background:#e60012">公開（サイトへ出力）</button>
-        </div>
-      </div>
-
-      <div class="adm-card p-4">
-        <div class="text-[14px] font-bold text-ink mb-2">アイキャッチ画像</div>
-        <select id="p_img" class="w-full border border-[#dcdce6] px-2 py-2 text-[13px] bg-white mb-2"></select>
-        <div class="h-32 bg-white border border-[#dcdce6] flex items-center justify-center overflow-hidden"><img id="imgPrev" src="assets/img/moxa-switch.jpg" class="max-h-full max-w-full object-contain"></div>
-      </div>
-
-      <!-- サイト表示プレビュー -->
-      <div class="adm-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">サイト表示プレビュー</div>
-        <div class="p-4"><div id="sitePrev"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際のWordPress投稿・DB保存は行われません（入力内容は画面上のみ）。</p>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際のWordPress投稿・DB保存は行われません。商品の登録・編集は各行の「編集」から別画面で行います。</p>
 </div>
 
 <script src="assets/data.js"></script>
 <script src="assets/shell.js"></script>
 <script>
+  // 旧URL互換：?code=XXX で来た場合は編集画面（別URL）へ
+  if(qs('code')){ location.replace('admin-product-edit.html?code='+encodeURIComponent(qs('code'))); }
+
   KMECS.renderAdminShell({
     active:'admin-products',
     title:'商品管理・登録',
     sub:'WordPress カスタム投稿タイプ「product」＋カスタムフィールドで商品を登録し、サイトへ出力',
     onReady:function(){
-      var IMAGES=['moxa-switch','moxa-router','moxa-gateway','moxa-media','moxa-wireless','moxa-cellular','moxa-deviceserver','moxa-serialconv','moxa-io','moxa-ipc','scat-connector','scat-sensor','scat-ipc'];
-
       /* ---- 一覧 ---- */
       function tagBadge(t){
+        // 「定番」「上位」は状態には出さない（ラベルとしても廃止）
         if(t==='EOL予定') return '<span class="badge text-white" style="background:#e60012">EOL予定</span>';
-        if(t==='定番') return '<span class="badge bg-ink text-white">定番</span>';
-        if(t==='上位') return '<span class="badge bg-neutral-200 text-neutral-700">上位</span>';
         if(t==='長納期') return '<span class="badge bg-amber-100 text-amber-700">長納期</span>';
         return '';
       }
       document.getElementById('fMaker').innerHTML='<option value="">全メーカー</option>'+Object.keys(MAKERS).map(function(k){return '<option value="'+k+'">'+MAKERS[k].name+'</option>';}).join('');
       // 疑似的に一部をdraft扱い
-      function statusOf(p){ return (p.stock%7===0)?'draft':'publish'; }
+      function statusOf(p){ return (p.stock%7===0 && p.stock>0)?'draft':'publish'; }
       function renderList(){
         var kw=document.getElementById('kw').value.trim(), mk=document.getElementById('fMaker').value, st=document.getElementById('fStatus').value;
         var list=PRODUCTS.filter(function(p){
           if(mk && p.maker!==mk) return false;
-          if(st && statusOf(p)!==st) return false;
+          if(st==='oos'){ if(p.stock>0) return false; }
+          else if(st && statusOf(p)!==st) return false;
           if(kw && (p.name+p.code).indexOf(kw)<0) return false;
           return true;
         });
         document.getElementById('cnt').textContent=list.length;
         document.getElementById('rows').innerHTML=list.slice(0,80).map(function(p){
-          var s=statusOf(p), pub=(s==='publish');
-          // 公開＝緑の帯・行を薄緑／非公開（下書き）＝グレーの帯・行を薄グレーで一目で区別
+          var s=statusOf(p), pub=(s==='publish'), oos=(p.stock===0);
+          // 公開＝緑の帯／非公開（下書き）＝グレーの帯。在庫切れは赤バッジを併記（在庫数を参照）
           var rowBg = pub ? 'background:#f2fbf6;box-shadow:inset 4px 0 0 #10b981;'
                           : 'background:#f7f7f9;box-shadow:inset 4px 0 0 #c4c4cf;';
-          var stCell = pub
+          var stCell = (pub
             ? '<span class="badge text-white" style="background:#10b981">● 公開中</span>'
-            : '<span class="badge text-white" style="background:#9a9aa6">○ 非公開（下書き）</span>';
+            : '<span class="badge text-white" style="background:#9a9aa6">○ 非公開（下書き）</span>')
+            + (oos?' <span class="badge text-white" style="background:#e60012">在庫切れ</span>':'');
           return '<tr class="hover:brightness-[.98]" style="'+rowBg+'">'
             + '<td class="px-4 py-2"><div class="w-12 h-12 bg-white border border-[#eee] flex items-center justify-center overflow-hidden"><img src="'+prodImg(p)+'" class="max-h-full max-w-full object-contain"></div></td>'
             + '<td class="py-2"><div class="text-[15px] font-bold text-ink">'+p.name+'</div><div class="text-[12px] text-neutral-400">'+p.code.toLowerCase()+'</div></td>'
@@ -180,99 +103,11 @@
             + '<td class="py-2 text-[13px] text-neutral-500">'+p.catJa+'</td>'
             + '<td class="py-2 text-right font-display">'+yen(p.price)+'</td>'
             + '<td class="py-2 pl-3">'+stCell+' '+tagBadge(p.tag)+'</td>'
-            + '<td class="px-4 py-2 text-right"><button class="edit text-[13px] text-white px-2.5 py-1" data-c="'+p.code+'" style="background:#393b56">編集</button></td></tr>';
-        }).join('')+(list.length>80?'':'');
-        document.querySelectorAll('.edit').forEach(function(b){ b.addEventListener('click', function(){ loadEditor(getProduct(b.getAttribute('data-c'))); showEdit(); }); });
+            + '<td class="px-4 py-2 text-right"><a href="admin-product-edit.html?code='+p.code+'" class="text-[13px] text-white px-2.5 py-1 inline-block" style="background:#393b56">編集</a></td></tr>';
+        }).join('');
       }
-
-      /* ---- エディタ ---- */
-      document.getElementById('p_maker').innerHTML=Object.keys(MAKERS).map(function(k){return '<option value="'+k+'">'+MAKERS[k].name+'</option>';}).join('');
-      document.getElementById('p_cat').innerHTML=CATEGORIES.map(function(c){return '<option value="'+c.key+'">'+c.en+' / '+c.ja+'</option>';}).join('');
-      document.getElementById('p_img').innerHTML=IMAGES.map(function(n){return '<option value="assets/img/'+n+'.jpg">'+n+'</option>';}).join('');
-
-      function specRow(k,v){
-        var d=document.createElement('div'); d.className='flex gap-2';
-        d.innerHTML='<input class="sk flex-1 border border-[#dcdce6] px-2 py-1.5 text-[13px]" placeholder="項目（例: ポート）" value="'+(k||'')+'">'
-          + '<input class="sv flex-1 border border-[#dcdce6] px-2 py-1.5 text-[13px]" placeholder="値（例: 10/100M ×8）" value="'+(v||'')+'">'
-          + '<button class="rm text-neutral-400 hover:text-[color:var(--brand)] px-2">×</button>';
-        d.querySelector('.rm').addEventListener('click', function(){ d.remove(); syncPrev(); });
-        d.querySelectorAll('input').forEach(function(i){ i.addEventListener('input', syncPrev); });
-        return d;
-      }
-      document.getElementById('addSpec').addEventListener('click', function(){ document.getElementById('specRows').appendChild(specRow('','')); });
-
-      function loadEditor(p){
-        p=p||{code:'',name:'',desc:'',maker:'moxa',cat:'wired',catJa:'',price:'',stock:'',lead:'即納',tag:'',img:'assets/img/moxa-switch.jpg',spec:[]};
-        document.getElementById('p_name').value=p.name||'';
-        document.getElementById('p_desc').value=p.desc||'';
-        document.getElementById('p_code').value=p.code||'';
-        document.getElementById('p_maker').value=p.maker||'moxa';
-        document.getElementById('p_cat').value=p.cat||'wired';
-        document.getElementById('p_catja').value=p.catJa||'';
-        document.getElementById('p_price').value=p.price||'';
-        document.getElementById('p_stock').value=(p.stock!==undefined?p.stock:'');
-        document.getElementById('p_lead').value=p.lead||'即納';
-        document.getElementById('p_tag').value=p.tag||'';
-        document.getElementById('p_img').value=(p.img||prodImg(p));
-        document.getElementById('imgPrev').src=document.getElementById('p_img').value;
-        var sr=document.getElementById('specRows'); sr.innerHTML='';
-        (p.spec&&p.spec.length?p.spec:[['','']]).forEach(function(s){ sr.appendChild(specRow(s[0],s[1])); });
-        syncPrev();
-      }
-
-      function syncPrev(){
-        var name=document.getElementById('p_name').value||'（商品名）';
-        var code=document.getElementById('p_code').value||'SKU';
-        var mk=document.getElementById('p_maker').value;
-        var catja=document.getElementById('p_catja').value||'カテゴリ';
-        var price=document.getElementById('p_price').value;
-        var img=document.getElementById('p_img').value;
-        var tag=document.getElementById('p_tag').value;
-        document.getElementById('p_slug').textContent=(code||'new-product').toLowerCase();
-        document.getElementById('imgPrev').src=img;
-        // サイト表示プレビュー（商品カード風）
-        document.getElementById('sitePrev').innerHTML=
-          '<div class="card overflow-hidden" style="max-width:220px">'
-          + '<div class="h-28 bg-white border-b border-[color:var(--line)] flex items-center justify-center p-2"><img src="'+img+'" class="max-h-full max-w-full object-contain"></div>'
-          + '<div class="p-3"><div class="text-[11px] text-neutral-400 font-display">'+(MAKERS[mk]?MAKERS[mk].name:'')+' ・ '+code+'</div>'
-          + '<div class="text-[13px] font-bold text-ink leading-snug mt-1">'+name+'</div>'
-          + '<div class="text-[12px] text-neutral-400 mt-0.5">'+catja+'</div>'
-          + '<div class="mt-2 pt-2 border-t border-[color:var(--line)] text-[12px]">'
-          + (price? '<span class="inline-flex items-center gap-1 text-neutral-400"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>ログインで表示</span>' : '<span class="text-neutral-300">価格未設定</span>')
-          + '</div></div></div>'
-          + '<div class="text-[11px] text-neutral-400 mt-2">↑ 公開すると商品検索／メーカーページにこの形で出力されます。標準価格 '+(price?yen(price):'—')+'（ログイン時に顧客別の得値を表示）</div>';
-      }
-      ['p_name','p_code','p_maker','p_catja','p_price','p_img','p_tag'].forEach(function(id){
-        document.getElementById(id).addEventListener('input', syncPrev);
-        document.getElementById(id).addEventListener('change', syncPrev);
-      });
-
-      document.getElementById('publish').addEventListener('click', function(){
-        var name=document.getElementById('p_name').value, code=document.getElementById('p_code').value;
-        if(!name||!code){ alert('商品名と型番(SKU)は必須です。'); return; }
-        alert('商品「'+name+'（'+code+'）」を公開しました。\nWordPress カスタム投稿「product」として保存され、商品検索・メーカーページに出力されます。（モック）');
-      });
-      document.getElementById('saveDraft').addEventListener('click', function(){ alert('下書きとして保存しました。（モック）'); });
-
-      /* ---- タブ切替 ---- */
-      function showList(){ document.getElementById('listView').classList.remove('hidden'); document.getElementById('editView').classList.add('hidden');
-        document.getElementById('tabList').style.background='#393b56'; document.getElementById('tabList').className='px-4 py-2 text-[14px] font-bold text-white';
-        document.getElementById('tabNew').className='px-4 py-2 text-[14px] font-bold border border-[#dcdce6] bg-white text-neutral-600'; document.getElementById('tabNew').style.background=''; renderList(); }
-      function showEdit(){ document.getElementById('listView').classList.add('hidden'); document.getElementById('editView').classList.remove('hidden');
-        document.getElementById('tabNew').style.background='#393b56'; document.getElementById('tabNew').className='px-4 py-2 text-[14px] font-bold text-white';
-        document.getElementById('tabList').className='px-4 py-2 text-[14px] font-bold border border-[#dcdce6] bg-white text-neutral-600'; document.getElementById('tabList').style.background=''; }
-      document.getElementById('tabList').addEventListener('click', showList);
-      document.getElementById('tabNew').addEventListener('click', function(){ loadEditor(null); showEdit(); });
       ['kw','fMaker','fStatus'].forEach(function(id){ document.getElementById(id).addEventListener('input', renderList); document.getElementById(id).addEventListener('change', renderList); });
-
       renderList();
-
-      // 横断検索などから ?code=XXX で来た場合は、その商品で一覧を絞り編集画面を開く
-      var preCode = qs('code');
-      if(preCode){
-        var pre = PRODUCTS.filter(function(p){ return p.code.toUpperCase()===preCode.toUpperCase(); })[0];
-        if(pre){ document.getElementById('kw').value = pre.code; renderList(); loadEditor(pre); showEdit(); }
-      }
     }
   });
 </script>

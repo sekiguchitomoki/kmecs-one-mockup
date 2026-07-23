@@ -439,11 +439,11 @@
     { sec: '受注業務', items: [
       { key: 'admin-orders', label: '受注管理・IBM連携', href: 'admin-orders.html', badge: '3' },
       { key: 'admin-quotes', label: '見積管理・作成', href: 'admin-quotes.html' },
-      { key: 'admin-rfq', label: 'メーカー見積依頼（RFQ）', href: 'admin-rfq.html' },
       { key: 'admin-inquiries', label: '問合せ管理', href: 'admin-inquiries.html', badge: '2' },
     ]},
     { sec: '商品管理', items: [
       { key: 'admin-products', label: '商品管理・登録', href: 'admin-products.html' },
+      { key: 'admin-categories', label: '商品カテゴリー管理', href: 'admin-categories.html' },
     ]},
     { sec: '顧客・分析', items: [
       { key: 'admin-customers', label: '顧客管理・価格設定', href: 'admin-customers.html' },

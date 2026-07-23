@@ -20,7 +20,7 @@
 <div id="content">
 
   <!-- KPI -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+  <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4" id="kpi"></div>
 
   <!-- 絞り込み -->
   <div class="adm-card p-4 mb-4 flex flex-wrap items-end gap-3">
@@ -87,8 +87,7 @@
         document.getElementById('kpi').innerHTML=
           '<div class="'+qc+'" data-k="open"><div class="text-[13px] text-neutral-500">未対応</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+open+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>'
           + '<div class="'+qc+'" data-k="working"><div class="text-[13px] text-neutral-500">対応中</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+working+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>'
-          + '<div class="'+qc+'" data-k="done"><div class="text-[13px] text-neutral-500">完了</div><div class="font-display text-2xl font-black text-ink mt-1">'+done+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>'
-          + '<div class="p-4"><div class="text-[13px] text-neutral-500">平均初動</div><div class="font-display text-2xl font-black text-ink mt-1">1.8<span class="text-[13px] font-normal text-neutral-400 ml-1">時間</span></div><div class="text-[11px] text-neutral-400 mt-0.5">未対応→初回返信の平均</div></div>';
+          + '<div class="'+qc+'" data-k="done"><div class="text-[13px] text-neutral-500">完了</div><div class="font-display text-2xl font-black text-ink mt-1">'+done+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">絞り込み ›</div></div>';
         document.querySelectorAll('.qkpi').forEach(function(card){
           card.addEventListener('click', function(){
             var k=card.getAttribute('data-k');
@@ -119,7 +118,8 @@
             + (q.status!=='done'
                 ? '<a href="admin-inquiry-reply.html?id='+q.id+'" class="text-[13px] text-white px-2.5 py-1.5 inline-block" style="background:#e60012">返信する ›</a>'
                   + '<button class="dn text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5" data-id="'+q.id+'">完了にする</button>'
-                : '<a href="admin-inquiry-reply.html?id='+q.id+'" class="text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">内容を見る ›</a>')
+                : '<a href="admin-inquiry-reply.html?id='+q.id+'" class="text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">内容を見る ›</a>'
+                  + '<button class="undn text-[13px] border px-2.5 py-1.5" data-id="'+q.id+'" style="border-color:#f0a500;color:#b25000">未完了に戻す</button>')
             + '</span></div></div>';
         }).join('') || '<div class="px-4 py-8 text-center text-neutral-400 text-[14px]">条件に一致する問合せがありません。</div>';
 
@@ -127,6 +127,12 @@
           b.addEventListener('click', function(){
             var q=getInquiry(b.getAttribute('data-id'));
             q.status='done'; render();
+          });
+        });
+        document.querySelectorAll('.undn').forEach(function(b){
+          b.addEventListener('click', function(){
+            var q=getInquiry(b.getAttribute('data-id'));
+            q.status='working'; render();
           });
         });
       }

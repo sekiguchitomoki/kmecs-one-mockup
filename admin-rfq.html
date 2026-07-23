@@ -19,6 +19,8 @@
 <body>
 <div id="content">
 
+  <a href="admin-quotes.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 見積管理・作成に戻る</a>
+
   <!-- 流れ図 -->
   <div class="adm-card p-5 mb-4">
     <div class="flex items-center gap-2 mb-3">
@@ -96,9 +98,9 @@
 <script src="assets/shell.js"></script>
 <script>
   KMECS.renderAdminShell({
-    active:'admin-rfq',
+    active:'admin-quotes',
     title:'メーカー見積依頼（RFQ）',
-    sub:'依頼書の発行・回答（原価・納期）の記録 ・ 見積依頼キューと連携',
+    sub:'見積管理・作成の一工程（①見積依頼 → RFQ発行 → ②メーカー見積取得） ・ 依頼書の発行・回答（原価・納期）の記録',
     onReady:function(){
       var RFQS=[
         { no:'RFQ-2607-012', maker:'MOXA',  items:'EDS-518A ×6 他2点',  rel:'QR-26068', issued:'2026/07/18', due:'2026/07/24', st:'waiting' },

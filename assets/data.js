@@ -244,6 +244,7 @@ window.ADMIN_ORDERS = [
   { no:'WO-24070', cust:'5088-04', date:'2026/06/30', amount:1280000,route:'EDI',            status:'unpaid',    maker:'moxa',  items:'MOXA EDS 一式' },
   { no:'WO-24069', cust:'1042-01', date:'2026/06/28', amount:77000,  route:'Web検索',        status:'paid',      maker:'moxa',  items:'MOXA EDS-408A ×2' },
   { no:'WO-24068', cust:'8006-01', date:'2026/06/25', amount:342000, route:'Web検索',        status:'paid',      maker:'ipc',   items:'産業用IPC ユニット' },
+  { no:'WO-24067', cust:'3011-02', date:'2026/06/24', amount:68640,  route:'メール',         status:'canceled',  maker:'moxa',  items:'MOXA EDS-408A ×2（受注後キャンセル）' },
   { no:'WO-24061', cust:'5088-04', date:'2026/06/20', amount:126000, route:'Web検索',        status:'shipped',   maker:'fraba', items:'POSITAL 磁気エンコーダ ×6' },
   { no:'WO-24055', cust:'1042-01', date:'2026/06/18', amount:281600, route:'見積Web',        status:'unpaid',    maker:'ipc',   items:'産業用IPC ×2' },
   { no:'WO-24048', cust:'6100-01', date:'2026/06/12', amount:189000, route:'メール',          status:'paid',      maker:'moxa',  items:'MOXA AWK ×3' },
@@ -598,7 +599,7 @@ window.QUOTE_REQUESTS = [
       { code:'AMC-2P-08',  qty:50, mkCost:null, mkLead:'' },
       { code:'CBL-AMC-2M', qty:50, mkCost:null, mkLead:'' },
     ] },
-  { id:'RQ-2607-030', date:'2026/07/16', cust:'2055-03', type:'特殊見積', status:'tech', staff:'鈴木 慶博',
+  { id:'RQ-2607-030', date:'2026/07/16', cust:'2055-03', type:'特殊見積', status:'maker', staff:'鈴木 慶博',
     note:'IPC組込構成。技術部の構成チェックが必要。',
     lines:[
       { code:'IPC-3050-i5', qty:2,  mkCost:185000, mkLead:'約3週間' },

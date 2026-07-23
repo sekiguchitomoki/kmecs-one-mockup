@@ -20,12 +20,13 @@
 <div id="content">
 
   <!-- KPI（クリックで下の受注一覧を絞り込み） -->
-  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+  <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-4">
     <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="all"><div class="text-[14px] text-neutral-500">受注（一覧）</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="kAll">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">すべて表示 ›</div></div>
     <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="auto"><div class="text-[14px] text-neutral-500">IBM自動IP済</div><div class="font-display text-2xl font-black text-emerald-600 mt-1"><span id="kAuto">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
     <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="check"><div class="text-[14px] text-neutral-500">要チェック</div><div class="font-display text-2xl font-black text-amber-600 mt-1"><span id="kCheck">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
     <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="error"><div class="text-[14px] text-neutral-500">連携エラー</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012"><span id="kError">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
     <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="nolead"><div class="text-[14px] text-neutral-500">納期未入力</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="kNolead">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
+    <div class="adm-card p-4 kpi cursor-pointer transition hover:border-[color:var(--brand)] hover:shadow-sm" data-k="noship"><div class="text-[14px] text-neutral-500">出荷未入力</div><div class="font-display text-2xl font-black text-ink mt-1"><span id="kNoship">0</span><span class="text-[14px] font-normal text-neutral-400 ml-1">件</span></div><div class="text-[11px] text-neutral-400 mt-0.5">この状態で絞り込み ›</div></div>
   </div>
 
   <div class="grid lg:grid-cols-3 gap-4 mb-4">
@@ -80,6 +81,7 @@
       <div class="flex flex-wrap gap-1 items-center text-[14px]">
         <button class="fb px-3 py-1.5 text-white" data-f="all" style="background:#e60012">すべて</button>
         <button class="fb px-3 py-1.5 border border-[#dcdce6] bg-white text-neutral-600" data-f="todo">要対応</button>
+        <label class="ml-2 inline-flex items-center gap-1.5 text-[13px] text-neutral-600 cursor-pointer select-none"><input type="checkbox" id="showCancel" class="accent-[#e60012]"> キャンセル済みを表示</label>
         <a href="admin-order-new.html" class="ml-2 inline-flex items-center gap-1 text-white px-3 py-1.5 font-bold" style="background:#393b56"><span class="text-[16px] leading-none">＋</span> 手動で受注を追加</a>
       </div>
     </div>
@@ -138,6 +140,7 @@
     { no:'WO-24070', ibm:'error', lead:'',           ship:'' },
     { no:'WO-24069', ibm:'auto',  lead:'2026/07/16', ship:'出荷済' },
     { no:'WO-24068', ibm:'check', lead:'',           ship:'' },
+    { no:'WO-24067', ibm:'auto',  lead:'2026/07/12', ship:'', canceled:true },
   ];
   function routeBadge(r){
     var m = { 'Web検索':'#e60012', '見積Web':'#ff6b6b', 'EDI':'#14887b', 'メール':'#393b56', 'FAX':'#5b5e80', '郵便':'#8b8ea8' };
@@ -164,23 +167,28 @@
           + '<div class="text-[13px] text-neutral-400 mt-0.5">'+r.note+'</div></div>';
       }).join('');
 
+      var showCancel=false;   // キャンセル済みの表示・非表示（既定は非表示）
       function matchFilter(r){
+        if(r.canceled && !showCancel) return false;           // キャンセル済みはチェックONのときのみ表示
         switch(f){
-          case 'auto':   return r.ibm==='auto';
-          case 'check':  return r.ibm==='check';
-          case 'error':  return r.ibm==='error';
-          case 'nolead': return !r.lead;
-          case 'todo':   return r.ibm!=='auto' || !r.lead;   // 旧「要対応」
+          case 'auto':   return !r.canceled && r.ibm==='auto';
+          case 'check':  return !r.canceled && r.ibm==='check';
+          case 'error':  return !r.canceled && r.ibm==='error';
+          case 'nolead': return !r.canceled && !r.lead;
+          case 'noship': return !r.canceled && !r.ship;
+          case 'todo':   return !r.canceled && (r.ibm!=='auto' || !r.lead);   // 旧「要対応」
           default:       return true;                         // all
         }
       }
-      var FILTER_LABEL = { all:'全件', auto:'IBM自動IP済', check:'要チェック', error:'連携エラー', nolead:'納期未入力', todo:'要対応' };
-      // KPI件数は実際の一覧（ROWS）から算出（表示件数と一致させる）
-      document.getElementById('kAll').textContent    = ROWS.length;
-      document.getElementById('kAuto').textContent   = ROWS.filter(function(r){return r.ibm==='auto';}).length;
-      document.getElementById('kCheck').textContent  = ROWS.filter(function(r){return r.ibm==='check';}).length;
-      document.getElementById('kError').textContent  = ROWS.filter(function(r){return r.ibm==='error';}).length;
-      document.getElementById('kNolead').textContent = ROWS.filter(function(r){return !r.lead;}).length;
+      var FILTER_LABEL = { all:'全件', auto:'IBM自動IP済', check:'要チェック', error:'連携エラー', nolead:'納期未入力', noship:'出荷未入力', todo:'要対応' };
+      // KPI件数は実際の一覧（ROWS）から算出（表示件数と一致させる／キャンセル済みは除く）
+      var ACT=ROWS.filter(function(r){return !r.canceled;});
+      document.getElementById('kAll').textContent    = ACT.length;
+      document.getElementById('kAuto').textContent   = ACT.filter(function(r){return r.ibm==='auto';}).length;
+      document.getElementById('kCheck').textContent  = ACT.filter(function(r){return r.ibm==='check';}).length;
+      document.getElementById('kError').textContent  = ACT.filter(function(r){return r.ibm==='error';}).length;
+      document.getElementById('kNolead').textContent = ACT.filter(function(r){return !r.lead;}).length;
+      document.getElementById('kNoship').textContent = ACT.filter(function(r){return !r.ship;}).length;
       function render(){
         var list = ROWS.filter(matchFilter);
         // 絞り込みラベル＋件数
@@ -209,6 +217,17 @@
           var o = getAdminOrder(r.no);              // 会社/金額/経路の正データ
           var c = getCustomer(o.cust) || {company:o.cust, rank:'-', code:o.cust};
           var idx = ROWS.indexOf(r);
+          if(r.canceled){
+            return '<tr class="opacity-60">'
+              + '<td class="px-4 py-3 font-display font-bold text-ink">'+r.no+'<div class="mt-1"><span class="badge text-white" style="background:#6b7280">キャンセル済</span></div></td>'
+              + '<td class="py-3 text-neutral-600 text-[16px]">'+c.company+'<div class="text-[14px] text-neutral-400">得値'+c.rank+' ・ '+c.code+'</div></td>'
+              + '<td class="py-3">'+routeBadge(o.route)+'</td>'
+              + '<td class="py-3 text-right font-display text-neutral-400 line-through">'+yen(o.amount)+'</td>'
+              + '<td class="py-3 pl-4 text-[14px] text-neutral-400">取消インプット済</td>'
+              + '<td class="py-3 text-neutral-300">—</td>'
+              + '<td class="py-3 text-neutral-300">—</td>'
+              + '<td class="px-4 py-3 text-right whitespace-nowrap"><a href="admin-order-detail.html?no='+r.no+'" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">開く ›</a></td></tr>';
+          }
           return '<tr class="'+(r.ibm==='error'?'bg-[#fff5f5]':'')+'">'
             + '<td class="px-4 py-3 font-display font-bold text-ink">'+r.no+'</td>'
             + '<td class="py-3 text-neutral-600 text-[16px]">'+c.company+'<div class="text-[14px] text-neutral-400">得値'+c.rank+' ・ '+c.code+'</div></td>'
@@ -296,12 +315,16 @@
       document.querySelectorAll('.fb').forEach(function(b){
         b.addEventListener('click', function(){ setFilter(b.getAttribute('data-f')); });
       });
+      // キャンセル済みの表示・非表示
+      document.getElementById('showCancel').addEventListener('change', function(){
+        showCancel = this.checked; render();
+      });
       // KPIカードのクリック
       document.querySelectorAll('.kpi').forEach(function(card){
         card.addEventListener('click', function(){ setFilter(card.getAttribute('data-k')); });
       });
       // URLパラメータ（ダッシュボード等からの遷移）で初期フィルタを反映
-      var qf=qs('f'); if(qf && ['all','auto','check','error','nolead'].indexOf(qf)>=0) f=qf;
+      var qf=qs('f'); if(qf && ['all','auto','check','error','nolead','noship'].indexOf(qf)>=0) f=qf;
       render();
     }
   });
