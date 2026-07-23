@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <!-- 流れ図 -->
+  <div class="adm-card p-5 mb-4">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-[11px] font-bold text-neutral-400 border border-[#dcdce6] px-1.5 py-0.5">図</span>
+      <span class="text-[13px] font-bold text-ink">メーカー見積依頼（RFQ）の流れ</span>
+      <span class="text-[12px] text-neutral-400">見積依頼キューの品目をメーカーへ問い合わせ、原価・納期を記録します</span>
+    </div>
+    <div class="flex items-stretch gap-0 text-[13px]">
+      <div class="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-l" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">1</span><div class="leading-tight"><div class="text-neutral-700 font-bold">見積依頼を確認</div><div class="text-[11px] text-neutral-400">見積管理のキューから</div></div></div>
+      <div class="self-center text-neutral-300 px-1">›</div>
+      <div class="flex-1 flex items-center gap-2 px-3 py-2.5" style="background:#fce8ea"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#e60012">2</span><div class="leading-tight"><div class="text-neutral-700 font-bold">RFQを発行</div><div class="text-[11px] text-neutral-400">メーカー別に依頼書PDF</div></div></div>
+      <div class="self-center text-neutral-300 px-1">›</div>
+      <div class="flex-1 flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">3</span><div class="leading-tight"><div class="text-neutral-700 font-bold">回答を記録</div><div class="text-[11px] text-neutral-400">原価・納期を入力</div></div></div>
+      <div class="self-center text-neutral-300 px-1">›</div>
+      <div class="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-r" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">4</span><div class="leading-tight"><div class="text-neutral-700 font-bold">見積作成へ</div><div class="text-[11px] text-neutral-400">得値で顧客向け見積</div></div></div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <button class="adm-card p-4 text-left kpi" data-f="waiting"><div class="text-[12px] text-neutral-500">回答待ち</div><div class="font-display font-black text-2xl mt-1" style="color:#e60012" id="kWait">—</div><div class="text-[11px] text-neutral-400 mt-0.5">メーカーからの回答待ち</div></button>
+    <button class="adm-card p-4 text-left kpi" data-f="received"><div class="text-[12px] text-neutral-500">回答受領</div><div class="font-display font-black text-2xl mt-1 text-ink" id="kRecv">—</div><div class="text-[11px] text-neutral-400 mt-0.5">見積作成に進めます</div></button>
+    <button class="adm-card p-4 text-left kpi" data-f="overdue"><div class="text-[12px] text-neutral-500">期限超過</div><div class="font-display font-black text-2xl mt-1" style="color:#b25000" id="kOver">—</div><div class="text-[11px] text-neutral-400 mt-0.5">回答期限を過ぎた依頼</div></button>
+    <div class="adm-card p-4"><div class="text-[12px] text-neutral-500">今月の依頼</div><div class="font-display font-black text-2xl mt-1 text-ink" id="kMonth">—</div><div class="text-[11px] text-neutral-400 mt-0.5">RFQ発行数</div></div>
+  </div>
+
+  <!-- RFQ一覧 -->
+  <div class="adm-card p-5 mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+      <div class="flex items-center gap-2">
+        <h2 class="text-[15px] font-bold text-ink">RFQ一覧（メーカー見積依頼）</h2>
+        <span class="text-[12px] text-neutral-400" id="cnt"></span>
+        <span id="filterLabel" class="hidden text-[12px] px-2 py-0.5 rounded-full text-white" style="background:#393b56"></span>
+        <button id="clearF" class="hidden text-[12px] text-neutral-400 underline">解除 ×</button>
+      </div>
+      <button id="newRfq" class="inline-flex items-center gap-1 text-white px-3 py-1.5 text-[13px] font-bold" style="background:#e60012">＋ 新規RFQを作成</button>
+    </div>
+    <table class="w-full text-[13px]">
+      <thead><tr class="text-left text-[11px] text-neutral-400 border-b border-[#dcdce6]">
+        <th class="py-2">RFQ番号</th><th>メーカー</th><th>品目 / 数量</th><th>関連見積依頼</th><th>発行日</th><th>回答期限</th><th>状況</th><th class="text-right">操作</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="text-[12px] text-neutral-400 mt-3">※ モックのため、実際のメーカー送付・PDF生成・保存は行われません。回答の原価・納期は「見積依頼→メーカー見積取得」画面にも反映される想定です。</p>
+  </div>
+
+  <!-- 新規RFQ作成 -->
+  <div id="newPanel" class="adm-card p-5 hidden">
+    <h2 class="text-[15px] font-bold text-ink mb-3">新規RFQを作成</h2>
+    <div class="grid sm:grid-cols-3 gap-3 mb-3">
+      <div><label class="text-[12px] font-bold text-ink block mb-1">メーカー</label>
+        <select id="nMaker" class="border border-[#dcdce6] px-3 py-2 text-[13px] w-full"><option>MOXA</option><option>ODU</option><option>POSITAL / FRABA</option><option>AXIOMTEK</option><option>IEI</option><option>その他</option></select></div>
+      <div><label class="text-[12px] font-bold text-ink block mb-1">回答期限</label><input id="nDue" type="date" class="border border-[#dcdce6] px-3 py-2 text-[13px] w-full"></div>
+      <div><label class="text-[12px] font-bold text-ink block mb-1">関連見積依頼（任意）</label><input id="nRel" placeholder="例：QR-26068" class="border border-[#dcdce6] px-3 py-2 text-[13px] w-full"></div>
+    </div>
+    <div class="flex items-center gap-2 mb-2">
+      <input id="nCode" placeholder="品目 / 型番" class="border border-[#dcdce6] px-3 py-2 text-[13px] w-56">
+      <input id="nQty" type="number" value="1" min="1" class="border border-[#dcdce6] px-2 py-2 text-[13px] w-16 text-center">
+      <button id="nAdd" class="text-white text-[12px] font-bold px-3 py-2" style="background:#393b56">＋ 追加</button>
+    </div>
+    <ul id="nLines" class="text-[13px] text-neutral-700 mb-3 space-y-1"></ul>
+    <div class="flex items-center gap-2">
+      <button id="nIssue" class="text-white text-[13px] font-bold px-4 py-2" style="background:#e60012">見積依頼書を発行（PDF）</button>
+      <button id="nCancel" class="text-[13px] text-neutral-500 px-2">キャンセル</button>
+    </div>
+  </div>
+
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-rfq',
+    title:'メーカー見積依頼（RFQ）',
+    sub:'依頼書の発行・回答（原価・納期）の記録 ・ 見積依頼キューと連携',
+    onReady:function(){
+      var RFQS=[
+        { no:'RFQ-2607-012', maker:'MOXA',  items:'EDS-518A ×6 他2点',  rel:'QR-26068', issued:'2026/07/18', due:'2026/07/24', st:'waiting' },
+        { no:'RFQ-2607-011', maker:'ODU',   items:'AMC-2P-12W ×40',      rel:'QR-26067', issued:'2026/07/17', due:'2026/07/23', st:'received', cost:'¥6,120 / 約2週間' },
+        { no:'RFQ-2607-010', maker:'POSITAL / FRABA', items:'OCD-DPB1B ×12', rel:'QR-26065', issued:'2026/07/15', due:'2026/07/18', st:'overdue' },
+        { no:'RFQ-2607-009', maker:'AXIOMTEK', items:'eBOX640 ×3・PPC-156 ×2', rel:'—（在庫補充）', issued:'2026/07/14', due:'2026/07/22', st:'received', cost:'¥118,000 / 約4週間' },
+        { no:'RFQ-2607-008', maker:'MOXA',  items:'AWK-1137C ×10',       rel:'QR-26061', issued:'2026/07/10', due:'2026/07/16', st:'received', cost:'¥31,500 / 約10日' },
+      ];
+      var filter=null;
+      function badge(st){
+        if(st==='waiting')  return '<span class="badge text-white" style="background:#393b56">回答待ち</span>';
+        if(st==='received') return '<span class="badge text-white" style="background:#1b7f4b">回答受領</span>';
+        return '<span class="badge text-white" style="background:#b25000">期限超過</span>';
+      }
+      function render(){
+        var list = filter ? RFQS.filter(function(r){return r.st===filter;}) : RFQS;
+        document.getElementById('rows').innerHTML = list.map(function(r){
+          var op = r.st==='received'
+            ? '<a href="admin-quote-new.html" class="text-[12px] font-bold" style="color:#e60012">見積作成へ ›</a>'
+            : '<button class="rec text-[12px] font-bold text-white px-2.5 py-1.5" data-no="'+r.no+'" style="background:#393b56">回答を記録</button>';
+          return '<tr class="border-b border-[#ececf2] '+(r.st==='overdue'?'bg-red-50':'')+'">'
+            + '<td class="py-2.5 font-bold text-ink">'+r.no+'</td>'
+            + '<td class="py-2.5">'+r.maker+'</td>'
+            + '<td class="py-2.5">'+r.items+(r.cost?'<div class="text-[11px] text-neutral-400">回答：'+r.cost+'</div>':'')+'</td>'
+            + '<td class="py-2.5 text-neutral-500">'+r.rel+'</td>'
+            + '<td class="py-2.5 text-neutral-500">'+r.issued+'</td>'
+            + '<td class="py-2.5 '+(r.st==='overdue'?'font-bold':'text-neutral-500')+'" '+(r.st==='overdue'?'style="color:#b25000"':'')+'>'+r.due+'</td>'
+            + '<td class="py-2.5">'+badge(r.st)+'</td>'
+            + '<td class="py-2.5 text-right whitespace-nowrap"><button class="pdf text-[12px] border border-[#dcdce6] px-2.5 py-1.5 mr-1.5">依頼書PDF</button>'+op+'</td></tr>';
+        }).join('');
+        document.getElementById('cnt').textContent='（'+list.length+'件）';
+        document.getElementById('kWait').textContent = RFQS.filter(function(r){return r.st==='waiting';}).length+'件';
+        document.getElementById('kRecv').textContent = RFQS.filter(function(r){return r.st==='received';}).length+'件';
+        document.getElementById('kOver').textContent = RFQS.filter(function(r){return r.st==='overdue';}).length+'件';
+        document.getElementById('kMonth').textContent = RFQS.length+'件';
+        var fl=document.getElementById('filterLabel'), cf=document.getElementById('clearF');
+        if(filter){ fl.classList.remove('hidden'); cf.classList.remove('hidden'); fl.textContent={waiting:'回答待ち',received:'回答受領',overdue:'期限超過'}[filter]; }
+        else { fl.classList.add('hidden'); cf.classList.add('hidden'); }
+        document.querySelectorAll('.rec').forEach(function(b){ b.addEventListener('click', function(){
+          var no=b.dataset.no; var r=RFQS.filter(function(x){return x.no===no;})[0];
+          var v=prompt('メーカー回答を記録：原価・納期を入力してください（例：¥6,120 / 約2週間）','');
+          if(v){ r.st='received'; r.cost=v; render(); alert('回答を記録しました。「見積依頼→メーカー見積取得」画面にも反映される想定です（モック）。'); }
+        });});
+        document.querySelectorAll('.pdf').forEach(function(b){ b.addEventListener('click', function(){ alert('見積依頼書（RFQ）をPDF出力しました。（モック）'); });});
+      }
+      document.querySelectorAll('.kpi').forEach(function(k){ k.addEventListener('click', function(){ filter = (filter===k.dataset.f) ? null : k.dataset.f; render(); });});
+      document.getElementById('clearF').addEventListener('click', function(){ filter=null; render(); });
+
+      // 新規RFQ
+      var nItems=[];
+      document.getElementById('newRfq').addEventListener('click', function(){ document.getElementById('newPanel').classList.toggle('hidden'); document.getElementById('newPanel').scrollIntoView({behavior:'smooth'}); });
+      document.getElementById('nCancel').addEventListener('click', function(){ document.getElementById('newPanel').classList.add('hidden'); });
+      document.getElementById('nAdd').addEventListener('click', function(){
+        var c=document.getElementById('nCode').value.trim(); if(!c) return;
+        nItems.push(c+' ×'+Math.max(1,+document.getElementById('nQty').value||1));
+        document.getElementById('nLines').innerHTML=nItems.map(function(x){return '<li>・'+x+'</li>';}).join('');
+        document.getElementById('nCode').value='';
+      });
+      document.getElementById('nIssue').addEventListener('click', function(){
+        if(!nItems.length){ alert('品目を1件以上追加してください。'); return; }
+        RFQS.unshift({ no:'RFQ-2607-013', maker:document.getElementById('nMaker').value, items:nItems.join('・'), rel:document.getElementById('nRel').value||'—', issued:'2026/07/21', due:document.getElementById('nDue').value?document.getElementById('nDue').value.replace(/-/g,'/'):'2026/07/28', st:'waiting' });
+        nItems=[]; document.getElementById('nLines').innerHTML=''; document.getElementById('newPanel').classList.add('hidden');
+        render(); alert('RFQを作成し、見積依頼書（PDF）を出力しました。メーカーへ送付してください。（モック）');
+      });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

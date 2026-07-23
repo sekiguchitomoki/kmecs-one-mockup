@@ -162,7 +162,7 @@
       return `<div class="grid grid-cols-12 gap-8">
         <div class="col-span-4">${megaFeature('quotes.html', 'assets/img/support1.jpg', '見積一覧を見る')}</div>
         <div class="col-span-4">${megaCol('QUOTE ／ 見積', megaLink('quotes.html', '見積一覧', '送付済みの見積・有効期限を確認') + megaLink('quotes.html', 'この見積で発注', '見積内容そのままカートへ'))}</div>
-        <div class="col-span-4">${megaCol('REQUEST ／ 依頼', megaLink('contact.html', 'お見積り依頼', '型番・数量から見積を依頼') + megaLink('contact.html', 'カスタムAssy・特注相談', '取扱外・特注もご相談ください'))}</div>
+        <div class="col-span-4">${megaCol('REQUEST ／ 依頼', megaLink('quote-request.html', 'お見積り依頼', '型番・数量から見積を依頼') + megaLink('contact.html', 'カスタムAssy・特注相談', '取扱外・特注もご相談ください'))}</div>
       </div>`;
     }
     if (key === 'orders') {
@@ -439,6 +439,7 @@
     { sec: '受注業務', items: [
       { key: 'admin-orders', label: '受注管理・IBM連携', href: 'admin-orders.html', badge: '3' },
       { key: 'admin-quotes', label: '見積管理・作成', href: 'admin-quotes.html' },
+      { key: 'admin-rfq', label: 'メーカー見積依頼（RFQ）', href: 'admin-rfq.html' },
       { key: 'admin-inquiries', label: '問合せ管理', href: 'admin-inquiries.html', badge: '2' },
     ]},
     { sec: '商品管理', items: [

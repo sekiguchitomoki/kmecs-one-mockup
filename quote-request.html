@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <!-- ヒーロー -->
+  <section class="text-white relative overflow-hidden" style="background:#0d1024">
+    <div class="relative max-w-[1200px] mx-auto px-4 xl:px-8 py-14">
+      <div class="sec-label text-neutral-300">QUOTE REQUEST</div>
+      <h1 class="font-display font-black text-4xl mt-2">お見積り依頼</h1>
+      <p class="text-neutral-300 text-[15px] mt-3 max-w-2xl leading-relaxed">型番・数量を入力して見積を依頼できます。取扱外の部材・特注品もそのままご記入ください。回答の見積は「見積一覧」に掲載され、そのまま発注できます。</p>
+    </div>
+  </section>
+
+  <div class="max-w-[1200px] mx-auto px-4 xl:px-8 py-10">
+
+    <!-- 見積の流れ -->
+    <div class="card p-5 mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-[11px] font-bold text-neutral-400 border border-[color:var(--line)] px-1.5 py-0.5">図</span>
+        <span class="text-[14px] font-bold text-ink">ご依頼から発注までの流れ</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[13px]">
+        <div class="flex items-center gap-2 px-3 py-2.5" style="background:#fce8ea"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#e60012">1</span><div class="leading-tight"><div class="font-bold text-ink">見積を依頼</div><div class="text-[11px] text-neutral-500">この画面から送信</div></div></div>
+        <div class="flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">2</span><div class="leading-tight"><div class="font-bold text-ink">当社で内容確認</div><div class="text-[11px] text-neutral-500">メーカーへ納期・価格確認</div></div></div>
+        <div class="flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">3</span><div class="leading-tight"><div class="font-bold text-ink">見積のご案内</div><div class="text-[11px] text-neutral-500">ポータル掲載＋メール</div></div></div>
+        <div class="flex items-center gap-2 px-3 py-2.5" style="background:#f6f6f9"><span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[11px] shrink-0" style="background:#393b56">4</span><div class="leading-tight"><div class="font-bold text-ink">そのまま発注</div><div class="text-[11px] text-neutral-500">見積一覧から数量指定可</div></div></div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6 items-start">
+      <!-- 左：入力 -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- 依頼明細 -->
+        <div class="card p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h2 class="text-[16px] font-bold text-ink">ご依頼の品目</h2>
+            <div class="flex items-center gap-2">
+              <input id="addCode" list="prodList" placeholder="型番で追加" class="border border-[color:var(--line)] px-3 py-2 text-[14px] w-44 outline-none focus:border-[color:var(--brand)]">
+              <datalist id="prodList"></datalist>
+              <input id="addQty" type="number" value="1" min="1" class="border border-[color:var(--line)] px-2 py-2 text-[14px] w-16 text-center outline-none">
+              <button id="addBtn" class="text-white text-[13px] font-bold px-3 py-2" style="background:#393b56">＋製品</button>
+              <button id="addFreeBtn" class="border border-[color:var(--line)] text-[13px] font-bold px-3 py-2 text-neutral-600 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">＋取扱外・特注品</button>
+            </div>
+          </div>
+          <!-- 取扱外インライン入力 -->
+          <div id="freePanel" class="hidden mb-4 p-4 border border-dashed border-[color:var(--line)]" style="background:var(--paper)">
+            <div class="flex flex-wrap items-center gap-2">
+              <input id="freeName" placeholder="品名・型番（取扱外／特注品）" class="border border-[color:var(--line)] px-3 py-2 text-[14px] flex-1 min-w-[220px] outline-none">
+              <input id="freeQty" type="number" value="1" min="1" class="border border-[color:var(--line)] px-2 py-2 text-[14px] w-16 text-center outline-none">
+              <button id="freeAdd" class="text-white text-[13px] font-bold px-3 py-2" style="background:#e60012">明細に追加</button>
+              <button id="freeCancel" class="text-[13px] text-neutral-500 px-2">キャンセル</button>
+            </div>
+            <p class="text-[12px] text-neutral-400 mt-2">図面・仕様書がある場合は、送信後に担当営業へお送りください。</p>
+          </div>
+          <table class="w-full text-[14px]">
+            <thead><tr class="text-left text-[12px] text-neutral-400 border-b border-[color:var(--line)]"><th class="py-2">区分</th><th>品目 / 型番</th><th class="text-center">数量</th><th></th></tr></thead>
+            <tbody id="lines"></tbody>
+          </table>
+          <div id="emptyMsg" class="text-center text-neutral-400 text-[14px] py-8">型番を入力するか、「＋取扱外・特注品」から追加してください。</div>
+        </div>
+
+        <!-- 希望条件 -->
+        <div class="card p-6">
+          <h2 class="text-[16px] font-bold text-ink mb-4">ご希望・補足</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-[13px] font-bold text-ink block mb-1.5">希望納期</label>
+              <input type="date" class="border border-[color:var(--line)] px-3 py-2 text-[14px] w-full outline-none">
+            </div>
+            <div>
+              <label class="text-[13px] font-bold text-ink block mb-1.5">用途・業界（任意）</label>
+              <input placeholder="例：搬送装置の制御盤向け" class="border border-[color:var(--line)] px-3 py-2 text-[14px] w-full outline-none">
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="text-[13px] font-bold text-ink block mb-1.5">備考（仕様条件・数量スライドの希望など）</label>
+            <textarea id="memo" rows="3" class="border border-[color:var(--line)] px-3 py-2 text-[14px] w-full outline-none" placeholder="例：EDS-408A 相当で動作温度 -40℃ 対応が必須。50台/100台の段階価格も知りたい。"></textarea>
+          </div>
+          <label class="flex items-center gap-2 mt-4 text-[14px] text-neutral-700">
+            <input id="techCheck" type="checkbox" class="w-4 h-4"> 技術部に構成の相談をしたい（構成品・置き換え選定を含む場合）
+          </label>
+          <div id="guestFields" class="hidden mt-4 pt-4 border-t border-[color:var(--line)] grid sm:grid-cols-2 gap-4">
+            <div><label class="text-[13px] font-bold text-ink block mb-1.5">御社名 <span style="color:#e60012">*</span></label><input id="gCompany" class="border border-[color:var(--line)] px-3 py-2 text-[14px] w-full outline-none"></div>
+            <div><label class="text-[13px] font-bold text-ink block mb-1.5">メールアドレス <span style="color:#e60012">*</span></label><input id="gMail" type="email" class="border border-[color:var(--line)] px-3 py-2 text-[14px] w-full outline-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：送信 -->
+      <div class="space-y-4">
+        <div class="card p-6">
+          <h2 class="text-[16px] font-bold text-ink mb-3">依頼内容の送信</h2>
+          <div id="acctBox" class="text-[13px] text-neutral-600 leading-relaxed mb-4"></div>
+          <button id="submitBtn" class="btn-red w-full !py-3.5">この内容で見積を依頼する</button>
+          <p class="text-[12px] text-neutral-400 mt-3 leading-relaxed">送信すると社内の見積依頼キューに登録され、担当営業とカスタマーサービスが内容を確認します。回答の見積は「見積一覧」に掲載され、メールでもお知らせします（モック）。</p>
+        </div>
+        <div class="card p-5" style="background:var(--paper)">
+          <div class="text-[13px] font-bold text-ink mb-1.5">お急ぎの場合</div>
+          <p class="text-[13px] text-neutral-500 leading-relaxed">お電話でも承ります。<br><span class="font-display font-bold text-ink">03-5825-5333</span>（平日 9:00〜17:30）</p>
+        </div>
+        <a href="quotes.html" class="block text-center text-[14px] font-bold py-3 border border-[color:var(--line)] hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]">送付済みの見積一覧を見る ›</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderUserShell({
+    active:'quotes',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'見積一覧',href:'quotes.html'},{label:'お見積り依頼'}],
+    onReady:function(){
+      var a = KMECS.account();
+      // 型番候補
+      document.getElementById('prodList').innerHTML = (window.PRODUCTS||[]).map(function(p){return '<option value="'+p.code+'">'+p.name+'</option>';}).join('');
+      // アカウント表示
+      document.getElementById('acctBox').innerHTML = a
+        ? '<div class="font-bold text-ink">'+a.company+' 様</div><div class="mt-0.5">担当営業：鈴木 慶博</div><div class="text-[12px] text-neutral-400 mt-1">依頼はそのまま担当営業に届きます。</div>'
+        : '<div class="text-neutral-500">未ログインでもご依頼いただけます。下の「御社名・メールアドレス」をご入力ください。</div>';
+      if(!a) document.getElementById('guestFields').classList.remove('hidden');
+
+      var items=[];
+      function render(){
+        var tb=document.getElementById('lines');
+        tb.innerHTML = items.map(function(it,i){
+          var badge = it.free ? '<span class="badge text-white" style="background:#b25000">部材・特注</span>' : '<span class="badge bg-ink text-white">製品</span>';
+          return '<tr class="border-b border-[color:var(--line)]">'
+            + '<td class="py-2.5 pr-2">'+badge+'</td>'
+            + '<td class="py-2.5"><div class="font-bold text-ink">'+it.code+'</div><div class="text-[12px] text-neutral-400">'+(it.name||'')+'</div></td>'
+            + '<td class="py-2.5 text-center"><input type="number" min="1" value="'+it.qty+'" data-i="'+i+'" class="qty border border-[color:var(--line)] w-16 px-1 py-1 text-center"></td>'
+            + '<td class="py-2.5 text-right"><button data-i="'+i+'" class="del text-neutral-400 hover:text-[color:var(--brand)]">×</button></td></tr>';
+        }).join('');
+        document.getElementById('emptyMsg').style.display = items.length ? 'none' : '';
+        tb.querySelectorAll('.qty').forEach(function(el){ el.addEventListener('change',function(){ items[+el.dataset.i].qty=Math.max(1,+el.value||1); }); });
+        tb.querySelectorAll('.del').forEach(function(el){ el.addEventListener('click',function(){ items.splice(+el.dataset.i,1); render(); }); });
+      }
+      function addProduct(){
+        var code=document.getElementById('addCode').value.trim(); if(!code) return;
+        var qty=Math.max(1,+document.getElementById('addQty').value||1);
+        var p=(window.PRODUCTS||[]).filter(function(x){return x.code.toLowerCase()===code.toLowerCase();})[0];
+        var ex=items.filter(function(x){return !x.free && x.code===(p?p.code:code);})[0];
+        if(ex){ ex.qty+=qty; } else { items.push({code:(p?p.code:code), name:(p?p.name:'（型番未確認・当社で確認します）'), qty:qty, free:false}); }
+        document.getElementById('addCode').value=''; render();
+      }
+      document.getElementById('addBtn').addEventListener('click', addProduct);
+      document.getElementById('addCode').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addProduct(); } });
+      document.getElementById('addFreeBtn').addEventListener('click', function(){ document.getElementById('freePanel').classList.toggle('hidden'); });
+      document.getElementById('freeCancel').addEventListener('click', function(){ document.getElementById('freePanel').classList.add('hidden'); });
+      document.getElementById('freeAdd').addEventListener('click', function(){
+        var n=document.getElementById('freeName').value.trim(); if(!n){ alert('品名・型番を入力してください。'); return; }
+        items.push({code:n, name:'取扱外・特注品（当社で仕様を確認します）', qty:Math.max(1,+document.getElementById('freeQty').value||1), free:true});
+        document.getElementById('freeName').value=''; document.getElementById('freePanel').classList.add('hidden'); render();
+      });
+      document.getElementById('submitBtn').addEventListener('click', function(){
+        if(!items.length){ alert('品目を1件以上追加してください。'); return; }
+        if(!a){
+          if(!document.getElementById('gCompany').value.trim() || !document.getElementById('gMail').value.trim()){ alert('御社名とメールアドレスを入力してください。'); return; }
+        }
+        alert('見積依頼を受け付けました（依頼番号 QR-26072）。\n担当営業より回答見積を「見積一覧」に掲載し、メールでもお知らせします。\n（モックのため実際の送信は行われません）');
+        location.href = a ? 'quotes.html' : 'index.html';
+      });
+      render();
+    }
+  });
+</script>
+</body>
+</html>
