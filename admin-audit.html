@@ -32,7 +32,17 @@
 
   <!-- 絞り込み -->
   <div class="adm-card p-4 mb-4 flex flex-wrap items-end gap-3">
-    <div class="flex-1 min-w-[200px]">
+    <div>
+      <label class="text-[13px] font-bold text-neutral-600">期間</label>
+      <div class="flex items-center gap-1.5 mt-1">
+        <input id="dFrom" type="date" class="border border-[#dcdce6] px-2 py-2 text-[13px]">
+        <span class="text-neutral-400">〜</span>
+        <input id="dTo" type="date" class="border border-[#dcdce6] px-2 py-2 text-[13px]">
+        <button id="today" class="text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-2">本日</button>
+        <button id="allPeriod" class="text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-2">全期間</button>
+      </div>
+    </div>
+    <div class="flex-1 min-w-[180px]">
       <label class="text-[13px] font-bold text-neutral-600">キーワード</label>
       <input id="kw" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="ユーザー・対象・内容・番号">
     </div>
@@ -95,7 +105,11 @@
 
       function render(){
         var kw=document.getElementById('kw').value.trim(), fu=document.getElementById('fUser').value, fa=document.getElementById('fAct').value, ft=document.getElementById('fTarget').value;
+        var df=document.getElementById('dFrom').value.replace(/-/g,'/'), dt=document.getElementById('dTo').value.replace(/-/g,'/');
         var list=LOG.filter(function(l){
+          var d=l.at.slice(0,10);
+          if(df && d<df) return false;
+          if(dt && d>dt) return false;
           if(fu && l.user!==fu) return false;
           if(fa && l.act!==fa) return false;
           if(ft && l.target!==ft) return false;
@@ -115,7 +129,12 @@
       }
 
       document.getElementById('csv').addEventListener('click', function(){ alert('操作履歴をCSVでエクスポートしました。（モック）'); });
-      ['kw','fUser','fAct','fTarget'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); document.getElementById(id).addEventListener('change', render); });
+      ['kw','fUser','fAct','fTarget','dFrom','dTo'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); document.getElementById(id).addEventListener('change', render); });
+      // 期間の既定は「本日」（モックの最新ログ日 2026/07/17）
+      var TODAY='2026-07-17';
+      document.getElementById('today').addEventListener('click', function(){ document.getElementById('dFrom').value=TODAY; document.getElementById('dTo').value=TODAY; render(); });
+      document.getElementById('allPeriod').addEventListener('click', function(){ document.getElementById('dFrom').value=''; document.getElementById('dTo').value=''; render(); });
+      document.getElementById('dFrom').value=TODAY; document.getElementById('dTo').value=TODAY;
       render();
     }
   });

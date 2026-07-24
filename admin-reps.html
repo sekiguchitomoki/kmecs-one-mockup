@@ -19,8 +19,29 @@
 <body>
 <div id="content">
 
+  <!-- 期間指定 -->
+  <div class="adm-card p-4 mb-4">
+    <div class="flex flex-wrap items-end gap-3">
+      <div>
+        <label class="text-[13px] font-bold text-neutral-600">対象期間</label>
+        <div class="flex items-center gap-1.5 mt-1">
+          <input id="dFrom" type="date" class="border border-[#dcdce6] px-2 py-1.5 text-[13px]">
+          <span class="text-neutral-400">〜</span>
+          <input id="dTo" type="date" class="border border-[#dcdce6] px-2 py-1.5 text-[13px]">
+        </div>
+      </div>
+      <div class="flex gap-1 text-[13px] items-center">
+        <span class="text-[12px] text-neutral-400 mr-1">ショートカット</span>
+        <button class="wb px-3 py-1.5" data-w="6">6ヶ月</button>
+        <button class="wb px-3 py-1.5" data-w="12">12ヶ月</button>
+        <button class="wb px-3 py-1.5" data-w="24">24ヶ月</button>
+      </div>
+      <div class="text-[12px] text-neutral-400 ml-auto pb-1.5">対象期間：<b class="text-neutral-600" id="pLabel">直近12ヶ月</b>（売上・目標はこの期間に按分）</div>
+    </div>
+  </div>
+
   <!-- 営業担当者ごとの売上 -->
-  <div class="text-[15px] font-bold text-ink mb-3">営業担当者ごとの売上（担当顧客の年間売上合計・目標達成率）</div>
+  <div class="text-[15px] font-bold text-ink mb-3">営業担当者ごとの売上（担当顧客の期間売上合計・目標達成率）</div>
   <div class="grid md:grid-cols-3 gap-3 mb-6" id="repCards"></div>
 
   <div class="grid lg:grid-cols-2 gap-4 mb-4">
@@ -44,7 +65,7 @@
   <!-- 顧客ランキング -->
   <div class="adm-card overflow-hidden">
     <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-[#dcdce6]">
-      <div class="text-[15px] font-bold text-ink">顧客ランキング（年間売上）</div>
+      <div class="text-[15px] font-bold text-ink">顧客ランキング（期間売上）</div>
       <div class="flex flex-wrap gap-1">
         <select id="fRep" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"></select>
         <button id="sortSales" class="px-3 py-1.5 text-[13px] text-white" style="background:#e60012">売上順</button>
@@ -57,7 +78,7 @@
         <thead><tr>
           <th class="text-center px-4 py-2.5">順位</th><th class="text-left py-2.5">顧客</th>
           <th class="text-left py-2.5">担当営業</th><th class="text-left py-2.5">得値</th>
-          <th class="text-right py-2.5">年間売上</th><th class="text-right py-2.5">前年比</th>
+          <th class="text-right py-2.5">期間売上</th><th class="text-right py-2.5">前年比</th>
           <th class="text-right py-2.5">受注</th><th class="text-right py-2.5">未入金</th>
           <th class="text-right px-4 py-2.5">構成比</th>
         </tr></thead>
@@ -90,22 +111,30 @@
     title:'営業担当者・顧客ランキング',
     sub:'担当営業ごとの売上・目標達成率・担当顧客、顧客ランキング',
     onReady:function(){
-      var totalSales=CUSTOMERS.reduce(function(s,c){return s+c.salesYear;},0);
+      var WIN=12;                       // 分析期間（月）。売上・目標を WIN/12 で按分
+      function factor(){ return WIN/12; }
+      var totalSales=CUSTOMERS.reduce(function(s,c){return s+c.salesYear*factor();},0);
       // 想定粗利率（社内のみ表示・得値ランク別）
       function grossRate(rank){ return rank==='A'?0.16 : rank==='B'?0.19 : rank==='C'?0.22 : 0.20; }
-      function grossOf(c){ return Math.round(c.salesYear*grossRate(c.rank)); }
-      // 直近12ヶ月の季節ウェイト（合計≒1・決め打ち）
+      function grossOf(c){ return Math.round(c.salesYear*factor()*grossRate(c.rank)); }
+      function salesOf(c){ return Math.round(c.salesYear*factor()); }
+      // 季節ウェイト（合計≒1・決め打ち）。担当者ドリルダウンの月次推移で使用
       var MW=[0.072,0.078,0.090,0.082,0.086,0.092,0.088,0.080,0.085,0.093,0.079,0.075];
       var MLAB=['25/8','25/9','25/10','25/11','25/12','26/1','26/2','26/3','26/4','26/5','26/6','26/7'];
       function repStat(r){
         var cs=CUSTOMERS.filter(function(c){return c.rep===r.name;});
-        var sales=cs.reduce(function(s,c){return s+c.salesYear;},0);
-        var unpaid=cs.reduce(function(s,c){return s+c.unpaid;},0);
+        var sales=cs.reduce(function(s,c){return s+salesOf(c);},0);
+        var unpaid=cs.reduce(function(s,c){return s+c.unpaid;},0);   // 未入金は現在残高（期間按分しない）
         var gross=cs.reduce(function(s,c){return s+grossOf(c);},0);
-        return { cs:cs, sales:sales, unpaid:unpaid, gross:gross, gpr:sales?Math.round(gross/sales*100):0, rate:Math.round(sales/r.target*100) };
+        var target=Math.round(r.target*factor());
+        return { cs:cs, sales:sales, unpaid:unpaid, gross:gross, target:target, gpr:sales?Math.round(gross/sales*100):0, rate:Math.round(sales/target*100) };
       }
-      var reps=REPS.map(function(r){ return Object.assign({}, r, repStat(r)); }).sort(function(a,b){return b.sales-a.sales;});
-      var repMax=reps[0].sales;
+      var reps=[], repMax=1;
+
+      function drawReps(){
+      totalSales=CUSTOMERS.reduce(function(s,c){return s+salesOf(c);},0);
+      reps=REPS.map(function(r){ return Object.assign({}, r, repStat(r)); }).sort(function(a,b){return b.sales-a.sales;});
+      repMax=reps[0].sales;
 
       // 担当カード（クリックで月次売上推移・粗利額の詳細を表示）
       document.getElementById('repCards').innerHTML=reps.map(function(r,i){
@@ -145,6 +174,7 @@
       document.querySelectorAll('.reprow').forEach(function(row){
         row.addEventListener('click', function(){ openRep(row.getAttribute('data-r')); });
       });
+      } // end drawReps
 
       // 顧客ランキング
       document.getElementById('fRep').innerHTML='<option value="">全担当</option>'+REPS.map(function(r){return '<option>'+r.name+'</option>';}).join('');
@@ -158,14 +188,14 @@
         if(SORT==='unpaid') list.sort(function(a,b){return b.unpaid-a.unpaid;});
         document.getElementById('rankRows').innerHTML=list.map(function(c,i){
           var yoy=Math.round((c.salesYear/c.salesPrev-1)*100);
-          var share=(c.salesYear/totalSales*100).toFixed(1);
+          var share=(salesOf(c)/totalSales*100).toFixed(1);
           var medal=i===0?'#e60012':i===1?'#c0a02c':i===2?'#b0703a':'#9aa0ad';
           return '<tr class="hover:bg-[#fafafe]">'
             + '<td class="px-4 py-3 text-center"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-display font-black text-[13px]" style="background:'+medal+'">'+(i+1)+'</span></td>'
             + '<td class="py-3"><div class="text-[15px] font-bold text-ink">'+c.company+'</div><div class="text-[12px] text-neutral-400">'+c.code+' ・ '+c.area+'</div></td>'
             + '<td class="py-3 text-[14px] text-neutral-700">'+c.rep+'</td>'
             + '<td class="py-3">'+rankBadge(c.rank)+'</td>'
-            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(salesOf(c))+'</td>'
             + '<td class="py-3 text-right font-display '+(yoy>=0?'text-emerald-600':'text-[color:var(--brand)]')+'">'+(yoy>=0?'+':'')+yoy+'%</td>'
             + '<td class="py-3 text-right font-display text-neutral-600">'+c.ordersCount+'</td>'
             + '<td class="py-3 text-right font-display '+(c.unpaid>0?'font-bold':'text-neutral-300')+'" '+(c.unpaid>0?'style="color:#e60012"':'')+'>'+(c.unpaid>0?yen(c.unpaid):'—')+'</td>'
@@ -180,7 +210,30 @@
       document.getElementById('sortGrowth').addEventListener('click', function(){ setSort('growth', this); });
       document.getElementById('sortUnpaid').addEventListener('click', function(){ setSort('unpaid', this); });
       document.getElementById('fRep').addEventListener('change', renderRank);
-      renderRank();
+
+      // 期間指定（ショートカット＋日付レンジ表示）
+      function fillRange(){
+        var to=new Date(2026,6,17); var from=new Date(2026,6,17); from.setMonth(from.getMonth()-WIN);
+        var fmt=function(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+        document.getElementById('dFrom').value=fmt(from); document.getElementById('dTo').value=fmt(to);
+        document.getElementById('pLabel').textContent='直近'+WIN+'ヶ月';
+      }
+      function drawAll(){
+        document.querySelectorAll('.wb').forEach(function(b){
+          var on=+b.getAttribute('data-w')===WIN;
+          b.className='wb px-3 py-1.5 '+(on?'text-white':'border border-[#dcdce6] bg-white text-neutral-600');
+          b.style.background=on?'#e60012':'';
+        });
+        fillRange(); drawReps(); renderRank();
+      }
+      document.querySelectorAll('.wb').forEach(function(b){
+        b.addEventListener('click', function(){ WIN=+b.getAttribute('data-w'); drawAll(); });
+      });
+      ['dFrom','dTo'].forEach(function(id){ document.getElementById(id).addEventListener('change', function(){
+        var f=document.getElementById('dFrom').value, t=document.getElementById('dTo').value;
+        if(f&&t){ var mo=Math.max(1,Math.round((new Date(t)-new Date(f))/86400000/30.44)); WIN=mo; drawAll(); }
+      }); });
+      drawAll();
 
       // ===== 担当者 詳細モーダル（月次売上推移・粗利額） =====
       function openRep(name){
@@ -200,7 +253,7 @@
         var custList=r.cs.slice().sort(function(a,b){return b.salesYear-a.salesYear;}).map(function(c){
           return '<tr class="border-t border-[#f0f0f4]"><td class="py-2 text-[14px] text-ink font-bold">'+c.company
             + '<span class="badge ml-1 text-white" style="background:'+(c.rank==='A'?'#e60012':c.rank==='B'?'#393b56':'#8b8ea8')+'">得値'+c.rank+'</span></td>'
-            + '<td class="py-2 text-right font-display text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-2 text-right font-display text-ink">'+yen(salesOf(c))+'</td>'
             + '<td class="py-2 text-right font-display text-emerald-700">'+yen(grossOf(c))+'</td>'
             + '<td class="py-2 text-right font-display text-neutral-500">'+Math.round(grossRate(c.rank)*100)+'%</td></tr>';
         }).join('');
@@ -208,8 +261,8 @@
         document.getElementById('rmTitle').textContent=r.name+'（'+r.dept+'）— 月次売上・粗利';
         document.getElementById('rmBody').innerHTML=
           '<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">'
-          + '<div class="p-3" style="background:var(--lav)"><div class="text-[12px] text-neutral-500">年間売上</div><div class="font-display text-xl font-black text-ink">'+yen(r.sales)+'</div></div>'
-          + '<div class="p-3" style="background:#f2fbf6"><div class="text-[12px] text-neutral-500">年間粗利額</div><div class="font-display text-xl font-black text-emerald-700">'+yen(r.gross)+'</div></div>'
+          + '<div class="p-3" style="background:var(--lav)"><div class="text-[12px] text-neutral-500">期間売上</div><div class="font-display text-xl font-black text-ink">'+yen(r.sales)+'</div></div>'
+          + '<div class="p-3" style="background:#f2fbf6"><div class="text-[12px] text-neutral-500">期間粗利額</div><div class="font-display text-xl font-black text-emerald-700">'+yen(r.gross)+'</div></div>'
           + '<div class="p-3" style="background:#f6f5f4"><div class="text-[12px] text-neutral-500">粗利率</div><div class="font-display text-xl font-black text-ink">'+r.gpr+'%</div></div>'
           + '<div class="p-3" style="background:#f6f5f4"><div class="text-[12px] text-neutral-500">目標達成率</div><div class="font-display text-xl font-black '+(r.rate>=100?'text-emerald-600':'text-amber-600')+'">'+r.rate+'%</div></div>'
           + '</div>'
@@ -217,7 +270,7 @@
           + '<div class="flex items-center gap-4 text-[12px] text-neutral-500 mb-2"><span class="flex items-center gap-1"><span class="w-3 h-3 inline-block" style="background:#e60012"></span>売上</span><span class="flex items-center gap-1"><span class="w-3 h-3 inline-block" style="background:#14887b"></span>粗利</span></div>'
           + bars
           + '<div class="text-[14px] font-bold text-ink mt-6 mb-2">担当顧客別 売上・粗利（'+r.cs.length+'社）</div>'
-          + '<table class="w-full"><thead><tr class="text-[12px] text-neutral-400 text-left"><th class="py-1">顧客</th><th class="py-1 text-right">年間売上</th><th class="py-1 text-right">粗利額</th><th class="py-1 text-right">粗利率</th></tr></thead><tbody>'+custList+'</tbody></table>'
+          + '<table class="w-full"><thead><tr class="text-[12px] text-neutral-400 text-left"><th class="py-1">顧客</th><th class="py-1 text-right">期間売上</th><th class="py-1 text-right">粗利額</th><th class="py-1 text-right">粗利率</th></tr></thead><tbody>'+custList+'</tbody></table>'
           + '<p class="text-[12px] text-neutral-400 mt-3">※ 月次配分・想定粗利率はモック用のダミー値です。粗利は社内管理のみ表示します。</p>';
         document.getElementById('repModal').classList.remove('hidden');
       }

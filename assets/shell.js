@@ -440,6 +440,7 @@
       { key: 'admin-orders', label: '受注管理・IBM連携', href: 'admin-orders.html', badge: '3' },
       { key: 'admin-quotes', label: '見積管理・作成', href: 'admin-quotes.html' },
       { key: 'admin-inquiries', label: '問合せ管理', href: 'admin-inquiries.html', badge: '2' },
+      { key: 'admin-staff', label: '担当者', href: 'admin-staff.html' },
     ]},
     { sec: '商品管理', items: [
       { key: 'admin-products', label: '商品管理・登録', href: 'admin-products.html' },

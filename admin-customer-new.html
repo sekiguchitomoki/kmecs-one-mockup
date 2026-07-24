@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <a href="admin-customers.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 顧客管理・価格設定に戻る</a>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2 space-y-4">
+      <!-- 基本 -->
+      <div class="adm-card overflow-hidden">
+        <div class="px-5 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">基本情報</div>
+        <div class="p-5 grid sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2"><label class="text-[13px] font-bold text-neutral-600">会社名 <span style="color:#e60012">*</span></label>
+            <input id="company" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="例: 株式会社サンプル電子"></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">エリア</label>
+            <select id="area" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">得値ランク</label>
+            <select id="rank" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"><option value="A">A（特約店）</option><option value="B" selected>B（一般）</option><option value="C">C</option></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">ご担当者</label>
+            <input id="contact" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="例: 田中 太郎" value="田中 太郎"></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">担当営業</label>
+            <select id="rep" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">TEL</label>
+            <input id="tel" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] font-display outline-none focus:border-[color:var(--brand)]" placeholder="045-000-0000" value="045-000-0000"></div>
+          <div class="sm:col-span-2"><label class="text-[13px] font-bold text-neutral-600">住所</label>
+            <input id="addr" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] outline-none focus:border-[color:var(--brand)]" placeholder="〒222-0033 神奈川県横浜市港北区新横浜1-2-3" value="〒222-0033 神奈川県横浜市港北区新横浜1-2-3"></div>
+        </div>
+      </div>
+
+      <!-- 取引条件 -->
+      <div class="adm-card overflow-hidden">
+        <div class="px-5 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">取引条件</div>
+        <div class="p-5 grid sm:grid-cols-2 gap-4">
+          <div><label class="text-[13px] font-bold text-neutral-600">支払条件</label>
+            <select id="terms" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"><option>月末締め / 翌月末払い</option><option>20日締め / 翌月10日払い</option><option>15日締め / 翌月15日払い</option></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">請求書</label>
+            <select id="invoiceBy" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] bg-white"><option>郵送</option><option>メール</option><option>FAX</option><option>EDI</option></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">与信枠</label>
+            <input id="credit" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 text-[15px] font-display outline-none focus:border-[color:var(--brand)]" placeholder="与信枠 500万円" value="与信枠 300万円"></div>
+        </div>
+      </div>
+
+      <!-- 価格設定（得値ルール） -->
+      <div class="adm-card overflow-hidden">
+        <div class="px-5 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">この顧客の価格設定（得値ルール）</div>
+        <div class="p-5 space-y-3">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div><label class="text-[13px] font-bold text-neutral-600">基本掛率（標準価格に対する）</label>
+              <div class="flex items-center gap-2 mt-1"><input id="rate" type="number" min="1" max="100" value="82" class="w-24 border border-[#dcdce6] px-3 py-2 text-[15px] font-display text-right outline-none focus:border-[color:var(--brand)]"><span class="text-neutral-500 text-[14px]">%</span>
+              <span class="text-[12px] text-neutral-400">（得値ランクに応じた既定値。個別に上書き可）</span></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-[13px] font-bold text-neutral-600">メーカー別・特別掛率（任意）</label>
+              <button id="addRule" class="text-[12px] text-white px-2.5 py-1" style="background:#393b56">＋ ルールを追加</button>
+            </div>
+            <div id="rules" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 保存 -->
+    <div class="space-y-4">
+      <div class="adm-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">登録</div>
+        <div class="p-4 text-[13px] text-neutral-500 leading-relaxed">顧客コードは登録時に自動採番されます（例：3016-01）。得値ランクを変更すると基本掛率の既定値が更新されます。</div>
+        <div class="px-4 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
+          <button id="save" class="w-full text-[14px] text-white py-2.5 font-bold" style="background:#e60012">顧客を登録する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際の顧客DB登録は行われません。</p>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-customers',
+    title:'新規顧客の登録',
+    sub:'会社情報・取引条件・価格設定（得値ルール）を登録',
+    onReady:function(){
+      var g=function(id){return document.getElementById(id);};
+      var areas=[...new Set(CUSTOMERS.map(function(c){return c.area;}))];
+      g('area').innerHTML=areas.map(function(a){return '<option'+(a==='関東'?' selected':'')+'>'+a+'</option>';}).join('');
+      var reps=[...new Set(CUSTOMERS.map(function(c){return c.rep;}))];
+      g('rep').innerHTML=reps.map(function(r){return '<option'+(r==='鈴木 慶博'?' selected':'')+'>'+r+'</option>';}).join('');
+
+      // 得値ランク→基本掛率の既定値
+      var RANK_RATE={A:65, B:82, C:88};
+      g('rank').addEventListener('change', function(){ g('rate').value=RANK_RATE[this.value]||82; });
+
+      // 得値ルール（メーカー別掛率）
+      function ruleRow(){
+        var d=document.createElement('div'); d.className='flex gap-2 items-center';
+        d.innerHTML='<select class="rmk border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white">'
+          + Object.keys(MAKERS).map(function(k){return '<option value="'+k+'">'+MAKERS[k].name+'</option>';}).join('')+'</select>'
+          + '<input type="number" class="rrate border border-[#dcdce6] px-2 py-1.5 text-[13px] w-20 text-right font-display" placeholder="掛率"><span class="text-[13px] text-neutral-500">%</span>'
+          + '<button class="rmrule text-neutral-400 hover:text-[color:var(--brand)] px-2">×</button>';
+        d.querySelector('.rmrule').addEventListener('click', function(){ d.remove(); });
+        return d;
+      }
+      g('addRule').addEventListener('click', function(){ g('rules').appendChild(ruleRow()); });
+
+      g('save').addEventListener('click', function(){
+        if(!g('company').value.trim()){ alert('会社名を入力してください。'); return; }
+        alert('顧客「'+g('company').value+'」を登録しました。\n顧客コード 3016-01 を自動採番し、価格設定（基本掛率 '+g('rate').value+'%）を保存しました。（モック）');
+        location.href='admin-customers.html';
+      });
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+
+  <div class="adm-card overflow-hidden mb-4">
+    <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between flex-wrap gap-2">
+      <div class="text-[15px] font-bold text-ink">担当者マスタ <span class="text-[13px] font-normal text-neutral-400 ml-1"><b id="cnt" class="text-ink">0</b> 名</span></div>
+      <div class="flex items-center gap-2">
+        <label class="flex items-center gap-1.5 text-[13px] text-neutral-600"><input type="checkbox" id="showRetired" class="accent-[#e60012]"> 退職者も表示</label>
+        <button id="addBtn" class="inline-flex items-center gap-1 text-white px-3 py-1.5 text-[13px] font-bold" style="background:#e60012"><span class="text-[14px] leading-none">＋</span> 担当者を追加</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full adm-table min-w-[920px]">
+        <thead><tr>
+          <th class="text-left px-4 py-2.5">名前</th><th class="text-left py-2.5">支店</th>
+          <th class="text-left py-2.5">部署</th><th class="text-left py-2.5">連絡先</th>
+          <th class="text-right py-2.5">月次売上目標</th><th class="text-left py-2.5 pl-3">状態</th>
+          <th class="text-right px-4 py-2.5">操作</th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#eceef5]" id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際の人事マスタ・認証とは連携していません。売上目標は営業担当者・ランキングの達成率算定に用いる想定です。</p>
+
+  <!-- 追加/編集モーダル -->
+  <div id="modal" class="hidden fixed inset-0 z-50 bg-black/50 p-4 overflow-y-auto">
+    <div class="max-w-lg mx-auto my-10 bg-white">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-[#dcdce6]">
+        <h3 id="mTitle" class="font-bold text-ink text-[16px]">担当者を追加</h3>
+        <button id="mClose" class="text-neutral-400 hover:text-ink text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-5 grid sm:grid-cols-2 gap-4 text-[14px]">
+        <div><label class="text-[13px] font-bold text-neutral-600">名前 <span style="color:#e60012">*</span></label>
+          <input id="fName" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 outline-none focus:border-[color:var(--brand)]" placeholder="例: 山本 健"></div>
+        <div><label class="text-[13px] font-bold text-neutral-600">支店</label>
+          <select id="fBranch" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 bg-white"><option>本社</option><option>横浜支店</option><option>名古屋支店</option><option>大阪支店</option></select></div>
+        <div><label class="text-[13px] font-bold text-neutral-600">部署</label>
+          <input id="fDept" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 outline-none focus:border-[color:var(--brand)]" placeholder="例: CS営業1課"></div>
+        <div><label class="text-[13px] font-bold text-neutral-600">電話番号</label>
+          <input id="fTel" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 font-display outline-none focus:border-[color:var(--brand)]" placeholder="03-5825-5333"></div>
+        <div class="sm:col-span-2"><label class="text-[13px] font-bold text-neutral-600">メールアドレス</label>
+          <input id="fMail" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 font-display outline-none focus:border-[color:var(--brand)]" placeholder="yamamoto@kmecsone.jp"></div>
+        <div class="sm:col-span-2"><label class="text-[13px] font-bold text-neutral-600">月次売上目標</label>
+          <div class="flex items-center gap-2 mt-1"><span class="text-neutral-400">¥</span><input id="fTarget" type="number" class="flex-1 border border-[#dcdce6] px-3 py-2 font-display text-right outline-none focus:border-[color:var(--brand)]" placeholder="3000000">
+          <span class="text-[12px] text-neutral-400">／月</span></div>
+          <div class="text-[12px] text-neutral-400 mt-1">期間集計時は「月次目標 × 対象月数」で目標額を算定します。</div></div>
+      </div>
+      <div class="flex gap-2 justify-end px-5 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
+        <button id="mCancel" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-4 py-2">キャンセル</button>
+        <button id="mSave" class="text-[14px] text-white px-4 py-2 font-bold" style="background:#e60012">保存</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  KMECS.renderAdminShell({
+    active:'admin-staff',
+    title:'担当者マスタ',
+    sub:'営業担当者の登録・編集・退職処理 ・ 支店 / 部署 / 連絡先 / 月次売上目標',
+    onReady:function(){
+      var g=function(id){return document.getElementById(id);};
+      // REPS（name/dept/target）を担当者マスタとして拡張
+      var BRANCH={'CS営業1課':'本社','CS営業2課':'横浜支店'};
+      var STAFF=REPS.map(function(r,i){
+        var kana=r.name.replace(/\s/g,'').toLowerCase();
+        return { name:r.name, branch:BRANCH[r.dept]||'本社', dept:r.dept,
+                 tel:'03-5825-533'+(i+1), mail:['suzuki','tamura','sasaki'][i]+'@kmecsone.jp',
+                 target:Math.round(r.target/12), retired:false };
+      });
+      var showRetired=false, editIdx=-1;
+
+      function render(){
+        var list=STAFF.map(function(s,i){return {s:s,i:i};}).filter(function(x){ return showRetired || !x.s.retired; });
+        g('cnt').textContent=STAFF.filter(function(s){return !s.retired;}).length;
+        g('rows').innerHTML=list.map(function(x){
+          var s=x.s;
+          return '<tr class="'+(s.retired?'opacity-50':'')+'">'
+            + '<td class="px-4 py-3 text-[15px] font-bold text-ink">'+s.name+'</td>'
+            + '<td class="py-3 text-[14px] text-neutral-600">'+s.branch+'</td>'
+            + '<td class="py-3 text-[14px] text-neutral-600">'+s.dept+'</td>'
+            + '<td class="py-3 text-[13px] text-neutral-500"><div class="font-display">'+s.tel+'</div><div class="font-display">'+s.mail+'</div></td>'
+            + '<td class="py-3 text-right font-display text-ink">'+yen(s.target)+'<span class="text-[11px] text-neutral-400">/月</span></td>'
+            + '<td class="py-3 pl-3">'+(s.retired?'<span class="badge bg-neutral-200 text-neutral-600">退職</span>':'<span class="badge bg-emerald-100 text-emerald-700">在籍</span>')+'</td>'
+            + '<td class="px-4 py-3 text-right whitespace-nowrap">'
+            + '<button class="edit text-[13px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1 mr-1" data-i="'+x.i+'">編集</button>'
+            + (s.retired
+                ? '<button class="rehire text-[13px] border px-2.5 py-1" data-i="'+x.i+'" style="border-color:#14887b;color:#14887b">復職</button>'
+                : '<button class="retire text-[13px] border px-2.5 py-1" data-i="'+x.i+'" style="border-color:#e60012;color:#e60012">退職</button>')
+            + '</td></tr>';
+        }).join('') || '<tr><td colspan="7" class="px-4 py-6 text-center text-neutral-400">担当者がいません。</td></tr>';
+        document.querySelectorAll('.edit').forEach(function(b){ b.addEventListener('click', function(){ openEdit(+b.getAttribute('data-i')); }); });
+        document.querySelectorAll('.retire').forEach(function(b){ b.addEventListener('click', function(){
+          var i=+b.getAttribute('data-i');
+          if(!confirm(STAFF[i].name+' を退職として登録しますか？')) return;
+          STAFF[i].retired=true; render();
+        }); });
+        document.querySelectorAll('.rehire').forEach(function(b){ b.addEventListener('click', function(){ STAFF[+b.getAttribute('data-i')].retired=false; render(); }); });
+      }
+
+      function openAdd(){ editIdx=-1; g('mTitle').textContent='担当者を追加';
+        g('fName').value=''; g('fBranch').value='本社'; g('fDept').value=''; g('fTel').value=''; g('fMail').value=''; g('fTarget').value='';
+        g('modal').classList.remove('hidden'); }
+      function openEdit(i){ editIdx=i; var s=STAFF[i]; g('mTitle').textContent=s.name+' を編集';
+        g('fName').value=s.name; g('fBranch').value=s.branch; g('fDept').value=s.dept; g('fTel').value=s.tel; g('fMail').value=s.mail; g('fTarget').value=s.target;
+        g('modal').classList.remove('hidden'); }
+      function close(){ g('modal').classList.add('hidden'); }
+
+      g('addBtn').addEventListener('click', openAdd);
+      g('mClose').addEventListener('click', close);
+      g('mCancel').addEventListener('click', close);
+      g('mSave').addEventListener('click', function(){
+        if(!g('fName').value.trim()){ alert('名前を入力してください。'); return; }
+        var rec={ name:g('fName').value.trim(), branch:g('fBranch').value, dept:g('fDept').value.trim(), tel:g('fTel').value.trim(), mail:g('fMail').value.trim(), target:+g('fTarget').value||0, retired:false };
+        if(editIdx>=0){ rec.retired=STAFF[editIdx].retired; STAFF[editIdx]=rec; } else { STAFF.push(rec); }
+        close(); render();
+        alert('担当者「'+rec.name+'」を保存しました。（モック）');
+      });
+      g('showRetired').addEventListener('change', function(){ showRetired=this.checked; render(); });
+      render();
+    }
+  });
+</script>
+</body>
+</html>

@@ -31,12 +31,57 @@
         <option value="12" selected>直近12ヶ月</option>
         <option value="24">直近24ヶ月</option>
       </select>
+      <button id="thBtn" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-700 px-3 py-2">セグメント閾値設定</button>
       <button id="csv" class="text-[14px] text-white px-3 py-2 font-bold" style="background:#393b56">CSVエクスポート</button>
     </div>
   </div>
 
+  <!-- 閾値設定モーダル -->
+  <div id="thModal" class="hidden fixed inset-0 z-50 bg-black/50 p-4 overflow-y-auto">
+    <div class="max-w-lg mx-auto my-10 bg-white">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-[#dcdce6]">
+        <h3 class="font-bold text-ink text-[16px]">セグメント閾値設定</h3>
+        <button id="thClose" class="text-neutral-400 hover:text-ink text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-5 space-y-4 text-[14px]">
+        <div class="text-[13px] text-neutral-500">各指標のスコア境界（5段階）を設定します。スコアはこの閾値でその場に再計算され、セグメント分布・一覧に反映されます。</div>
+        <div>
+          <div class="font-bold text-ink mb-1">R：最終取引からの日数（小さいほど高スコア）</div>
+          <div class="flex items-center gap-2 flex-wrap text-[13px]">
+            <span class="text-neutral-500">≤</span><input id="thR1" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">日=5点
+            <span class="text-neutral-500 ml-2">≤</span><input id="thR2" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">日=4点
+            <span class="text-neutral-500 ml-2">≤</span><input id="thR3" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">日=3点
+            <span class="text-neutral-500 ml-2">≤</span><input id="thR4" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">日=2点
+          </div>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">F：受注件数（多いほど高スコア）</div>
+          <div class="flex items-center gap-2 flex-wrap text-[13px]">
+            <span class="text-neutral-500">≥</span><input id="thF1" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">件=5点
+            <span class="text-neutral-500 ml-2">≥</span><input id="thF2" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">=4点
+            <span class="text-neutral-500 ml-2">≥</span><input id="thF3" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">=3点
+            <span class="text-neutral-500 ml-2">≥</span><input id="thF4" type="number" class="w-16 border border-[#dcdce6] px-2 py-1 text-right font-display">=2点
+          </div>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">M：分析期間売上（万円・多いほど高スコア）</div>
+          <div class="flex items-center gap-2 flex-wrap text-[13px]">
+            <span class="text-neutral-500">≥</span><input id="thM1" type="number" class="w-20 border border-[#dcdce6] px-2 py-1 text-right font-display">万=5点
+            <span class="text-neutral-500 ml-2">≥</span><input id="thM2" type="number" class="w-20 border border-[#dcdce6] px-2 py-1 text-right font-display">=4点
+            <span class="text-neutral-500 ml-2">≥</span><input id="thM3" type="number" class="w-20 border border-[#dcdce6] px-2 py-1 text-right font-display">=3点
+            <span class="text-neutral-500 ml-2">≥</span><input id="thM4" type="number" class="w-20 border border-[#dcdce6] px-2 py-1 text-right font-display">=2点
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 justify-end px-5 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
+        <button id="thReset" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-4 py-2">既定値に戻す</button>
+        <button id="thApply" class="text-[14px] text-white px-4 py-2 font-bold" style="background:#e60012">適用</button>
+      </div>
+    </div>
+  </div>
+
   <!-- KPI -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpi"></div>
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4" id="kpi"></div>
 
   <div class="grid lg:grid-cols-3 gap-4 mb-4">
     <!-- セグメント分布 -->
@@ -63,8 +108,8 @@
         <thead><tr>
           <th class="text-left px-4 py-2.5">顧客</th>
           <th class="text-right py-2.5">最終取引<br><span class="font-normal text-[11px]">(R:日数)</span></th>
-          <th class="text-right py-2.5">受注件数<br><span class="font-normal text-[11px]">(F)</span></th>
-          <th class="text-right py-2.5">年間売上<br><span class="font-normal text-[11px]">(M)</span></th>
+          <th class="text-right py-2.5">受注件数<br><span class="font-normal text-[11px]">(F:分析期間)</span></th>
+          <th class="text-right py-2.5">分析期間売上<br><span class="font-normal text-[11px]">(M)</span></th>
           <th class="text-center py-2.5">R</th><th class="text-center py-2.5">F</th><th class="text-center py-2.5">M</th>
           <th class="text-center py-2.5">RFM</th>
           <th class="text-left py-2.5 pl-3">セグメント</th>
@@ -93,10 +138,12 @@
   // 基準日
   var TODAY = new Date(2026,6,17);
   function daysSince(str){ var p=str.split('/'); var d=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((TODAY-d)/86400000); }
-  // 5段階スコア（大きいほど良い）
-  function scoreR(d){ return d<=7?5:d<=20?4:d<=40?3:d<=90?2:1; }
-  function scoreF(f){ return f>=45?5:f>=35?4:f>=25?3:f>=18?2:1; }
-  function scoreM(m){ return m>=20000000?5:m>=15000000?4:m>=10000000?3:m>=6000000?2:1; }
+  // 5段階スコアの閾値（閾値設定モーダルで変更可能）。M は円単位。
+  var DEFAULT_TH = { r:[7,20,40,90], f:[45,35,25,18], m:[20000000,15000000,10000000,6000000] };
+  var TH = JSON.parse(JSON.stringify(DEFAULT_TH));
+  function scoreR(d){ return d<=TH.r[0]?5:d<=TH.r[1]?4:d<=TH.r[2]?3:d<=TH.r[3]?2:1; }
+  function scoreF(f){ return f>=TH.f[0]?5:f>=TH.f[1]?4:f>=TH.f[2]?3:f>=TH.f[3]?2:1; }
+  function scoreM(m){ return m>=TH.m[0]?5:m>=TH.m[1]?4:m>=TH.m[2]?3:m>=TH.m[3]?2:1; }
   function segOf(r,f,m){
     var avg=(r+f+m)/3;
     if(r>=4 && f>=4 && m>=4) return 'champ';
@@ -108,12 +155,16 @@
     return 'dormant';
   }
   // 分析対象期間（月）内に取引のある顧客のみを母集団とする
+  // 受注件数・売上は分析期間に合わせて按分（12ヶ月=年間相当）
   function build(winMonths){
     var limit = winMonths*30.44;
+    var factor = winMonths/12;
     return CUSTOMERS.map(function(c){
-      var r=daysSince(c.lastOrder), sr=scoreR(r), sf=scoreF(c.ordersCount), sm=scoreM(c.salesYear);
+      var pcount=Math.max(1,Math.round(c.ordersCount*factor));
+      var psales=Math.round(c.salesYear*factor);
+      var r=daysSince(c.lastOrder), sr=scoreR(r), sf=scoreF(pcount), sm=scoreM(psales);
       var seg=segOf(sr,sf,sm);
-      return { c:c, r:r, sr:sr, sf:sf, sm:sm, seg:seg, rfm:''+sr+sf+sm };
+      return { c:c, r:r, pcount:pcount, psales:psales, sr:sr, sf:sf, sm:sm, seg:seg, rfm:''+sr+sf+sm };
     }).filter(function(d){ return d.r <= limit; });
   }
 
@@ -132,15 +183,14 @@
         return;
       }
 
-      // KPI
-      var champ=data.filter(function(d){return d.seg==='champ';}).length;
-      var risk=data.filter(function(d){return d.seg==='attention'||d.seg==='dormant';}).length;
-      var avgM=Math.round(data.reduce(function(s,d){return s+d.c.salesYear;},0)/data.length);
+      // KPI（セグメントに一致：分析対象顧客／優良顧客／見込み育成／新規／休眠）
+      var cnt=function(seg){ return data.filter(function(d){return d.seg===seg;}).length; };
       document.getElementById('kpi').innerHTML=
         '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">分析対象顧客</div><div class="font-display text-2xl font-black text-ink mt-1">'+data.length+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
-        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">優良顧客</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+champ+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
-        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">離反注意・休眠</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+risk+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
-        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均 年間売上(M)</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(avgM)+'</div></div>';
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">優良顧客</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+cnt('champ')+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">見込み育成</div><div class="font-display text-2xl font-black text-amber-600 mt-1">'+cnt('potential')+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">新規</div><div class="font-display text-2xl font-black mt-1" style="color:#14887b">'+cnt('newbie')+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>'
+        + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">休眠</div><div class="font-display text-2xl font-black text-neutral-500 mt-1">'+cnt('dormant')+'<span class="text-[13px] font-normal text-neutral-400 ml-1">社</span></div></div>';
 
       // R×F マトリクス（5×5）
       var cell={};
@@ -194,8 +244,8 @@
           return '<tr class="hover:bg-[#fafafe]">'
             + '<td class="px-4 py-3"><div class="text-[15px] font-bold text-ink">'+c.company+'</div><div class="text-[12px] text-neutral-400">'+c.code+' ・ '+c.area+'</div></td>'
             + '<td class="py-3 text-right font-display '+(d.r>90?'text-[color:var(--brand)] font-bold':'text-neutral-600')+'">'+d.r+'日前</td>'
-            + '<td class="py-3 text-right font-display text-neutral-600">'+c.ordersCount+'</td>'
-            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(c.salesYear)+'</td>'
+            + '<td class="py-3 text-right font-display text-neutral-600">'+d.pcount+'</td>'
+            + '<td class="py-3 text-right font-display font-bold text-ink">'+yen(d.psales)+'</td>'
             + '<td class="py-3 text-center">'+sc(d.sr)+'</td><td class="py-3 text-center">'+sc(d.sf)+'</td><td class="py-3 text-center">'+sc(d.sm)+'</td>'
             + '<td class="py-3 text-center font-display font-bold text-ink">'+d.rfm+'</td>'
             + '<td class="py-3 pl-3">'+segBadge(d.seg)+'</td>'
@@ -219,6 +269,26 @@
       document.getElementById('csv').addEventListener('click', function(){
         alert('RFM分析結果（直近'+document.getElementById('win').value+'ヶ月 / '+data.length+'社）をCSVでエクスポートしました。（モック）');
       });
+
+      // 閾値設定モーダル
+      var g=function(id){return document.getElementById(id);};
+      function loadTh(){
+        g('thR1').value=TH.r[0]; g('thR2').value=TH.r[1]; g('thR3').value=TH.r[2]; g('thR4').value=TH.r[3];
+        g('thF1').value=TH.f[0]; g('thF2').value=TH.f[1]; g('thF3').value=TH.f[2]; g('thF4').value=TH.f[3];
+        g('thM1').value=TH.m[0]/10000; g('thM2').value=TH.m[1]/10000; g('thM3').value=TH.m[2]/10000; g('thM4').value=TH.m[3]/10000;
+      }
+      g('thBtn').addEventListener('click', function(){ loadTh(); g('thModal').classList.remove('hidden'); });
+      g('thClose').addEventListener('click', function(){ g('thModal').classList.add('hidden'); });
+      g('thReset').addEventListener('click', function(){ TH=JSON.parse(JSON.stringify(DEFAULT_TH)); loadTh(); });
+      g('thApply').addEventListener('click', function(){
+        TH.r=[+g('thR1').value,+g('thR2').value,+g('thR3').value,+g('thR4').value];
+        TH.f=[+g('thF1').value,+g('thF2').value,+g('thF3').value,+g('thF4').value];
+        TH.m=[+g('thM1').value*10000,+g('thM2').value*10000,+g('thM3').value*10000,+g('thM4').value*10000];
+        g('thModal').classList.add('hidden');
+        renderAll();
+        alert('セグメント閾値を更新しました。スコア・セグメントを再計算しました。（モック）');
+      });
+
       renderAll();
     }
   });

@@ -105,8 +105,8 @@
     title:'見積を作成',
     sub:'顧客・件名・明細を入力して見積を作成。得値（顧客掛率）を自動適用・部材も追加可',
     onReady:function(){
-      // ②メーカー見積取得：依頼フロー（?from=）経由なら取得済、白紙の新規作成なら未取得＋導線を表示
-      if(!qs('from')){
+      // ②メーカー見積取得：依頼フロー（?from=）経由・既存見積の編集（?edit=）なら取得済、白紙の新規作成なら未取得＋導線を表示
+      if(!qs('from') && !qs('edit')){
         document.getElementById('step2').outerHTML =
           '<a id="step2" href="admin-quote-request.html" class="flex-1 flex items-center gap-2 px-3 py-2 border border-dashed hover:opacity-80" style="background:#fffdf5;border-color:#f0a500">'
           + '<span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] text-white" style="background:#f0a500">2</span>'
@@ -196,6 +196,19 @@
       document.getElementById('save').addEventListener('click', function(){ submit(false); });
 
       // 見積依頼から遷移した場合は顧客・明細・件名を引き継ぐ（③見積作成）
+      // 既存見積の編集（?edit=見積番号）：見積内容を明細に読み込む
+      var editNo = qs('edit'), editQuote = null;
+      if(editNo && window.getQuote){
+        editQuote = getQuote(editNo);
+        var ec = editQuote.acc==='A'?'1042-01':editQuote.acc==='B'?'2055-03':'1042-01';
+        document.getElementById('cust').value = ec;
+        document.getElementById('title').value = editQuote.title;
+        if(editQuote.type==='特殊見積'){ document.getElementById('type').selectedIndex=1; }
+        if(editQuote.techCheck){ document.getElementById('tech').checked=true; }
+        editQuote.lines.forEach(function(l){ LINES.push(l.custom? {custom:l.custom, price:(l.price||0), qty:l.qty} : {code:l.code, qty:l.qty}); });
+        document.getElementById('backLink').setAttribute('href','admin-quote-detail.html?no='+editQuote.no);
+        document.getElementById('backLink').textContent='‹ 見積詳細 '+editQuote.no+' に戻る';
+      }
       var fromId = qs('from'), fromReq = null;
       if(fromId && window.getQuoteRequest){
         fromReq = getQuoteRequest(fromId);
@@ -211,6 +224,11 @@
       if(fromReq){
         document.getElementById('custInfo').innerHTML =
           '<span class="badge bg-emerald-100 text-emerald-700">見積依頼 '+fromReq.id+' から作成</span> '
+          + document.getElementById('custInfo').innerHTML;
+      }
+      if(editQuote){
+        document.getElementById('custInfo').innerHTML =
+          '<span class="badge bg-amber-100 text-amber-700">見積 '+editQuote.no+' を編集中</span> '
           + document.getElementById('custInfo').innerHTML;
       }
     }

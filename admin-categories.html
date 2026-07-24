@@ -101,6 +101,7 @@
           + '<span class="ml-auto flex gap-1 shrink-0">'
           + (depth<2?'<button class="addc text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-0.5" data-p="'+path+'">＋子を追加</button>':'')
           + '<button class="ren text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-0.5" data-p="'+path+'">名称変更</button>'
+          + '<button class="slug text-[12px] border border-[#dcdce6] bg-white text-neutral-600 px-2 py-0.5" data-p="'+path+'">スラッグ変更</button>'
           + '<button class="del text-[12px] border px-2 py-0.5" style="border-color:#e60012;color:#e60012" data-p="'+path+'">削除</button>'
           + '</span></div>';
       }
@@ -149,6 +150,14 @@
             var nm=prompt('新しいカテゴリー名を入力してください', t.node.name);
             if(!nm) return;
             t.node.name=nm; render();
+          });
+        });
+        document.querySelectorAll('.slug').forEach(function(b){
+          b.addEventListener('click', function(){
+            var t=byPath(b.getAttribute('data-p'));
+            var sl=prompt('新しいスラッグ（URL）を入力してください', t.node.slug||'');
+            if(sl===null) return;
+            t.node.slug=sl.trim().toLowerCase().replace(/\s+/g,'-'); render();
           });
         });
         document.querySelectorAll('.del').forEach(function(b){

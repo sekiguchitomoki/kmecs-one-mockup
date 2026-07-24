@@ -27,6 +27,9 @@
     </div>
   </div>
 
+  <!-- サマリカード（請求金額・請求済み金額・状態） -->
+  <div class="no-print grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4" id="invCards"></div>
+
   <div class="adm-card overflow-hidden">
     <div id="printArea"><div class="p-8" id="invoiceBody"></div></div>
   </div>
@@ -110,13 +113,42 @@
         + 'お支払条件：'+a.terms+' ／ 対象注文書：'+v.orders.join(' / ')+'</div></div>'
         + '</div>';
 
+      // サマリカード（請求済み金額を明示）
+      function stLabel(){ return v.status==='draft'?'未発行（起案済）':v.status==='unpaid'?'発行済・未入金':'発行済・入金済'; }
+      function stColor(){ return v.status==='draft'?'#9a9aa6':v.status==='unpaid'?'#e60012':'#14887b'; }
+      function renderCards(){
+        var billed = v.status==='draft' ? 0 : total;   // 請求済み金額（発行済のみ計上）
+        document.getElementById('invCards').innerHTML=
+          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">ご請求金額（税込）</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(total)+'</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">請求済み金額</div><div class="font-display text-2xl font-black mt-1" style="color:'+(billed?'#14887b':'#9a9aa6')+'">'+yen(billed)+'</div><div class="text-[11px] text-neutral-400 mt-0.5">'+(billed?'発行済':'未発行のため¥0')+'</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">状態 ・ 送付方法</div><div class="mt-1"><span class="badge text-white" style="background:'+stColor()+'">'+stLabel()+'</span></div><div class="text-[12px] text-neutral-400 mt-1">送付：'+a.invoiceBy+'</div></div>';
+      }
+      renderCards();
+
+      // 発行ボタン：メールは自動送付、郵送/FAX/EDIは「請求処理完了」で請求済（発行済）にする
       var issueBtn=document.getElementById('issue');
-      issueBtn.textContent = v.status==='draft' ? '発行して送付（'+a.invoiceBy+'）' : '再送信する';
+      var isMail = a.invoiceBy==='メール';
+      function setBtn(){
+        if(v.status==='draft'){
+          issueBtn.textContent = isMail ? '発行して送付（メール）' : '請求処理完了（'+a.invoiceBy+'で送付済にする）';
+          issueBtn.style.background='#e60012'; issueBtn.disabled=false;
+        }else{
+          issueBtn.textContent = isMail ? '再送信する' : '送付状況を確認';
+          issueBtn.style.background='#393b56'; issueBtn.disabled=false;
+        }
+      }
+      setBtn();
       document.getElementById('printInv').addEventListener('click', function(){ window.print(); });
       issueBtn.addEventListener('click', function(){
-        if(v.status==='draft') v.status='unpaid';
-        alert('請求書 '+v.no+' を発行し、顧客ポータル掲載＋'+a.invoiceBy+'送付しました。（モック）');
-        location.href='admin-invoice.html';
+        if(v.status==='draft'){
+          v.status='unpaid';
+          alert(isMail
+            ? '請求書 '+v.no+' を発行し、顧客ポータル掲載＋メール送付しました。請求済（発行済）になります。（モック）'
+            : '請求書 '+v.no+' を'+a.invoiceBy+'で送付済とし、請求処理を完了しました。請求済（発行済）になります。（モック）');
+          setBtn(); renderCards();
+          return;
+        }
+        alert(isMail ? '請求書 '+v.no+' を再送信しました。（モック）' : '請求書 '+v.no+' の送付状況：'+a.invoiceBy+'で送付済です。（モック）');
       });
     }
   });

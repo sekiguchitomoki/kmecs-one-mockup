@@ -19,14 +19,27 @@
 <body>
 <div id="content">
 
-  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-    <div class="text-[13px] text-neutral-500">対象期間：<b class="text-ink" id="pLabel">今年度（2026年度）</b></div>
-    <div class="flex gap-1 text-[13px] items-center">
-      <select id="mSel" class="hidden border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white mr-1"></select>
-      <button class="pb px-3 py-1.5" data-p="year">今年度</button>
-      <button class="pb px-3 py-1.5" data-p="prev">前年度</button>
-      <button class="pb px-3 py-1.5" data-p="month">月次</button>
+  <!-- 期間指定 -->
+  <div class="adm-card p-4 mb-4">
+    <div class="flex flex-wrap items-end gap-3">
+      <div>
+        <label class="text-[13px] font-bold text-neutral-600">対象期間</label>
+        <div class="flex items-center gap-1.5 mt-1">
+          <input id="dFrom" type="date" class="border border-[#dcdce6] px-2 py-1.5 text-[13px]">
+          <span class="text-neutral-400">〜</span>
+          <input id="dTo" type="date" class="border border-[#dcdce6] px-2 py-1.5 text-[13px]">
+        </div>
+      </div>
+      <select id="mSel" class="hidden border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white"></select>
+      <div class="flex gap-1 text-[13px] items-center">
+        <span class="text-[12px] text-neutral-400 mr-1">ショートカット</span>
+        <button class="pb px-3 py-1.5" data-p="year">今年度</button>
+        <button class="pb px-3 py-1.5" data-p="prev">前年度</button>
+        <button class="pb px-3 py-1.5" data-p="month">月次</button>
+      </div>
+      <label class="flex items-center gap-2 text-[13px] text-neutral-700 pb-1.5 ml-auto"><input type="checkbox" id="cmp" class="accent-[#e60012]"> 前年度と比較する</label>
     </div>
+    <div class="text-[12px] text-neutral-400 mt-2">対象期間：<b class="text-neutral-600" id="pLabel">今年度（2026年度）</b></div>
   </div>
 
   <!-- KPI -->
@@ -52,18 +65,11 @@
       <div class="px-4 py-3 border-b border-[#dcdce6]"><div class="text-[15px] font-bold text-ink">顧客別 売上ランキング</div></div>
       <div class="p-4 space-y-3" id="byCust"></div>
     </div>
-    <!-- 受注ステータス構成＋経路 -->
-    <div class="space-y-4">
-      <div class="adm-card p-5">
-        <div class="text-[15px] font-bold text-ink mb-4">受注ステータス構成（金額ベース）</div>
-        <div class="flex h-6 overflow-hidden mb-3" id="statusBar"></div>
-        <div class="grid grid-cols-2 gap-2 text-[13px]" id="statusLegend"></div>
-      </div>
-      <div class="adm-card p-5">
-        <div class="text-[15px] font-bold text-ink mb-1">エリア別 売上</div>
-        <div class="text-[13px] text-neutral-400 mb-3">全国の売上分布</div>
-        <div class="space-y-2.5" id="byArea"></div>
-      </div>
+    <!-- エリア別 -->
+    <div class="adm-card p-5">
+      <div class="text-[15px] font-bold text-ink mb-1">エリア別 売上</div>
+      <div class="text-[13px] text-neutral-400 mb-3">全国の売上分布</div>
+      <div class="space-y-2.5" id="byArea"></div>
     </div>
   </div>
   <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、数値はダミーです。実際のBIツール／基幹データとは連携していません。</p>
@@ -79,7 +85,7 @@
   KMECS.renderAdminShell({
     active:'admin-analytics',
     title:'売上分析',
-    sub:'年間売上・前年比・メーカー別 / 顧客別 / エリア別・受注ステータス構成',
+    sub:'期間指定の売上・前年度比較・メーカー別 / 顧客別 / エリア別',
     onReady:function(){
       // ---- 年度合計（顧客マスタが真値。月次はこの合計を月別シェアで按分） ----
       var totalSales=CUSTOMERS.reduce(function(s,c){return s+c.salesYear;},0);
@@ -98,12 +104,24 @@
       var mPrev2=mPrev.map(function(v){ return Math.round(v*0.9); }); // 前々年度（前年度表示時の比較線）
       var mil=function(v){ return (v/1000000).toFixed(1); };
 
-      var period='year', mi=3; // 既定：今年度 / 月次選択時は7月
+      var period='year', mi=3, cmp=false; // 既定：今年度 / 月次選択時は7月 / cmp=前年度比較
 
       // 月セレクタ
       document.getElementById('mSel').innerHTML=months.map(function(m,i){
         return '<option value="'+i+'"'+(i===3?' selected':'')+'>'+m+'月</option>';
       }).join('');
+
+      // 期間ショートカット → 日付レンジを埋める（表示用）
+      var RANGE={ year:['2026-04-01','2027-03-31'], prev:['2025-04-01','2026-03-31'] };
+      function fillRange(){
+        var el=document.getElementById('dFrom'), et=document.getElementById('dTo');
+        if(period==='month'){
+          var mo=months[mi]; var yr=(+mo>=4?2026:2027);
+          var mm=String(mo).padStart(2,'0');
+          var last=new Date(yr, +mo, 0).getDate();
+          el.value=yr+'-'+mm+'-01'; et.value=yr+'-'+mm+'-'+String(last).padStart(2,'0');
+        }else{ el.value=RANGE[period][0]; et.value=RANGE[period][1]; }
+      }
 
       // 期間ごとの数値定義
       function ctx(){
@@ -124,9 +142,11 @@
         var yoy=Math.round((x.sales/x.base-1)*100);
         var avg=Math.round(x.sales/x.cnt);
         document.getElementById('pLabel').textContent=x.label;
+        document.getElementById('cmp').checked=cmp;
+        fillRange();
         document.getElementById('mSel').className = period==='month'
-          ? 'border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white mr-1'
-          : 'hidden border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white mr-1';
+          ? 'border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white'
+          : 'hidden border border-[#dcdce6] px-2 py-1.5 text-[13px] bg-white';
 
         // 期間ボタンの見た目
         document.querySelectorAll('.pb').forEach(function(b){
@@ -135,21 +155,21 @@
           b.style.background=on?'#e60012':'';
         });
 
-        // KPI
+        // KPI（前年比は「前年度と比較する」ON時のみ表示）
         document.getElementById('kpi').innerHTML=
-          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">'+x.salesLabel+'</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(x.sales)+'</div><div class="text-[12px] '+(yoy>=0?"text-emerald-600":"text-[color:var(--brand)]")+' mt-0.5">'+x.baseLabel+' '+(yoy>=0?"+":"")+yoy+'%</div></div>'
+          '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">'+x.salesLabel+'</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(x.sales)+'</div>'+(cmp?'<div class="text-[12px] '+(yoy>=0?"text-emerald-600":"text-[color:var(--brand)]")+' mt-0.5">'+x.baseLabel+' '+(yoy>=0?"+":"")+yoy+'%</div>':'')+'</div>'
           + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">'+x.cntLabel+'</div><div class="font-display text-2xl font-black text-ink mt-1">'+x.cnt+'<span class="text-[13px] font-normal text-neutral-400 ml-1">件</span></div></div>'
           + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">平均受注単価</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(avg)+'</div></div>'
           + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">未回収（現在）</div><div class="font-display text-2xl font-black mt-1" style="color:#e60012">'+yen(totalUnpaid)+'</div></div>';
 
-        // 月次チャート（期間で棒／線を切替）
+        // 月次チャート（期間で棒／線を切替。前年比較線は cmp ON時のみ表示）
         var bars  = period==='prev' ? mPrev  : mCur;
         var line  = period==='prev' ? mPrev2 : mPrev;
-        var max=Math.max.apply(null, bars.concat(line));
+        var max=Math.max.apply(null, cmp ? bars.concat(line) : bars);
         document.getElementById('chartTitle').textContent = period==='prev' ? '月次売上推移（前年度）' : '月次売上推移（今年度）';
-        document.getElementById('chartSub').textContent = period==='prev'
-          ? '単位：百万円　／　棒＝前年度 ・ 線＝前々年度'
-          : (period==='month' ? '単位：百万円　／　棒＝今年度（選択月を強調） ・ 線＝前年同月' : '単位：百万円　／　棒＝今年度 ・ 線＝前年同月');
+        document.getElementById('chartSub').textContent = cmp
+          ? (period==='prev' ? '単位：百万円　／　棒＝前年度 ・ 線＝前々年度' : '単位：百万円　／　棒＝今年度 ・ 線＝前年同月')
+          : '単位：百万円　／　棒＝'+(period==='prev'?'前年度':'今年度');
         document.getElementById('monthly').innerHTML=months.map(function(m,i){
           var hc=Math.round(bars[i]/max*100), hp=Math.round(line[i]/max*100);
           var sel = period==='month' && i===mi;
@@ -158,7 +178,7 @@
             + '<div class="absolute -top-1 text-[11px] font-display font-bold text-ink '+(sel?'':'opacity-0 group-hover:opacity-100')+'">'+mil(bars[i])+'</div>'
             + '<div class="w-full relative flex items-end justify-center" style="height:100%">'
             + '<div class="w-2/3" style="height:'+hc+'%;background:'+col+'"></div>'
-            + '<div class="absolute w-full border-t-2 border-dashed" style="bottom:'+hp+'%;border-color:#393b56"></div></div>'
+            + (cmp?'<div class="absolute w-full border-t-2 border-dashed" style="bottom:'+hp+'%;border-color:#393b56"></div>':'')+'</div>'
             + '<div class="text-[11px] '+(sel?'font-bold text-ink':'text-neutral-400')+' mt-1">'+m+'</div></div>';
         }).join('');
         // 棒クリックでその月へ
@@ -178,40 +198,33 @@
             + '<div class="h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+pct+'%;background:'+MK_COLOR[k]+'"></div></div></div>';
         }).join('');
 
-        // 顧客別ランキング
+        // 顧客別ランキング（cmp ON時は前年度を2行目に表示）
         var cs=CUSTOMERS.slice().sort(function(a,b){return x.salesOf(b)-x.salesOf(a);});
         var cmax=x.salesOf(cs[0])||1;
         document.getElementById('byCust').innerHTML=cs.map(function(c,i){
           var v=x.salesOf(c), pct=Math.round(v/cmax*100);
+          var pv=Math.round(c.salesPrev*x.factor), ppct=Math.round(pv/cmax*100);
           return '<div><div class="flex justify-between text-[13px] mb-1">'
             + '<span class="text-ink"><b class="font-display mr-1.5" style="color:#e60012">'+(i+1)+'</b>'
             + '<a href="admin-customer-detail.html?code='+c.code+'" class="hover:underline">'+c.company+'</a></span>'
             + '<span class="font-display font-bold text-ink">'+yen(v)+'</span></div>'
-            + '<div class="h-2" style="background:#eee"><div class="h-2" style="width:'+pct+'%;background:#393b56"></div></div></div>';
+            + '<div class="h-2" style="background:#eee"><div class="h-2" style="width:'+pct+'%;background:#393b56"></div></div>'
+            + (cmp?'<div class="flex justify-between text-[11px] text-neutral-400 mt-0.5 mb-0.5"><span>前年度</span><span class="font-display">'+yen(pv)+'</span></div>'
+                 + '<div class="h-1.5" style="background:#f2f2f5"><div class="h-1.5" style="width:'+ppct+'%;background:#b8bacb"></div></div>':'')
+            + '</div>';
         }).join('');
 
-        // 受注ステータス構成
-        var st={}; ADMIN_ORDERS.forEach(function(o){ st[o.status]=(st[o.status]||0)+o.amount*x.factor; });
-        var stTotal=Object.keys(st).reduce(function(s,k){return s+st[k];},0);
-        var order=['arranging','shipped','billed','unpaid','paid'];
-        document.getElementById('statusBar').innerHTML=order.filter(function(k){return st[k];}).map(function(k){
-          var pct=st[k]/stTotal*100; var s=ORDER_STATUS[k];
-          return '<div style="width:'+pct+'%;background:'+s.bg+'" title="'+s.ja+'"></div>';
-        }).join('');
-        document.getElementById('statusLegend').innerHTML=order.filter(function(k){return st[k];}).map(function(k){
-          var s=ORDER_STATUS[k];
-          return '<div class="flex items-center gap-2"><span class="w-3 h-3 shrink-0" style="background:'+s.bg+';border:1px solid #ccc"></span>'
-            + '<span class="text-neutral-600">'+s.ja+'</span><span class="ml-auto font-display text-neutral-500">'+yen(Math.round(st[k]))+'</span></div>';
-        }).join('');
-
-        // エリア別
-        var ar={}; CUSTOMERS.forEach(function(c){ ar[c.area]=(ar[c.area]||0)+x.salesOf(c); });
+        // エリア別（cmp ON時は前年度を2本目のバーに表示）
+        var ar={}, arp={}; CUSTOMERS.forEach(function(c){ ar[c.area]=(ar[c.area]||0)+x.salesOf(c); arp[c.area]=(arp[c.area]||0)+Math.round(c.salesPrev*x.factor); });
         var arMax=Math.max.apply(null,Object.keys(ar).map(function(k){return ar[k];}));
         document.getElementById('byArea').innerHTML=Object.keys(ar).sort(function(a,b){return ar[b]-ar[a];}).map(function(k){
-          var pct=Math.round(ar[k]/arMax*100);
+          var pct=Math.round(ar[k]/arMax*100), ppct=Math.round(arp[k]/arMax*100);
           return '<div class="flex items-center gap-3"><span class="w-12 text-[13px] text-neutral-600 shrink-0">'+k+'</span>'
-            + '<div class="flex-1 h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+pct+'%;background:#e60012"></div></div>'
-            + '<span class="w-24 text-right font-display text-[13px] text-neutral-600">'+yen(ar[k])+'</span></div>';
+            + '<div class="flex-1">'
+            + '<div class="h-2.5" style="background:#eee"><div class="h-2.5" style="width:'+pct+'%;background:#e60012"></div></div>'
+            + (cmp?'<div class="h-1.5 mt-0.5" style="background:#f2f2f5"><div class="h-1.5" style="width:'+ppct+'%;background:#b8bacb"></div></div>':'')
+            + '</div>'
+            + '<span class="w-24 text-right font-display text-[13px] text-neutral-600">'+yen(ar[k])+(cmp?'<div class="text-[11px] text-neutral-400">前年 '+yen(arp[k])+'</div>':'')+'</span></div>';
         }).join('');
       }
 
@@ -219,6 +232,13 @@
         b.addEventListener('click', function(){ period=b.getAttribute('data-p'); render(); });
       });
       document.getElementById('mSel').addEventListener('change', function(){ mi=+this.value; render(); });
+      document.getElementById('cmp').addEventListener('change', function(){ cmp=this.checked; render(); });
+      // 日付レンジを手入力で変えたら、年度に応じてショートカット期間を推定
+      ['dFrom','dTo'].forEach(function(id){ document.getElementById(id).addEventListener('change', function(){
+        var f=document.getElementById('dFrom').value;
+        period = (f && f<'2026-04-01') ? 'prev' : 'year';
+        render();
+      }); });
       render();
     }
   });

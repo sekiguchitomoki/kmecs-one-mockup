@@ -410,6 +410,9 @@ window.PRODUCTS = [
 /* ===== 見積（営業送付済・見積番号から発注）=====
    構成：IPC/ODU 等。部材：取扱製品以外も含む（PDF与件） */
 window.QUOTES = [
+  { no:'QT26070033', acc:'A', date:'2026/07/17', title:'産業用ルータ 構成見積（作成中）', due:'2026/08/16', left:23, status:'下書き', draft:true, staff:'鈴木 慶博',
+    type:'一般見積', techCheck:false,
+    lines:[ { code:'EDR-G9010', qty:2, kind:'製品' }, { code:'AWK-1137C', qty:4, kind:'製品' } ] },
   { no:'QT26070031', acc:'A', date:'2026/07/03', title:'MOXA AWK-1131A-JP 他 3点', due:'2026/08/02', left:11, status:'有効', staff:'鈴木 慶博',
     type:'一般見積', techCheck:false,
     lines:[
@@ -606,10 +609,10 @@ window.QUOTE_REQUESTS = [
       { code:'NPort-5150A', qty:4,  mkCost:null,   mkLead:'' },
       { custom:'DINレール取付キット（他社品）', qty:2, mkCost:2800, mkLead:'在庫' },
     ] },
-  { id:'RQ-2607-029', date:'2026/07/16', cust:'5088-04', type:'特殊見積', status:'maker', staff:'佐々木 涼',
-    note:'傾斜センサ。メーカー（POSITAL/fraba）へ見積依頼中。',
+  { id:'RQ-2607-029', date:'2026/07/16', cust:'5088-04', type:'特殊見積', status:'ready', staff:'佐々木 涼',
+    note:'傾斜センサ。メーカー（POSITAL/fraba）から見積回答受領済み。',
     lines:[
-      { code:'OCD-DPB1B', qty:10, mkCost:null, mkLead:'' },
+      { code:'OCD-DPB1B', qty:10, mkCost:21000, mkLead:'約3週間' },
     ] },
 ];
 window.getQuoteRequest = (id) => window.QUOTE_REQUESTS.filter(r => r.id === id)[0] || window.QUOTE_REQUESTS[0];
