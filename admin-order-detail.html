@@ -22,6 +22,32 @@
   <a href="admin-orders.html" class="inline-flex items-center gap-1 text-[13px] text-neutral-500 hover:text-[color:var(--brand)] mb-3">‹ 受注管理一覧に戻る</a>
   <div id="body"></div>
 
+  <!-- 返品受付モーダル -->
+  <div id="rtModal" class="hidden fixed inset-0 z-50 bg-black/50 p-4 overflow-y-auto">
+    <div class="max-w-lg mx-auto my-10 bg-white">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-[#dcdce6]">
+        <h3 class="font-bold text-ink text-[16px]">返品受付（RMA発行）</h3>
+        <button id="rtClose" class="text-neutral-400 hover:text-ink text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-5 space-y-4 text-[14px]">
+        <div class="text-[13px] text-neutral-500">出荷済の受注に対する返品を受け付け、RMA番号を発行します。IBMへ返品インプット（在庫戻し・赤伝／返金の起票）される想定です。</div>
+        <div id="rtLines" class="space-y-2"></div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div><label class="text-[13px] font-bold text-neutral-600">返品理由 <span style="color:#e60012">*</span></label>
+            <select id="rtReason" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 bg-white"><option value="">選択してください</option><option>初期不良</option><option>員数違い・誤出荷</option><option>仕様相違</option><option>輸送破損</option><option>顧客都合</option></select></div>
+          <div><label class="text-[13px] font-bold text-neutral-600">返金・処理区分</label>
+            <select id="rtRefund" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 bg-white"><option>返金（赤伝発行）</option><option>代替品を再出荷</option><option>次回請求で相殺</option></select></div>
+        </div>
+        <div><label class="text-[13px] font-bold text-neutral-600">備考</label>
+          <textarea id="rtMemo" rows="2" class="w-full mt-1 border border-[#dcdce6] px-3 py-2 outline-none focus:border-[color:var(--brand)]" placeholder="不良症状・入荷予定・連絡事項など"></textarea></div>
+      </div>
+      <div class="flex gap-2 justify-end px-5 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
+        <button id="rtCancel" class="text-[14px] border border-[#dcdce6] bg-white text-neutral-600 px-4 py-2">やめる</button>
+        <button id="rtSubmit" class="text-[14px] text-white px-4 py-2 font-bold" style="background:#e60012">返品を受け付ける</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 <script src="assets/data.js"></script>
 <script src="assets/shell.js"></script>
@@ -32,9 +58,11 @@
   // IBMインプット状況・納期・出荷（受注管理一覧と同じ値）
   var IBM_MAP={'WO-24072':'check','WO-24071':'check','WO-24068':'check','WO-24070':'error'};
   var LEAD_MAP={'WO-24074':'2026/07/20','WO-24073':'2026/07/17','WO-24071':'2026/07/18','WO-24069':'2026/07/16','WO-24067':'2026/07/12'};
-  var SHIP_MAP={'WO-24073':'出荷準備中','WO-24069':'出荷済'};
-  // 受注管理一覧に載っている9件は一覧と同じ納期・出荷を表示（それ以前の受注は完了扱い）
-  var LISTED=['WO-24076','WO-24075','WO-24074','WO-24073','WO-24072','WO-24071','WO-24070','WO-24069','WO-24068','WO-24067'];
+  var SHIP_MAP={'WO-24073':'出荷準備中','WO-24069':'出荷済','WO-24066':'出荷済'};
+  // 返品受付済みサンプルの返品情報
+  var RET_MAP={'WO-24066':{ rma:'RMA-2607-014', reason:'初期不良', refund:'返金（赤伝発行）', memo:'電源投入時にリンクLED不点灯。メーカーへ現品返送予定。', qty:'MOXA EDS-518A ×2', date:'2026/06/26' }};
+  // 受注管理一覧に載っている件は一覧と同じ納期・出荷を表示（それ以前の受注は完了扱い）
+  var LISTED=['WO-24076','WO-24075','WO-24074','WO-24073','WO-24072','WO-24071','WO-24070','WO-24069','WO-24068','WO-24067','WO-24066'];
   var inList = LISTED.indexOf(o.no)>=0;
   var done = !inList && o.status!=='arranging';   // 一覧より前の出荷済以降の受注
   var SHIPDATE_MAP={'WO-24073':'2026/07/18','WO-24069':'2026/07/16'};
@@ -46,6 +74,7 @@
     shipDate: SHIPDATE_MAP[o.no] || (done ? o.date : ''),
     lines:[{name:o.items, qty:'一式', price:Math.round(o.amount/1.1)}],
     edit:false,
+    ret: RET_MAP[o.no] || null,   // 返品情報 {rma, reason, refund, memo, qty, date}
     history:[{d:o.date+' 09:40', u:'受注登録（'+o.route+'）', by:'システム'}]
   };
 
@@ -194,12 +223,32 @@
         + '<div class="text-[13px] text-neutral-500 mt-1 leading-relaxed">'+(c.code||'')+'<br>ご担当：'+c.contact+' 様<br>担当営業：'+c.rep+'<br>'+(c.addr||'')+'</div>'
         + '<div class="mt-2 pt-2 border-t border-[#eee] text-[13px]">支払条件：'+(c.terms||'-')+'</div>'
         + '<a href="admin-customer-detail.html?code='+(c.code||'')+'" class="mt-3 inline-block text-[13px]" style="color:#e60012">顧客詳細を開く ›</a></div>'
+        // 返品情報パネル（返品受付済みのとき）
+        + (S.ret
+          ? '<div class="adm-card overflow-hidden" style="border-color:#393b56">'
+            + '<div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2" style="background:#f0f0fa">'
+            + '<span class="w-6 h-6 flex items-center justify-center text-white text-[12px]" style="background:#393b56">R</span>'
+            + '<span class="text-[14px] font-bold text-ink">返品情報</span></div>'
+            + '<div class="p-4 text-[13px] space-y-1.5">'
+            + '<div class="flex justify-between"><span class="text-neutral-500">RMA番号</span><b class="font-display text-ink">'+S.ret.rma+'</b></div>'
+            + '<div class="flex justify-between"><span class="text-neutral-500">受付日</span><span class="font-display">'+S.ret.date+'</span></div>'
+            + '<div class="flex justify-between"><span class="text-neutral-500">返品理由</span><span class="text-ink">'+S.ret.reason+'</span></div>'
+            + '<div class="flex justify-between"><span class="text-neutral-500">返品数量</span><span>'+S.ret.qty+'</span></div>'
+            + '<div class="flex justify-between"><span class="text-neutral-500">処理区分</span><span class="text-ink">'+S.ret.refund+'</span></div>'
+            + (S.ret.memo?'<div class="pt-1.5 border-t border-[#eee] text-neutral-600">備考：'+S.ret.memo+'</div>':'')
+            + '<button onclick="alert(\'返品受付票（RMA）を出力しました。（モック）\')" class="mt-2 w-full text-[13px] border border-[#dcdce6] text-neutral-600 px-3 py-1.5">返品受付票を出力</button>'
+            + '</div></div>'
+          : '')
         + '<div class="adm-card p-5"><div class="text-[14px] font-bold text-ink mb-2">受注の操作</div>'
         + '<div class="space-y-2">'
-        + (stopped
-          ? '<div class="text-[13px] text-neutral-500">この受注は「'+ORDER_STATUS[S.status].ja+'」です。IBMへ'+(S.status==='canceled'?'取消':'返品')+'インプット済み（モック）。</div>'
-          : '<button id="cancelOrder" class="w-full text-[13px] border px-3 py-2 text-left" style="border-color:#e60012;color:#e60012">受注をキャンセル</button>'
-            + (S.ship==='出荷済'?'<button id="returnOrder" class="w-full text-[13px] border border-[#dcdce6] text-neutral-600 px-3 py-2 text-left">返品を受け付ける（RMA発行）</button>':'')
+        + (S.status==='canceled'
+            ? '<div class="text-[13px] text-neutral-500">この受注は「キャンセル」です。IBMへ取消インプット済み（モック）。</div>'
+          : S.status==='returned'
+            ? '<div class="text-[13px] text-neutral-500">この受注は「返品受付」済みです（RMA発行・IBMへ返品インプット済み）。返品情報は上のパネルをご確認ください。</div>'
+            : '<button id="cancelOrder" class="w-full text-[13px] border px-3 py-2 text-left" style="border-color:#e60012;color:#e60012">受注をキャンセル</button>'
+              + (S.ship==='出荷済'
+                  ? '<button id="returnOrder" class="w-full text-[13px] text-white px-3 py-2 text-left" style="background:#393b56">返品を受け付ける（RMA発行）</button>'
+                  : '<div class="text-[12px] text-neutral-400">※ 返品受付は出荷済の受注で可能になります。</div>')
           )
         + '</div>'
         + '<div class="text-[12px] text-neutral-400 mt-2">キャンセル・返品はIBMへ取消／返品インプットされ、請求・在庫に反映されます。</div></div>'
@@ -303,11 +352,29 @@
         alert(o.no+' をキャンセルしました。（モック）');
       });
       if(q('returnOrder')) q('returnOrder').addEventListener('click', function(){
-        if(!confirm(o.no+' の返品を受け付けますか？\nRMA番号を発行し、IBMへ返品インプットされます。')) return;
+        // 明細ごとの返品数量入力を用意
+        q('rtLines').innerHTML='<div class="text-[13px] font-bold text-neutral-600 mb-1">返品対象・数量</div>'
+          + S.lines.map(function(l,i){
+              return '<div class="flex items-center gap-2 border border-[#dcdce6] px-3 py-2">'
+                + '<span class="flex-1 text-[13px] text-neutral-700">'+l.name+'</span>'
+                + '<span class="text-[12px] text-neutral-400">返品数</span>'
+                + '<input class="rtQ w-16 border border-[#dcdce6] px-2 py-1 text-[13px] text-right font-display" data-i="'+i+'" value="'+(l.qty==='一式'?'1':l.qty)+'"></div>';
+            }).join('');
+        q('rtReason').value=''; q('rtRefund').selectedIndex=0; q('rtMemo').value='';
+        q('rtModal').classList.remove('hidden');
+      });
+      if(q('rtClose')) q('rtClose').addEventListener('click', function(){ q('rtModal').classList.add('hidden'); });
+      if(q('rtCancel')) q('rtCancel').addEventListener('click', function(){ q('rtModal').classList.add('hidden'); });
+      if(q('rtSubmit')) q('rtSubmit').addEventListener('click', function(){
+        if(!q('rtReason').value){ alert('返品理由を選択してください。'); return; }
+        var qtys=[]; document.querySelectorAll('.rtQ').forEach(function(inp){ qtys.push(S.lines[+inp.getAttribute('data-i')].name+' ×'+(inp.value||'0')); });
+        var rma='RMA-2607-'+String(15).padStart(3,'0');
+        S.ret={ rma:rma, reason:q('rtReason').value, refund:q('rtRefund').value, memo:q('rtMemo').value.trim(), qty:qtys.join('、'), date:stamp().slice(0,10) };
         S.status='returned';
-        S.history.push({d:stamp(), u:'返品受付（RMA-2607-015 発行・IBMへ返品インプット）', by:'CS 山田'});
+        S.history.push({d:stamp(), u:'返品受付（'+rma+'・'+S.ret.reason+'・'+S.ret.refund+'）IBMへ返品インプット', by:'CS 山田'});
+        q('rtModal').classList.add('hidden');
         draw();
-        alert(o.no+' の返品を受け付けました。RMA-2607-015 を発行しました。（モック）');
+        alert(o.no+' の返品を受け付けました。'+rma+' を発行し、IBMへ返品インプット（在庫戻し・'+S.ret.refund+'）しました。（モック）');
       });
   }
 

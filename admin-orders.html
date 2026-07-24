@@ -141,6 +141,7 @@
     { no:'WO-24069', ibm:'auto',  lead:'2026/07/16', ship:'出荷済' },
     { no:'WO-24068', ibm:'check', lead:'',           ship:'' },
     { no:'WO-24067', ibm:'auto',  lead:'2026/07/12', ship:'', canceled:true },
+    { no:'WO-24066', ibm:'auto',  lead:'2026/06/25', ship:'出荷済', returned:true },
   ];
   function routeBadge(r){
     var m = { 'Web検索':'#e60012', '見積Web':'#ff6b6b', 'EDI':'#14887b', 'メール':'#393b56', 'FAX':'#5b5e80', '郵便':'#8b8ea8' };
@@ -168,21 +169,22 @@
       }).join('');
 
       var showCancel=false;   // キャンセル済みの表示・非表示（既定は非表示）
+      function term(r){ return r.canceled || r.returned; }   // 終了状態（キャンセル/返品）
       function matchFilter(r){
         if(r.canceled && !showCancel) return false;           // キャンセル済みはチェックONのときのみ表示
         switch(f){
-          case 'auto':   return !r.canceled && r.ibm==='auto';
-          case 'check':  return !r.canceled && r.ibm==='check';
-          case 'error':  return !r.canceled && r.ibm==='error';
-          case 'nolead': return !r.canceled && !r.lead;
-          case 'noship': return !r.canceled && !r.ship;
-          case 'todo':   return !r.canceled && (r.ibm!=='auto' || !r.lead);   // 旧「要対応」
+          case 'auto':   return !term(r) && r.ibm==='auto';
+          case 'check':  return !term(r) && r.ibm==='check';
+          case 'error':  return !term(r) && r.ibm==='error';
+          case 'nolead': return !term(r) && !r.lead;
+          case 'noship': return !term(r) && !r.ship;
+          case 'todo':   return !term(r) && (r.ibm!=='auto' || !r.lead);   // 旧「要対応」
           default:       return true;                         // all
         }
       }
       var FILTER_LABEL = { all:'全件', auto:'IBM自動IP済', check:'要チェック', error:'連携エラー', nolead:'納期未入力', noship:'出荷未入力', todo:'要対応' };
-      // KPI件数は実際の一覧（ROWS）から算出（表示件数と一致させる／キャンセル済みは除く）
-      var ACT=ROWS.filter(function(r){return !r.canceled;});
+      // KPI件数は実際の一覧（ROWS）から算出（表示件数と一致させる／キャンセル・返品は除く）
+      var ACT=ROWS.filter(function(r){return !term(r);});
       document.getElementById('kAll').textContent    = ACT.length;
       document.getElementById('kAuto').textContent   = ACT.filter(function(r){return r.ibm==='auto';}).length;
       document.getElementById('kCheck').textContent  = ACT.filter(function(r){return r.ibm==='check';}).length;
@@ -226,6 +228,17 @@
               + '<td class="py-3 pl-4 text-[14px] text-neutral-400">取消インプット済</td>'
               + '<td class="py-3 text-neutral-300">—</td>'
               + '<td class="py-3 text-neutral-300">—</td>'
+              + '<td class="px-4 py-3 text-right whitespace-nowrap"><a href="admin-order-detail.html?no='+r.no+'" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">開く ›</a></td></tr>';
+          }
+          if(r.returned){
+            return '<tr style="background:#f4f4f8">'
+              + '<td class="px-4 py-3 font-display font-bold text-ink">'+r.no+'<div class="mt-1"><span class="badge text-white" style="background:#393b56">返品受付</span></div></td>'
+              + '<td class="py-3 text-neutral-600 text-[16px]">'+c.company+'<div class="text-[14px] text-neutral-400">得値'+c.rank+' ・ '+c.code+'</div></td>'
+              + '<td class="py-3">'+routeBadge(o.route)+'</td>'
+              + '<td class="py-3 text-right font-display text-neutral-500">'+yen(o.amount)+'</td>'
+              + '<td class="py-3 pl-4 text-[14px] text-neutral-400">返品インプット済（RMA）</td>'
+              + '<td class="py-3 text-[14px] font-display text-neutral-500">'+r.lead+'</td>'
+              + '<td class="py-3"><span class="badge bg-emerald-100 text-emerald-700">出荷済</span></td>'
               + '<td class="px-4 py-3 text-right whitespace-nowrap"><a href="admin-order-detail.html?no='+r.no+'" class="text-[14px] border border-[#dcdce6] text-neutral-600 px-2.5 py-1.5 inline-block">開く ›</a></td></tr>';
           }
           return '<tr class="'+(r.ibm==='error'?'bg-[#fff5f5]':'')+'">'
