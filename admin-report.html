@@ -127,12 +127,11 @@
 <script src="assets/shell.js"></script>
 <script>
   // セグメント定義（色・施策）
+  // セグメントはKPIと一致する4種（優良顧客／見込み育成／新規／休眠）
   var SEG = {
     champ:  { name:'優良顧客',      color:'#e60012', action:'手厚いフォロー・新製品優先案内・特別条件の維持' },
-    loyal:  { name:'常連',          color:'#ff6b6b', action:'クロスセル・上位機種の提案・定期フォロー' },
     potential:{ name:'見込み育成',  color:'#f0a500', action:'購入頻度UP施策・キャンペーン・掛率見直し' },
     newbie: { name:'新規',          color:'#14887b', action:'オンボーディング・初回サポート強化' },
-    attention:{ name:'離反注意',    color:'#8b5cf6', action:'早期フォロー・不満ヒアリング・再アプローチ' },
     dormant:{ name:'休眠',          color:'#6b7280', action:'掘り起こしDM・特別オファーで再取引を促す' },
   };
   // 基準日
@@ -146,13 +145,11 @@
   function scoreM(m){ return m>=TH.m[0]?5:m>=TH.m[1]?4:m>=TH.m[2]?3:m>=TH.m[3]?2:1; }
   function segOf(r,f,m){
     var avg=(r+f+m)/3;
-    if(r>=4 && f>=4 && m>=4) return 'champ';
-    if(f>=4 && m>=3) return 'loyal';
-    if(r<=2 && (f>=3||m>=3)) return 'attention';
-    if(r<=2) return 'dormant';
-    if(r>=4 && f<=2) return 'newbie';
-    if(avg>=3) return 'potential';
-    return 'dormant';
+    if(r>=4 && f>=4 && m>=4) return 'champ';     // 優良顧客
+    if(f>=4 && m>=3)         return 'champ';     // 高頻度・高額の重要顧客も優良に統合（旧「常連」）
+    if(r<=2)                 return 'dormant';   // 直近取引が遠い→休眠（旧「離反注意」を統合）
+    if(r>=4 && f<=2)         return 'newbie';    // 最近取引・低頻度→新規
+    return 'potential';                          // それ以外は見込み育成
   }
   // 分析対象期間（月）内に取引のある顧客のみを母集団とする
   // 受注件数・売上は分析期間に合わせて按分（12ヶ月=年間相当）

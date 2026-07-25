@@ -27,8 +27,8 @@
     </div>
   </div>
 
-  <!-- サマリカード（請求金額・請求済み金額・状態） -->
-  <div class="no-print grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4" id="invCards"></div>
+  <!-- サマリカード（請求金額・請求済み金額・入金済み金額・状態） -->
+  <div class="no-print grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="invCards"></div>
 
   <div class="adm-card overflow-hidden">
     <div id="printArea"><div class="p-8" id="invoiceBody"></div></div>
@@ -118,9 +118,11 @@
       function stColor(){ return v.status==='draft'?'#9a9aa6':v.status==='unpaid'?'#e60012':'#14887b'; }
       function renderCards(){
         var billed = v.status==='draft' ? 0 : total;   // 請求済み金額（発行済のみ計上）
+        var paid   = v.status==='paid'  ? total : 0;    // 入金済み金額（入金済のみ計上）
         document.getElementById('invCards').innerHTML=
           '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">ご請求金額（税込）</div><div class="font-display text-2xl font-black text-ink mt-1">'+yen(total)+'</div></div>'
-          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">請求済み金額</div><div class="font-display text-2xl font-black mt-1" style="color:'+(billed?'#14887b':'#9a9aa6')+'">'+yen(billed)+'</div><div class="text-[11px] text-neutral-400 mt-0.5">'+(billed?'発行済':'未発行のため¥0')+'</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">請求済み金額</div><div class="font-display text-2xl font-black mt-1" style="color:'+(billed?'#14887b':'#9a9aa6')+'">'+yen(billed)+'</div><div class="text-[11px] text-neutral-400 mt-0.5">'+(billed?'発行済（請求処理完了）':'未発行のため¥0')+'</div></div>'
+          + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">入金済み金額</div><div class="font-display text-2xl font-black mt-1" style="color:'+(paid?'#14887b':'#9a9aa6')+'">'+yen(paid)+'</div><div class="text-[11px] text-neutral-400 mt-0.5">'+(paid?'入金消込済':(billed?'未入金':'—'))+'</div></div>'
           + '<div class="adm-card p-4"><div class="text-[13px] text-neutral-500">状態 ・ 送付方法</div><div class="mt-1"><span class="badge text-white" style="background:'+stColor()+'">'+stLabel()+'</span></div><div class="text-[12px] text-neutral-400 mt-1">送付：'+a.invoiceBy+'</div></div>';
       }
       renderCards();
