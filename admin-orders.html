@@ -53,23 +53,29 @@
           <span class="text-[13px] text-neutral-400">VPN 暗号化</span>
           <svg width="70" height="16" viewBox="0 0 70 16"><line x1="0" y1="8" x2="60" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/><path d="M60 3l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <span class="text-[13px] text-emerald-600">● 接続中</span>
+          <span class="text-[11px] text-neutral-400 mt-0.5">VPNトンネル死活監視</span>
         </div>
         <div class="flex flex-col items-center gap-1.5">
           <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl" style="background:var(--lav)">☁️</div>
           <div class="font-bold text-ink">クラウド受発注</div><div class="text-neutral-400">キュー / 変換</div>
+          <span class="text-[11px] text-emerald-600">● 稼働中</span>
+          <span class="text-[11px] text-neutral-400">ヘルスチェックAPI 応答あり</span>
         </div>
         <div class="flex flex-col items-center" style="color:#e60012">
           <span class="text-[13px] text-neutral-400">自動インプット</span>
           <svg width="70" height="16" viewBox="0 0 70 16"><line x1="0" y1="8" x2="60" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/><path d="M60 3l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-          <span class="text-[13px] text-emerald-600">● 稼働中</span>
+          <span class="text-[13px] text-emerald-600">● 応答あり</span>
+          <span class="text-[11px] text-neutral-400 mt-0.5">ポート疎通／テスト受付</span>
         </div>
         <div class="flex flex-col items-center gap-1.5">
           <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl text-white" style="background:#393b56">🖥️</div>
           <div class="font-bold text-ink">IBM 基幹</div><div class="text-neutral-400">受注IP / 発注IP</div>
+          <span class="text-[11px] text-emerald-600">● 受付可能</span>
         </div>
       </div>
-      <div class="text-center text-[14px] text-neutral-500 mt-2 pt-3 border-t border-[color:var(--line)]">
-        受注確定 → 自動でIBMへ<b class="text-ink">受注インプット／発注インプット</b>（人のチェックは要確認案件のみ）・在庫／顧客／価格／商品マスタを参照
+      <div class="text-[13px] text-neutral-500 mt-2 pt-3 border-t border-[color:var(--line)] leading-relaxed">
+        受注確定 → 自動でIBMへ<b class="text-ink">受注インプット／発注インプット</b>（人のチェックは要確認案件のみ）・在庫／顧客／価格／商品マスタを参照<br>
+        <span class="text-[12px] text-neutral-400">※ 稼働確認は区間ごとに方式が異なります：<b class="text-neutral-500">VPN＝トンネルの死活</b>／<b class="text-neutral-500">クラウド＝ヘルスチェックAPI（ハートビート）</b>／<b class="text-neutral-500">IBM基幹＝ポート疎通・テスト受付</b>で確認します（単純なPING疎通だけでなく、受付可否まで含めて監視）。異常時は上部KPI「連携エラー」に集約されます。</span>
       </div>
     </div>
   </div>
