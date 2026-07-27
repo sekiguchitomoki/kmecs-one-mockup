@@ -283,10 +283,10 @@
         </div>
 
         <!-- ② メインヘッダー（マーケティング・グローバルナビ） -->
-        <div class="text-white" style="background:#0d1024">
+        <div class="text-white relative z-30" style="background:#0d1024">
           <div class="flex items-center gap-2 px-4 xl:px-6 2xl:px-8 h-[76px]">
             <a href="index.html" class="flex items-center gap-3 shrink-0">${logoImgW(44)}</a>
-            <nav class="hidden xl:flex items-stretch mx-auto min-w-0">
+            <nav class="hidden xl:flex items-stretch self-stretch mx-auto min-w-0">
               ${MGNAV.map(mnavItem).join('')}
             </nav>
             <div class="flex items-center gap-2 ml-auto xl:ml-0 shrink-0 whitespace-nowrap">
