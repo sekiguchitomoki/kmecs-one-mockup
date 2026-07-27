@@ -67,7 +67,7 @@
 
   const logoImg = (h) => `<img src="assets/img/logo.png" alt="K.MECS ONE" style="height:${h}px;width:auto;display:block">`;
   // ダーク背景用：ロゴの黒文字を白へ反転（赤アイコンは維持）
-  const logoImgW = (h) => `<img src="assets/img/logo.png" alt="K.MECS ONE" style="height:${h}px;width:auto;display:block">`;
+  const logoImgW = (h) => `<img src="assets/img/logo_white.png" alt="K.MECS ONE" style="height:${h}px;width:auto;display:block">`;
 
   /* ================= 顧客向けシェル ================= */
   // マーケティング・グローバルナビ（ログイン前後とも常設）＝ ディレクトリマップ v3 準拠
