@@ -122,7 +122,7 @@
   var STEPS = CUST_STEPS;
   var o = getCustOrder(qs('no'));   // ?no= から注文を特定（無ければ先頭）
   var LINES = o.lines;
-  var CURRENT = o.step;             // 完了工程数（= 現在の工程インデックス）
+  var CURRENT = custStep8(o);       // 8段階の完了工程数（社内の受注詳細と整合）
 
   KMECS.renderUserShell({
     active:'orders',
@@ -135,20 +135,23 @@
       // ヘッダー
       document.getElementById('oNo').textContent = o.no;
       document.getElementById('oMeta').innerHTML = '受注日 '+o.date+'　｜　経路：'+o.route+'　｜　担当 '+cust.rep;
-      var stepName = STEPS[Math.min(o.step, STEPS.length-1)];
-      var stLabel = o.step>=6?'完了（入金済）':(o.step>=4?'出荷済・'+stepName+'工程':o.step+'工程まで完了・'+stepName+'対応中');
+      var stepName = STEPS[Math.min(CURRENT, STEPS.length-1)];
+      var stLabel = CURRENT>=8 ? '完了（入金済）' : '「'+stepName+'」対応中';
       document.getElementById('oBadges').innerHTML =
         '<span class="badge text-white" style="background:#e60012">'+stLabel+'</span>'
         + '<span class="badge bg-neutral-100 text-neutral-500">'+o.pay+'</span>';
 
-      // 工程サブラベル（注文データから生成）
+      // 工程サブラベル（注文データから生成・8段階）
+      var shipped = !!(o.slip || o.shipDate);
       var SUB=[];
-      SUB[0] = o.route.indexOf('見積')>=0 ? o.route.replace('見積 ','') : '受付';
-      SUB[1] = 'IBM受注/発注IP済';
-      SUB[2] = o.lead ? '納期回答 '+o.lead.slice(5) : '対応中';
-      SUB[3] = o.slip ? '出荷済 '+(o.shipDate||'').slice(5) : '出荷準備中';
-      SUB[4] = (o.pay==='未請求')?'—':'請求済';
-      SUB[5] = (o.pay==='入金済')?'入金済':'—';
+      SUB[0] = o.route.indexOf('見積')>=0 ? o.route.replace('見積 ','') : '受付';   // 見積
+      SUB[1] = 'IBM受注/発注IP済';                                                 // 受発注
+      SUB[2] = o.lead ? '納期回答 '+o.lead.slice(5) : '対応中';                      // 納期連絡
+      SUB[3] = shipped ? '出荷連絡済' : '準備中';                                     // 出荷連絡
+      SUB[4] = shipped ? '送り状発行' : '—';                                         // 出荷準備中
+      SUB[5] = shipped ? '出荷済 '+(o.shipDate||'').slice(5) : '—';                  // 出荷
+      SUB[6] = (o.pay==='未請求')?'—':'請求済';                                       // 請求
+      SUB[7] = (o.pay==='入金済')?'入金済':'—';                                       // 入金
 
       var s='';
       for(var i=0;i<STEPS.length;i++){

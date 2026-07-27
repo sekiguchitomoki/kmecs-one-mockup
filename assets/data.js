@@ -652,7 +652,17 @@ window.getAdminOrder = (no) => window.ADMIN_ORDERS.filter(o => o.no === no)[0] |
 /* 社内status → 完了工程数（0..6）。顧客側 order-detail と社内側 admin-order-detail で共通に使い、現在工程を一致させる */
 window.orderStep = (status) => ({ arranging:2, shipped:4, billed:5, unpaid:5, paid:6 }[status] !== undefined ? { arranging:2, shipped:4, billed:5, unpaid:5, paid:6 }[status] : 2);
 window.getCustOrder = (no) => window.CUST_ORDERS.filter(o => o.no === no)[0] || window.CUST_ORDERS[0];
-window.CUST_STEPS = ['見積','受発注','問合せ','出荷','請求','入金'];
+/* 顧客側の工程は社内（受注詳細）と同じ8段階。出荷を「出荷連絡→出荷準備中→出荷」に細分化し、③は「納期連絡」 */
+window.CUST_STEPS = ['見積','受発注','納期連絡','出荷連絡','出荷準備中','出荷','請求','入金'];
+/* 注文データ（納期・送り状・入金）から8段階の完了数（=現在工程のインデックス）を算出。社内の受注詳細と整合。 */
+window.custStep8 = function (o) {
+  if (o.step < 2) return o.step;                          // 見積(0)/受発注(1) 進行中
+  if (!o.lead) return 2;                                  // 納期連絡 待ち
+  if (!o.slip && !o.shipDate) return 3;                   // 出荷連絡 待ち（未出荷）
+  if (o.pay === '入金済') return 8;                        // 入金まで完了
+  if (o.pay === '未入金' || o.pay === '請求済') return 7;   // 請求済・入金待ち
+  return 6;                                               // 出荷完了・請求前
+};
 
 /* ===== 買い物カゴ（cart / checkout / order-complete で共通・デモは固定構成） ===== */
 window.CART = [ { code:'AMC-2P-08', qty:20 }, { code:'IPC-3050-i5', qty:2 }, { code:'EDS-408A', qty:2 } ];
