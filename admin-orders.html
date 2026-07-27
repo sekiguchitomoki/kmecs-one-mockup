@@ -44,33 +44,36 @@
     <!-- IBM連携図 -->
     <div class="adm-card p-5 lg:col-span-2">
       <div class="text-[16px] font-bold text-ink mb-3">クラウド ⇄ IBM基幹 連携</div>
-      <div class="flex items-center justify-center gap-3 sm:gap-6 flex-wrap text-center text-[14px] py-3">
+      <div class="flex items-start justify-center gap-1.5 sm:gap-3 flex-nowrap overflow-x-auto text-center text-[14px] py-3">
         <div class="flex flex-col items-center gap-1.5">
           <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl" style="background:var(--lav)">🌐</div>
           <div class="font-bold text-ink">Webポータル</div><div class="text-neutral-400">受注入力</div>
+          <div class="text-[11px] text-neutral-400 max-w-[130px] leading-snug">顧客・社内の入力画面（本モック）</div>
         </div>
         <div class="flex flex-col items-center" style="color:#e60012">
           <span class="text-[13px] text-neutral-400">VPN 暗号化</span>
           <svg width="70" height="16" viewBox="0 0 70 16"><line x1="0" y1="8" x2="60" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/><path d="M60 3l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <span class="text-[13px] text-emerald-600">● 接続中</span>
-          <span class="text-[11px] text-neutral-400 mt-0.5">VPNトンネル死活監視</span>
+          <span class="text-[11px] text-neutral-400 mt-0.5 max-w-[100px] leading-snug">トンネル死活監視</span>
         </div>
         <div class="flex flex-col items-center gap-1.5">
           <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl" style="background:var(--lav)">☁️</div>
           <div class="font-bold text-ink">クラウド受発注</div><div class="text-neutral-400">キュー / 変換</div>
-          <span class="text-[11px] text-emerald-600">● 稼働中</span>
-          <span class="text-[11px] text-neutral-400">ヘルスチェックAPI 応答あり</span>
+          <div class="text-[11px] text-neutral-400 max-w-[140px] leading-snug">裏側のサーバ/DB。保存・変換・IBM連携</div>
+          <span class="text-[11px] text-emerald-600 mt-0.5">● 稼働中</span>
+          <span class="text-[11px] text-neutral-400 max-w-[110px] leading-snug">ヘルスチェック応答</span>
         </div>
         <div class="flex flex-col items-center" style="color:#e60012">
           <span class="text-[13px] text-neutral-400">自動インプット</span>
           <svg width="70" height="16" viewBox="0 0 70 16"><line x1="0" y1="8" x2="60" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/><path d="M60 3l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
           <span class="text-[13px] text-emerald-600">● 応答あり</span>
-          <span class="text-[11px] text-neutral-400 mt-0.5">ポート疎通／テスト受付</span>
+          <span class="text-[11px] text-neutral-400 mt-0.5 max-w-[100px] leading-snug">ポート疎通・受付</span>
         </div>
         <div class="flex flex-col items-center gap-1.5">
           <div class="w-14 h-14 rounded-lg flex items-center justify-center text-xl text-white" style="background:#393b56">🖥️</div>
           <div class="font-bold text-ink">IBM 基幹</div><div class="text-neutral-400">受注IP / 発注IP</div>
-          <span class="text-[11px] text-emerald-600">● 受付可能</span>
+          <div class="text-[11px] text-neutral-400 max-w-[130px] leading-snug">既存の基幹。各マスタの正本</div>
+          <span class="text-[11px] text-emerald-600 mt-0.5">● 受付可能</span>
         </div>
       </div>
       <div class="text-[13px] text-neutral-500 mt-2 pt-3 border-t border-[color:var(--line)] leading-relaxed">
