@@ -108,10 +108,19 @@
       // ログイン時は担当営業を出し、未ログインなら会社名・メール欄を出す
       if(a){
         var c = getCustomer(a.custCode) || CUSTOMERS[0];
+        var rep = getRep(c.rep);
+        document.getElementById('repBox').className='flex items-start gap-3 p-4 mb-5';
         document.getElementById('repBox').innerHTML =
-          '<span class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold shrink-0" style="background:#393b56">'+c.rep.slice(0,1)+'</span>'
-          + '<span class="text-[14px] leading-relaxed"><b class="text-ink">'+c.company+'</b> 様の担当営業は <b class="text-ink">'+c.rep+'</b> です。<br>'
-          + '<span class="text-neutral-500">お問い合わせはそのまま担当営業へ届きます。</span></span>';
+          '<span class="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold shrink-0" style="background:#393b56">'+c.rep.slice(0,1)+'</span>'
+          + '<div class="text-[14px] leading-relaxed flex-1">'
+          + '<b class="text-ink">'+c.company+'</b> 様の担当営業は <b class="text-ink">'+rep.name+'</b>（'+rep.dept+'）です。'
+          + '<div class="mt-2 grid sm:grid-cols-3 gap-x-4 gap-y-1 text-[13px]">'
+          + '<span class="text-neutral-500">TEL：<a href="tel:'+rep.tel+'" class="text-ink font-display hover:underline">'+rep.tel+'</a></span>'
+          + '<span class="text-neutral-500">携帯：<a href="tel:'+rep.mobile+'" class="text-ink font-display hover:underline">'+rep.mobile+'</a></span>'
+          + '<span class="text-neutral-500">メール：<a href="mailto:'+rep.email+'" class="font-display hover:underline" style="color:#e60012">'+rep.email+'</a></span>'
+          + '</div>'
+          + '<div class="text-neutral-500 mt-1.5">お急ぎの場合は上記へ直接ご連絡いただけます。フォームからのお問い合わせもそのまま担当営業へ届きます。</div>'
+          + '</div>';
         document.getElementById('orderList').innerHTML = ADMIN_ORDERS.filter(function(o){return o.cust===c.code;})
           .map(function(o){ return '<option value="'+o.no+'">'+o.items+'</option>'; }).join('');
       } else {

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケーメックスONE_DEMOサイト</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { brand:{DEFAULT:'#e60012',dark:'#cc0000'}, navy:'#393b56', ink:'#000000', paper:'#f8f8f8', lav:'#f0f0fa' },
+    fontFamily: { sans:['"Noto Sans JP"','sans-serif'], display:['Roboto','"Noto Sans JP"','sans-serif'] },
+  }}};
+</script>
+<link rel="stylesheet" href="assets/common.css">
+</head>
+<body>
+<div id="content">
+  <div class="max-w-[1000px] mx-auto px-4 xl:px-8 py-10">
+    <div class="sec-label">WEBINAR ENTRY</div>
+    <h1 class="text-3xl font-bold text-ink mt-2 mb-1">ウェビナー参加登録</h1>
+    <p class="text-[16px] text-neutral-500 mb-8">下記のセミナー・ウェビナーへの参加をお申し込みいただけます。無料でご参加いただけます。</p>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- フォーム -->
+      <div class="lg:col-span-2">
+        <div class="card p-6">
+          <div id="repBox" class="p-3 mb-5 text-[14px]" style="background:var(--lav)"></div>
+
+          <div class="space-y-5">
+            <div>
+              <label class="text-[15px] font-bold text-ink">お名前 <span style="color:#e60012">*</span></label>
+              <input id="fName" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]" placeholder="例：山田 太郎">
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div><label class="text-[15px] font-bold text-ink">会社名 <span style="color:#e60012">*</span></label>
+                <input id="fComp" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]" placeholder="例：株式会社サンプル電子"></div>
+              <div><label class="text-[15px] font-bold text-ink">部署・役職 <span class="text-[13px] font-normal text-neutral-400">（任意）</span></label>
+                <input id="fDept" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]" placeholder="例：技術部 課長"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div><label class="text-[15px] font-bold text-ink">メールアドレス <span style="color:#e60012">*</span></label>
+                <input id="fMail" type="email" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px] font-display" placeholder="you@example.com">
+                <div class="text-[12px] text-neutral-400 mt-1">視聴用URLをこのアドレスへお送りします。</div></div>
+              <div><label class="text-[15px] font-bold text-ink">電話番号 <span class="text-[13px] font-normal text-neutral-400">（任意）</span></label>
+                <input id="fTel" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px] font-display" placeholder="03-0000-0000"></div>
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-ink">業種 <span class="text-[13px] font-normal text-neutral-400">（任意）</span></label>
+              <select id="fIndustry" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px] bg-white">
+                <option value="">選択してください</option>
+                <option>造船・舶用</option><option>装置・機械メーカー</option><option>プラント・設備</option>
+                <option>SIer・エンジニアリング</option><option>商社・代理店</option><option>その他</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-ink">ご質問・ご要望 <span class="text-[13px] font-normal text-neutral-400">（任意）</span></label>
+              <textarea id="fNote" rows="3" class="w-full mt-1.5 border border-[color:var(--line)] px-3 py-2.5 text-[16px]" placeholder="当日聞きたいこと・関心のあるテーマなど"></textarea>
+            </div>
+            <label class="flex items-start gap-2 text-[14px] text-neutral-700"><input type="checkbox" id="fAgree" class="accent-[#e60012] mt-0.5">
+              <span><a href="privacy.html" class="underline" style="color:#e60012">個人情報の取扱い</a>に同意します。<span class="text-neutral-400">（同業者様のお申し込みはお断りする場合があります）</span></span></label>
+
+            <button id="apply" class="btn-red !py-3.5 !px-9 !text-[16px] w-full sm:w-auto">この内容で参加登録する</button>
+            <p class="text-[12px] text-neutral-400">※ 本ページはモックのため、実際の申し込み・配信は行われません。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 申込対象セミナーのサマリ -->
+      <div class="lg:col-span-1">
+        <div class="card overflow-hidden sticky top-24">
+          <div id="semImg" class="h-32 bg-cover bg-center" style="background:#0d1024"></div>
+          <div class="p-5">
+            <div class="text-[12px] font-bold" style="color:#e60012">お申し込み内容</div>
+            <div id="semTitle" class="text-[16px] font-bold text-ink mt-1 leading-snug"></div>
+            <dl id="semMeta" class="mt-4 space-y-2 text-[14px]"></dl>
+            <a id="semBack" href="event.html" class="mt-4 inline-block text-[13px] text-neutral-500 hover:text-[color:var(--brand)]">‹ セミナー詳細に戻る</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/shell.js"></script>
+<script>
+  var id = qs('id') || 'iacs-e26';
+  var E = getSeminar(id);
+
+  KMECS.renderUserShell({
+    active:'event',
+    crumbs:[{label:'トップ',href:'index.html'},{label:'セミナー・イベント',href:'event.html'},{label:E.title,href:'event-detail.html?id='+id},{label:'参加登録'}],
+    onReady:function(){
+      var a = KMECS.account();
+      // ログイン時は会社名・氏名・担当営業を反映
+      if(a){
+        var c = getCustomer(a.custCode) || CUSTOMERS[0];
+        var rep = getRep(c.rep);
+        document.getElementById('fComp').value = c.company;
+        document.getElementById('fName').value = a.user;
+        document.getElementById('repBox').innerHTML =
+          '<b class="text-ink">'+c.company+'</b> 様としてログイン中です。担当営業 <b class="text-ink">'+rep.name+'</b>（メール '
+          + '<a href="mailto:'+rep.email+'" class="hover:underline" style="color:#e60012">'+rep.email+'</a>）にも登録内容を共有します。';
+      } else {
+        document.getElementById('repBox').innerHTML =
+          '<span class="text-neutral-600">ログインすると会社名・お名前が自動で入ります。'
+          + '<a href="login.html" class="ml-1 font-bold" style="color:#e60012">ログイン ›</a></span>';
+      }
+
+      // セミナーサマリ
+      document.getElementById('semImg').style.backgroundImage = 'linear-gradient(rgba(13,16,36,.55),rgba(13,16,36,.55)), url('+E.img+')';
+      document.getElementById('semTitle').textContent = E.title;
+      document.getElementById('semBack').href = 'event-detail.html?id='+id;
+      var mode = E.mode + (E.tool && E.tool!=='—' ? '（'+E.tool+'）' : '');
+      document.getElementById('semMeta').innerHTML =
+        row('日時', E.date.replace(/\./g,'/')+(E.dow?'（'+E.dow+'）':'')+'　'+E.time+(E.span&&E.span!=='—'?'（'+E.span+'）':''))
+        + row('形式', mode)
+        + row('参加費', E.fee)
+        + row('主催', E.host);
+
+      function row(k,v){ return '<div class="flex gap-2"><dt class="w-14 shrink-0 text-neutral-400">'+k+'</dt><dd class="text-ink flex-1">'+v+'</dd></div>'; }
+
+      document.getElementById('apply').addEventListener('click', function(){
+        if(!document.getElementById('fName').value.trim()){ alert('お名前をご入力ください。'); return; }
+        if(!document.getElementById('fComp').value.trim()){ alert('会社名をご入力ください。'); return; }
+        var mail=document.getElementById('fMail').value.trim();
+        if(!mail){ alert('メールアドレスをご入力ください。'); return; }
+        if(!document.getElementById('fAgree').checked){ alert('個人情報の取扱いへの同意が必要です。'); return; }
+        alert('「'+E.title+'」への参加登録を受け付けました。\n視聴用URLを '+mail+' 宛にお送りします。（モック）');
+        location.href = a ? 'mypage.html' : 'event.html';
+      });
+    }
+  });
+</script>
+</body>
+</html>
