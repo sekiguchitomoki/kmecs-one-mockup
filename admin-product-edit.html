@@ -89,15 +89,14 @@
           <span class="ml-auto inline-flex items-center gap-1 text-[11px] text-neutral-500 border border-[#dcdce6] px-1.5 py-0.5"><span class="w-1.5 h-1.5 rounded-full" style="background:#21759b"></span>REST API</span>
         </div>
         <div class="p-4 text-[14px] space-y-2.5">
-          <div class="flex justify-between items-center"><span class="text-neutral-500">ステータス</span>
-            <select id="p_status" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"><option value="draft">非公開（下書き）</option><option value="publish">公開</option></select></div>
+          <div class="flex justify-between items-center"><span class="text-neutral-500">送信先ステータス</span>
+            <span id="p_statusView" class="badge"></span></div>
           <div class="flex justify-between items-center"><span class="text-neutral-500">価格表示</span>
             <select id="p_pricevis" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"><option value="after">ログイン後のみ（得値）</option><option value="before">ログイン前も表示（標準価格）</option></select></div>
-          <div class="text-[12px] text-neutral-400 leading-relaxed pt-1 border-t border-[#f0f0f4]">この管理画面で最低限の情報を登録し、WordPress（カスタム投稿「product」）へ送信します。ユーザー画面（商品詳細）はWordPress側で表示します。</div>
+          <div id="p_statusNote" class="text-[12px] text-neutral-400 leading-relaxed pt-1 border-t border-[#f0f0f4]"></div>
         </div>
-        <div class="flex gap-2 px-4 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
-          <button id="saveDraft" class="flex-1 text-[13px] border border-[#dcdce6] bg-white text-neutral-600 py-2">下書きとして送信</button>
-          <button id="publish" class="flex-1 text-[13px] text-white py-2 font-bold" style="background:#e60012">WordPressに送信して公開</button>
+        <div class="px-4 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
+          <button id="send" class="w-full text-[13px] text-white py-2.5 font-bold" style="background:#e60012">WordPressに送信</button>
         </div>
       </div>
 
@@ -275,13 +274,32 @@
       });
       syncPrev();
 
-      /* ---- 保存 ---- */
-      g('publish').addEventListener('click', function(){
+      /* ---- WordPressへ送信 ----
+         新規登録 → WordPressで「下書き」／すでに公開済みの商品 → 「公開」のまま更新。
+         （既存でも非公開のものは下書きのまま送信） */
+      function statusOf(pp){ return (pp.stock%7===0 && pp.stock>0) ? 'draft' : 'publish'; }
+      var isNew = !p;
+      var target = isNew ? 'draft' : statusOf(p);   // 'publish' or 'draft'
+      g('p_statusView').textContent = target==='publish' ? '公開' : '非公開（下書き）';
+      g('p_statusView').className = 'badge ' + (target==='publish' ? 'bg-emerald-100 text-emerald-700' : 'bg-neutral-200 text-neutral-600');
+      g('p_statusNote').textContent = isNew
+        ? '新規登録のため、WordPressでは「下書き」として送信します（公開はWordPress側で確認のうえ実施）。'
+        : (target==='publish'
+            ? 'すでに公開済みの商品のため、WordPressでも「公開」のまま更新します。'
+            : 'この商品はまだ非公開（下書き）のため、WordPressでも「下書き」のまま送信します。');
+
+      g('send').addEventListener('click', function(){
         var name=g('p_name').value, codev=g('p_code').value;
         if(!name||!codev){ alert('商品名と型番(SKU)は必須です。'); return; }
-        alert('商品「'+name+'（'+codev+'）」をWordPressへ送信しました（ステータス：公開）。\nWordPress REST API（POST /wp-json/wp/v2/product）でカスタム投稿「product」として登録され、ユーザー画面（商品詳細）に表示されます。（モック）');
+        if(target==='publish'){
+          alert('商品「'+name+'（'+codev+'）」をWordPressへ送信しました（ステータス：公開）。\n'
+            + 'REST API（POST /wp-json/wp/v2/product、status=publish）で更新され、ユーザー画面（商品詳細）に反映されます。（モック）');
+        }else{
+          alert('商品「'+name+'（'+codev+'）」をWordPressへ送信しました（ステータス：下書き）。\n'
+            + (isNew ? '新規登録のため' : 'この商品は非公開のため')
+            + 'WordPressでは「下書き」として登録され、公開するまでユーザー画面には表示されません。（モック）');
+        }
       });
-      g('saveDraft').addEventListener('click', function(){ alert('WordPressへ下書きとして送信しました（ステータス：非公開（下書き））。\nREST API（POST /wp-json/wp/v2/product、status=draft）で登録され、公開するまでユーザー画面には表示されません。（モック）'); });
     }
   });
 </script>
