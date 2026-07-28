@@ -84,16 +84,20 @@
     <!-- 公開＋アイキャッチ＋プレビュー -->
     <div class="space-y-4">
       <div class="adm-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-[#dcdce6] text-[14px] font-bold text-ink">公開</div>
+        <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center gap-2">
+          <span class="text-[14px] font-bold text-ink">WordPressへ送信</span>
+          <span class="ml-auto inline-flex items-center gap-1 text-[11px] text-neutral-500 border border-[#dcdce6] px-1.5 py-0.5"><span class="w-1.5 h-1.5 rounded-full" style="background:#21759b"></span>REST API</span>
+        </div>
         <div class="p-4 text-[14px] space-y-2.5">
           <div class="flex justify-between items-center"><span class="text-neutral-500">ステータス</span>
             <select id="p_status" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"><option value="draft">非公開（下書き）</option><option value="publish">公開</option></select></div>
           <div class="flex justify-between items-center"><span class="text-neutral-500">価格表示</span>
             <select id="p_pricevis" class="border border-[#dcdce6] px-2 py-1 text-[13px] bg-white"><option value="after">ログイン後のみ（得値）</option><option value="before">ログイン前も表示（標準価格）</option></select></div>
+          <div class="text-[12px] text-neutral-400 leading-relaxed pt-1 border-t border-[#f0f0f4]">この管理画面で最低限の情報を登録し、WordPress（カスタム投稿「product」）へ送信します。ユーザー画面（商品詳細）はWordPress側で表示します。</div>
         </div>
         <div class="flex gap-2 px-4 py-3 border-t border-[#dcdce6]" style="background:var(--lav)">
-          <button id="saveDraft" class="flex-1 text-[13px] border border-[#dcdce6] bg-white text-neutral-600 py-2">非公開（下書き）保存</button>
-          <button id="publish" class="flex-1 text-[13px] text-white py-2 font-bold" style="background:#e60012">公開（サイトへ出力）</button>
+          <button id="saveDraft" class="flex-1 text-[13px] border border-[#dcdce6] bg-white text-neutral-600 py-2">下書きとして送信</button>
+          <button id="publish" class="flex-1 text-[13px] text-white py-2 font-bold" style="background:#e60012">WordPressに送信して公開</button>
         </div>
       </div>
 
@@ -117,7 +121,7 @@
     </div>
   </div>
 
-  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際のWordPress投稿・DB保存・画像アップロードは行われません（画像はプレビューのみ）。</p>
+  <p class="text-[13px] text-neutral-400 mt-3">※ モックのため、実際のWordPressへの送信・投稿・画像アップロードは行われません（画像はプレビューのみ）。本番はWordPress REST API（認証はApplication Passwords 等）へPOSTし、カスタムフィールドはACF、アイキャッチはメディアAPI経由で連携する想定です。</p>
 </div>
 
 <script src="assets/data.js"></script>
@@ -146,7 +150,7 @@
   KMECS.renderAdminShell({
     active:'admin-products',
     title: p ? '商品編集 '+p.code : '新規商品を追加',
-    sub:'商品詳細の編集（一覧とはURLを分離） ・ カテゴリー階層／価格表示／アイキャッチ／本文ブロック',
+    sub:'最低限の情報を登録してWordPress（カスタム投稿「product」）へ送信 ・ ユーザー画面はWordPressで表示',
     onReady:function(){
       var g=function(id){return document.getElementById(id);};
       g('p_maker').innerHTML=Object.keys(MAKERS).map(function(k){return '<option value="'+k+'">'+MAKERS[k].name+'</option>';}).join('');
@@ -275,9 +279,9 @@
       g('publish').addEventListener('click', function(){
         var name=g('p_name').value, codev=g('p_code').value;
         if(!name||!codev){ alert('商品名と型番(SKU)は必須です。'); return; }
-        alert('商品「'+name+'（'+codev+'）」を公開しました。\nWordPress カスタム投稿「product」として保存され、商品検索・メーカーページに出力されます。（モック）');
+        alert('商品「'+name+'（'+codev+'）」をWordPressへ送信しました（ステータス：公開）。\nWordPress REST API（POST /wp-json/wp/v2/product）でカスタム投稿「product」として登録され、ユーザー画面（商品詳細）に表示されます。（モック）');
       });
-      g('saveDraft').addEventListener('click', function(){ alert('「非公開（下書き）」として保存しました。一覧にも非公開（下書き）で表示されます。（モック）'); });
+      g('saveDraft').addEventListener('click', function(){ alert('WordPressへ下書きとして送信しました（ステータス：非公開（下書き））。\nREST API（POST /wp-json/wp/v2/product、status=draft）で登録され、公開するまでユーザー画面には表示されません。（モック）'); });
     }
   });
 </script>
