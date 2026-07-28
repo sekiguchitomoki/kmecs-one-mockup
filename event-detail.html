@@ -35,7 +35,9 @@
         ? '<span class="badge text-white" style="background:#393b56">'+E.mode+(E.tool&&E.tool!=='—'?'（'+E.tool+'）':'')+'</span>'
         : '<span class="badge bg-ink text-white">'+E.mode+'</span>'; }
       var dd = E.date.split('.');
-      var applyBtn = '<a href="event-apply.html?id='+encodeURIComponent(qs('id')||'iacs-e26')+'" class="btn-red !px-9 !py-3.5 !text-[16px]">無料で参加登録する</a>';
+      // セミナー申込は外部フォーム（skylake）へ。※現在リンク切れ・暫定
+      var applyUrl = 'https://skylake.kmecsone.jp/public/application/add/4025';
+      var applyBtn = '<a href="'+applyUrl+'" target="_blank" rel="noopener" class="btn-red !px-9 !py-3.5 !text-[16px]">無料で参加登録する</a>';
 
       var html =
         // ヒーロー
@@ -110,7 +112,7 @@
       html += '<section class="text-white text-center p-10" style="background:#e60012">'
         + '<h2 class="text-2xl font-bold">'+E.title+'</h2>'
         + '<p class="text-[15px] opacity-90 mt-2">'+E.date.replace(/\./g,'/')+(E.dow?'（'+E.dow+'）':'')+'　'+E.time+'　'+E.mode+'　参加費 '+E.fee+'　主催：'+E.host+'</p>'
-        + '<div class="mt-5"><a href="event-apply.html?id='+encodeURIComponent(qs('id')||'iacs-e26')+'" class="inline-flex items-center gap-2 bg-white font-bold text-[16px] px-9 py-3.5" style="color:#e60012">無料ウェビナーに申し込む ›</a></div>'
+        + '<div class="mt-5"><a href="'+applyUrl+'" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white font-bold text-[16px] px-9 py-3.5" style="color:#e60012">無料ウェビナーに申し込む ›</a></div>'
         + '<p class="text-[12px] opacity-80 mt-4">※ 本ページはモックのため、実際の申し込み・配信は行われません。同業者様のお申し込みはお断りする場合がございます。</p>'
         + '</section>'
         + '</div>';
