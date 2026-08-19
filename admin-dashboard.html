@@ -26,9 +26,6 @@
     <div class="flex flex-wrap items-stretch gap-2 text-[13px]" id="flow"></div>
   </div>
 
-  <!-- KPI（全体）-->
-  <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-4" id="kpi"></div>
-
   <!-- 要対応アラート -->
   <div class="adm-card overflow-hidden mb-4">
     <div class="px-4 py-3 border-b border-[#dcdce6] flex items-center justify-between">
@@ -84,37 +81,28 @@
     onReady:function(){
       // フロー
       // c=要対応件数（累計・遷移先の一覧と同じ件数）、lbl=その件数が何を指すか
+      // c=要対応件数、extra=そのステージに集約した関連KPI（旧KPI行から統合）
       var STEPS=[
         {n:'①',t:'見積',href:'admin-quotes.html',c:3,lbl:'見積依頼'},
-        {n:'②',t:'受発注',href:'admin-orders.html',c:3,lbl:'要チェック'},
+        {n:'②',t:'受発注',href:'admin-orders.html',c:3,lbl:'要チェック',extra:[{l:'受注（累計）',v:'9件',c:'text-ink'},{l:'IBM自動連携済',v:'5件',c:'text-emerald-600'}]},
         {n:'③',t:'問合せ',href:'admin-inquiries.html',c:2,lbl:'未対応'},
         {n:'④',t:'出荷',href:'admin-shipping.html',c:5,lbl:'送り状未発行'},
-        {n:'⑤',t:'請求',href:'admin-invoice.html',c:4,lbl:'未発行'},
+        {n:'⑤',t:'請求',href:'admin-invoice.html',c:4,lbl:'未発行',extra:[{l:'未入金',v:'¥1,477,564',c:'text-[color:var(--brand)]'}]},
         {n:'⑥',t:'入金',href:'admin-payment.html',c:2,lbl:'要確認'},
       ];
       document.getElementById('flow').innerHTML = STEPS.map(function(s,i){
-        return '<a href="'+s.href+'" class="flex-1 min-w-[120px] border border-[#dcdce6] p-3 hover:border-[color:var(--brand)] bg-white relative">'
+        return '<a href="'+s.href+'" class="flex-1 min-w-[130px] border border-[#dcdce6] p-3 hover:border-[color:var(--brand)] bg-white relative flex flex-col">'
           + '<div class="flex items-center gap-2"><span class="font-display font-black text-xl" style="color:#e60012">'+s.n+'</span>'
           + '<span class="font-bold text-ink">'+s.t+'</span></div>'
           + (s.c>0
               ? '<div class="flex items-baseline gap-1 mt-2"><span class="badge text-white" style="background:#e60012">'+s.lbl+'</span><span class="font-display font-black text-lg text-ink">'+s.c+'</span><span class="text-[11px] text-neutral-400">件</span></div>'
               : '<span class="badge bg-neutral-100 text-neutral-400 mt-2">対応なし</span>')
+          + (s.extra
+              ? '<div class="mt-2 pt-2 border-t border-[#eef0f5] space-y-1">'
+                + s.extra.map(function(x){ return '<div class="flex items-center justify-between text-[11px]"><span class="text-neutral-500">'+x.l+'</span><span class="font-display font-bold '+x.c+'">'+x.v+'</span></div>'; }).join('')
+                + '</div>'
+              : '')
           + '</a>'+(i<STEPS.length-1?'<span class="self-center text-neutral-300">›</span>':'');
-      }).join('');
-
-      // KPI（累計。件数は遷移先の一覧・KPIと同じ数字）
-      var KPI=[
-        {l:'受注（累計）',v:'9',u:'件',c:'text-ink',h:'admin-orders.html'},
-        {l:'IBM自動連携済',v:'5',u:'件',c:'text-emerald-600',h:'admin-orders.html?f=auto'},
-        {l:'要チェック受注',v:'3',u:'件',c:'text-amber-600',h:'admin-orders.html?f=check'},
-        {l:'送り状未発行',v:'5',u:'件',c:'text-ink',h:'admin-shipping.html'},
-        {l:'未入金',v:'¥1,477,564',u:'',c:'text-[color:var(--brand)]',h:'admin-invoice.html?f=unpaid'},
-        {l:'見積依頼(未処理)',v:'3',u:'件',c:'text-[color:var(--brand)]',h:'admin-quotes.html'},
-      ];
-      document.getElementById('kpi').innerHTML = KPI.map(function(k){
-        return '<a href="'+k.h+'" class="adm-card p-4 block transition cursor-pointer hover:border-[color:var(--brand)] hover:shadow-sm group">'
-          + '<div class="text-[12px] text-neutral-500 flex items-center justify-between">'+k.l+'<span class="text-neutral-300 group-hover:text-[color:var(--brand)]">›</span></div>'
-          + '<div class="font-display text-2xl font-black mt-1 '+k.c+'">'+k.v+(k.u?'<span class="text-[12px] font-normal text-neutral-400 ml-1">'+k.u+'</span>':'')+'</div></a>';
       }).join('');
 
       // アラート
