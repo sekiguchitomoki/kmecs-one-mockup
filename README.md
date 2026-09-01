@@ -11,15 +11,17 @@
 
 > 本セクションが現在の運用まとめです。以降の「開き方」以下は初期の設計メモで、一部は最新の実装より前の記述を含みます。
 
-### 閲覧URL（デモ）
-- **モック閲覧URL： https://sekiguchitomoki.github.io/kmecs-one-mockup/** （GitHub Pages・public・稼働中）
-- **閲覧パスワード：`kmecs28`**（初回アクセス時に入力。軽い閲覧制限で、本番のセキュリティではありません）
+### 閲覧URL（本番デモ・T2C配信）
+- **https://tools.t2c-inc.com/cl/kmecsone/** （T2C独自ドメイン・**Basic認証**で保護／`t2c-inc/kmecs-one-mockup` への push で自動更新）
+  - 各画面：`/cl/kmecsone/`（TOP）／`/cl/kmecsone/mypage`／`/cl/kmecsone/admin-dashboard`／`/cl/kmecsone/login`（`.html` 付きでもアクセス可）
+  - **Basic認証のID/PWはこのリポジトリには記載しない**（漏洩防止。関口から別途共有）。
+  - さらに画面内に簡易ゲート（PW `kmecs28`）あり。
+- 予備ミラー（任意・public）： https://sekiguchitomoki.github.io/kmecs-one-mockup/ （GitHub Pages。PW `kmecs28`）
 
-### リポジトリ構成（2つ）
-- **`t2c-inc/kmecs-one-mockup`（private）… ソース管理・引き継ぎ用の正リポジトリ。** スタッフはここをcloneして作業（`CLAUDE.md`が適用される）。
-  - ※ t2c-inc は GitHub Free プランのため、**private リポジトリでは GitHub Pages が使えない**（`t2c-inc.github.io/...` は配信しない＝404で正常）。
-- `sekiguchitomoki/kmecs-one-mockup`（public）… **ライブデモの配信元**。上記の閲覧URLはこちらから配信。
-- ライブデモを更新したいときは **public 側（`origin`）に push**（下記デプロイ参照）。private 側（`t2c`）への push はソース保管であり、ライブサイトには反映されません。
+### リポジトリ構成
+- **`t2c-inc/kmecs-one-mockup`（private）… 正リポジトリ。ここに push すると本番 `tools.t2c-inc.com` が自動更新。** スタッフはここをcloneして作業（`CLAUDE.md`適用）。
+- `sekiguchitomoki/kmecs-one-mockup`（public）… 予備ミラー（GitHub Pages配信元）。private化はしていない＝ソースは公開状態。
+- ※ t2c-inc は Free プランのため t2c-inc.github.io のPagesは使わない（本番配信は tools.t2c-inc.com）。
 
 ### 主要画面（URL末尾に付ける）
 | 系統 | 画面 | パス |
@@ -33,10 +35,11 @@
 
 ### 更新とデプロイ
 - 静的サイト（HTML＋Tailwind CDN＋素JS・**ビルド不要**）。編集して **`git push` すると GitHub Pages が自動デプロイ**（数十秒〜数分）。ブラウザはハードリロード（Cmd+Shift+R）。
-- **remote は2つ**：`origin`（sekiguchitomoki・public＝ライブ配信元）／ `t2c`（t2c-inc・private＝ソース保管）。
-  - **ライブデモを更新** → `git push origin main`（GitHub Pages自動デプロイ）
-  - **T2Cのソースも更新** → `git push t2c main`（private・Pagesなし。通常は両方に push して同期）
-- デプロイ状況：`gh api repos/sekiguchitomoki/kmecs-one-mockup/pages --jq .status`（`built` で完了）。
+- **remote は2つ**：`t2c`（t2c-inc・private＝**本番 tools.t2c-inc.com の配信元**）／ `origin`（sekiguchitomoki・public＝予備ミラー/GitHub Pages）。
+  - **本番（tools.t2c-inc.com）を更新** → `git push t2c main`
+  - **予備ミラー（GitHub Pages）も更新** → `git push origin main`
+  - 通常は両方に push して同期（`git push t2c main && git push origin main`）。
+- 予備ミラーのデプロイ状況：`gh api repos/sekiguchitomoki/kmecs-one-mockup/pages --jq .status`（`built` で完了）。
 
 ### 成果物（Googleドライブ）
 - 操作マニュアル（PPT/PDF）とディレクトリマップ（機能一覧）は Drive に保存：
