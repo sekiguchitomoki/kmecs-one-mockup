@@ -11,10 +11,15 @@
 
 > 本セクションが現在の運用まとめです。以降の「開き方」以下は初期の設計メモで、一部は最新の実装より前の記述を含みます。
 
-### 公開URL（GitHub Pages・2サイト並存）
-- **T2C組織（社内共有・こちらを正とする）**： https://t2c-inc.github.io/kmecs-one-mockup/
-- 個人アカウント（旧・並存）： https://sekiguchitomoki.github.io/kmecs-one-mockup/
+### 閲覧URL（デモ）
+- **モック閲覧URL： https://sekiguchitomoki.github.io/kmecs-one-mockup/** （GitHub Pages・public・稼働中）
 - **閲覧パスワード：`kmecs28`**（初回アクセス時に入力。軽い閲覧制限で、本番のセキュリティではありません）
+
+### リポジトリ構成（2つ）
+- **`t2c-inc/kmecs-one-mockup`（private）… ソース管理・引き継ぎ用の正リポジトリ。** スタッフはここをcloneして作業（`CLAUDE.md`が適用される）。
+  - ※ t2c-inc は GitHub Free プランのため、**private リポジトリでは GitHub Pages が使えない**（`t2c-inc.github.io/...` は配信しない＝404で正常）。
+- `sekiguchitomoki/kmecs-one-mockup`（public）… **ライブデモの配信元**。上記の閲覧URLはこちらから配信。
+- ライブデモを更新したいときは **public 側（`origin`）に push**（下記デプロイ参照）。private 側（`t2c`）への push はソース保管であり、ライブサイトには反映されません。
 
 ### 主要画面（URL末尾に付ける）
 | 系統 | 画面 | パス |
@@ -28,8 +33,10 @@
 
 ### 更新とデプロイ
 - 静的サイト（HTML＋Tailwind CDN＋素JS・**ビルド不要**）。編集して **`git push` すると GitHub Pages が自動デプロイ**（数十秒〜数分）。ブラウザはハードリロード（Cmd+Shift+R）。
-- **remote は2つ**：`origin`（sekiguchitomoki）／ `t2c`（t2c-inc）。両サイトに反映するなら両方へ push（`git push origin main` と `git push t2c main`）。
-- デプロイ状況：`gh api repos/<owner>/kmecs-one-mockup/pages --jq .status`（`built` で完了）。
+- **remote は2つ**：`origin`（sekiguchitomoki・public＝ライブ配信元）／ `t2c`（t2c-inc・private＝ソース保管）。
+  - **ライブデモを更新** → `git push origin main`（GitHub Pages自動デプロイ）
+  - **T2Cのソースも更新** → `git push t2c main`（private・Pagesなし。通常は両方に push して同期）
+- デプロイ状況：`gh api repos/sekiguchitomoki/kmecs-one-mockup/pages --jq .status`（`built` で完了）。
 
 ### 成果物（Googleドライブ）
 - 操作マニュアル（PPT/PDF）とディレクトリマップ（機能一覧）は Drive に保存：

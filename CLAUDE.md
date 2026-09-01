@@ -30,10 +30,11 @@
 ## 更新・デプロイ手順
 1. 編集 → 下記「動作確認」→ commit。
 2. デプロイ方式：GitHub Pages（Deploy from branch `main` / ルート）。`git push` で自動デプロイ。
-3. **サイトは2つ並存**：remote が2つある。
-   - `origin` = `sekiguchitomoki/kmecs-one-mockup` → https://sekiguchitomoki.github.io/kmecs-one-mockup/
-   - `t2c` = `t2c-inc/kmecs-one-mockup` → https://t2c-inc.github.io/kmecs-one-mockup/
-   - 両方に反映するなら `git push origin main` と `git push t2c main` の両方。
+3. **remote は2つ・役割が違う**：
+   - `origin` = `sekiguchitomoki/kmecs-one-mockup`（**public＝ライブ配信元**）→ https://sekiguchitomoki.github.io/kmecs-one-mockup/（閲覧PW `kmecs28`）
+   - `t2c` = `t2c-inc/kmecs-one-mockup`（**private＝ソース保管・引き継ぎ**。t2c-incはFreeプランのため private だと Pages 不可＝ライブ配信なし）
+   - **ライブデモ更新は `git push origin main`**。ソース同期に `git push t2c main` も併せて実行（t2cへのpushはライブに反映されない）。
+   - 参考：T2C組織リポジトリは原則 private（`gh repo create t2c-inc/<name> --private`）。
 4. push認証は gh のトークンを使う：
    ```
    git -c credential.helper='!f() { echo "username=x-access-token"; echo "password=$(gh auth token)"; }; f' push <remote> main
